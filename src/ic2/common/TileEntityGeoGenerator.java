@@ -75,7 +75,6 @@ public class TileEntityGeoGenerator extends TileEntityBaseGenerator implements I
 		}
 		if (energy >= 20) {
 			int a = 20 - sendEnergy(20);
-			System.out.println("Sent " + a);
 			energy -= a;
 		}
 		if (energy <= 20 && fuel > 0) {
