@@ -35,12 +35,10 @@ public class TileEntitySolarGenerator extends TileEntityBaseGenerator implements
 		if (this.ticker++ % this.tickRate() == 0) {
 			this.updateSunVisibility();
 		}
-
 		if (this.sunIsVisible) {
 			if (randomizer.nextInt(100) < mod_IC2.energyGeneratorSolar) {
 				++this.storage;
 			}
-
 			return true;
 		}
 		else {

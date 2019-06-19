@@ -40,7 +40,7 @@ public class TileEntityLuminator extends TileEntity implements IEnergySink {
 			}
 
 			++this.ticker;
-			if (this.ticker % 4 == 0) {
+			if (this.ticker % 20 == 0) { //Changed to once every 4 ticks to once every 20 ticks
 				--this.energy;
 				if (this.energy <= 0) {
 					this.world.setTypeIdAndData(this.x, this.y, this.z, Ic2Items.luminator.id, this.world.getData(this.x, this.y, this.z));

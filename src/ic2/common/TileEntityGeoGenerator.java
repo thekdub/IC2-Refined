@@ -11,7 +11,8 @@ public class TileEntityGeoGenerator extends TileEntityBaseGenerator implements I
 	public int maxLava = 24000;
 
 	public TileEntityGeoGenerator() {
-		super(2, mod_IC2.energyGeneratorGeo, mod_IC2.energyGeneratorGeo);
+//		super(2, mod_IC2.energyGeneratorGeo, mod_IC2.energyGeneratorGeo);
+		super(2, mod_IC2.energyGeneratorGeo, 20000); //Increased maximum EU storage from 20 to 20,000.
 	}
 
 	public int gaugeFuelScaled(int i) {
@@ -61,8 +62,12 @@ public class TileEntityGeoGenerator extends TileEntityBaseGenerator implements I
 		return false;
 	}
 
+//	public boolean needsFuel() {
+//		return this.fuel <= this.maxLava;
+//	}
+
 	public boolean needsFuel() {
-		return this.fuel <= this.maxLava;
+		return this.fuel <= this.maxLava && this.storage + this.production * 200 <= this.maxStorage;
 	}
 
 	public int distributeLava(int i) {

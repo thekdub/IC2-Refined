@@ -496,10 +496,8 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
 			if (breakev.isCancelled()) {
 				return false;
 			}
-
 			breakev.setCancelled(true);
 		}
-
 		if (itemstack != null) {
 			if (this.id < 0) {
 				if (itemstack.id == Ic2Items.crop.id && !this.upgraded) {
@@ -509,12 +507,10 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
 							entityhuman.inventory.items[entityhuman.inventory.itemInHandIndex] = null;
 						}
 					}
-
 					this.upgraded = true;
 					this.dirty = true;
 					return true;
 				}
-
 				if (this.applyBaseSeed(itemstack, entityhuman)) {
 					return true;
 				}
@@ -525,13 +521,10 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
 					if (s == null) {
 						s = "Unknown Crop";
 					}
-
 					Platform.messagePlayer(entityhuman, s);
 				}
-
 				return true;
 			}
-
 			if (itemstack.id == Item.WATER_BUCKET.id || itemstack.id == Ic2Items.waterCell.getItem().id) {
 				if (this.waterStorage < 10) {
 					this.waterStorage = 10;
@@ -541,7 +534,6 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
 					return itemstack.id == Item.WATER_BUCKET.id;
 				}
 			}
-
 			if (itemstack.id == Item.SEEDS.id) {
 				if (this.nutrientStorage <= 50) {
 					this.nutrientStorage += 25;
@@ -549,10 +541,8 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
 					if (itemstack.count <= 0) {
 						entityhuman.inventory.items[entityhuman.inventory.itemInHandIndex] = null;
 					}
-
 					return true;
 				}
-
 				return false;
 			}
 

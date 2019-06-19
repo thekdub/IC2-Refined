@@ -62,12 +62,10 @@ public abstract class TileEntityBaseGenerator extends TileEntityMachine implemen
 		if (this.needsFuel()) {
 			flag = this.gainFuel();
 		}
-
 		boolean flag1 = this.gainEnergy();
 		if (this.storage > this.maxStorage) {
 			this.storage = this.maxStorage;
 		}
-
 		if (this.storage > 0) {
 			int j;
 			if (this.inventory[0] != null && Item.byId[this.inventory[0].id] instanceof IElectricItem) {
@@ -77,17 +75,14 @@ public abstract class TileEntityBaseGenerator extends TileEntityMachine implemen
 					flag = true;
 				}
 			}
-
 			j = Math.min(this.production, this.storage);
 			if (j > 0) {
 				this.storage = (short) (this.storage + (this.sendEnergy(j) - j));
 			}
 		}
-
 		if (flag) {
 			this.update();
 		}
-
 		if (!this.delayActiveUpdate()) {
 			this.setActive(flag1);
 		}
@@ -96,17 +91,14 @@ public abstract class TileEntityBaseGenerator extends TileEntityMachine implemen
 				this.setActive(this.activityMeter > 0);
 				this.activityMeter = 0;
 			}
-
 			if (flag1) {
 				++this.activityMeter;
 			}
 			else {
 				--this.activityMeter;
 			}
-
 			++this.ticksSinceLastActiveUpdate;
 		}
-
 	}
 
 	public void onCreated() {
@@ -123,12 +115,10 @@ public abstract class TileEntityBaseGenerator extends TileEntityMachine implemen
 			EnergyNet.getForWorld(this.world).removeTileEntity(this);
 			this.addedToEnergyNet = false;
 		}
-
 		if (Platform.isRendering() && this.audioSource != null) {
 			AudioManager.removeSources(this);
 			this.audioSource = null;
 		}
-
 		super.j();
 	}
 

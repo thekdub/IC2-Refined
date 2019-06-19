@@ -4,6 +4,9 @@ import ic2.api.Direction;
 import ic2.api.IEnergySink;
 import ic2.platform.Platform;
 import net.minecraft.server.*;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
 
 public class TileEntityCropmatron extends TileEntityMachine implements IEnergySink, IHasGui {
 	public static int maxInput = 32;
@@ -85,12 +88,18 @@ public class TileEntityCropmatron extends TileEntityMachine implements IEnergySi
 				this.checkStackSizeZero(3);
 			}
 
-			if (this.inventory[6] != null && this.inventory[6].id == Ic2Items.weedEx.id && tileentitycrop.applyWeedEx(false)) {
-				this.energy -= 10;
-				this.inventory[6].damage(1, null);
-				if (this.inventory[6].getData() >= this.inventory[6].i()) {
-					--this.inventory[6].count;
-					this.checkStackSizeZero(6);
+			if (this.inventory[6] != null && this.inventory[6].id == Ic2Items.weedEx.id) {
+				if (this.inventory[6].count > 1) {
+					this.world.getWorld().dropItem(new Location(this.world.getWorld(), x, y, z), new ItemStack(Ic2Items.weedEx.id, this.inventory[6].count - 1));
+					this.inventory[6].count = 1;
+				}
+				if (tileentitycrop.applyWeedEx(false)) {
+					this.energy -= 10;
+					this.inventory[6].damage(1, null);
+					if (this.inventory[6].getData() >= this.inventory[6].i()) {
+						--this.inventory[6].count;
+						this.checkStackSizeZero(6);
+					}
 				}
 			}
 		}
