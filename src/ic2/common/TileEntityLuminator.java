@@ -38,12 +38,12 @@ public class TileEntityLuminator extends TileEntity implements IEnergySink {
 				EnergyNet.getForWorld(this.world).addTileEntity(this);
 				this.addedToEnergyNet = true;
 			}
-
-			++this.ticker;
-			if (this.ticker % 20 == 0) { //Changed to once every 4 ticks to once every 20 ticks
-				--this.energy;
-				if (this.energy <= 0) {
+			if (++this.ticker % 20 == 0) { //Changed to once every 4 ticks to once every 20 ticks
+				if (this.energy > 0)
+					this.energy -= 5; //Energy consumption updated to keep to 0.25EU/t
+				if (this.energy <= 0 && this.world.getTypeId(x, y, z) == Ic2Items.activeLuminator.id) {
 					this.world.setTypeIdAndData(this.x, this.y, this.z, Ic2Items.luminator.id, this.world.getData(this.x, this.y, this.z));
+					this.energy = 0;
 				}
 			}
 		}
@@ -70,21 +70,24 @@ public class TileEntityLuminator extends TileEntity implements IEnergySink {
 		else if (i <= 0) {
 			return 0;
 		}
-		else if (this.world.getTypeId(this.x, this.y, this.z) == Ic2Items.luminator.id) {
+		else if (this.world.getTypeId(this.x, this.y, this.z) == Ic2Items.luminator.id && this.energy > 32) {
 			this.world.setTypeIdAndData(this.x, this.y, this.z, Ic2Items.activeLuminator.id, this.world.getData(this.x, this.y, this.z));
-			TileEntityLuminator tileentityluminator = (TileEntityLuminator) this.world.getTileEntity(this.x, this.y, this.z);
-			return tileentityluminator.injectEnergy(direction, i);
+			TileEntityLuminator luminator = (TileEntityLuminator) this.world.getTileEntity(x, y, z);
+			luminator.addEnergy(this.energy);
 		}
-		else {
-			this.energy += i;
-			int j = 0;
-			if (this.energy > this.getMaxEnergy() + 32) {
-				j = this.energy - (this.getMaxEnergy() + 32);
-				this.energy = this.getMaxEnergy() + 32;
-			}
+		this.energy += i;
+		int j = 0;
+		if (this.energy >= this.getMaxEnergy()) {
+			j = this.energy - this.getMaxEnergy();
+			this.energy = this.getMaxEnergy();
+		}
+		return j;
+	}
 
-			return j;
-		}
+	public void addEnergy(int i) {
+		energy += i;
+		if (energy > getMaxEnergy())
+			energy = getMaxEnergy();
 	}
 
 	public int getMaxEnergy() {
