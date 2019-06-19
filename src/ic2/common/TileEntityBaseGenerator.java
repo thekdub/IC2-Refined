@@ -34,7 +34,6 @@ public abstract class TileEntityBaseGenerator extends TileEntityMachine implemen
 
 	public void a(NBTTagCompound nbttagcompound) {
 		super.a(nbttagcompound);
-
 		try {
 			this.fuel = nbttagcompound.getInt("fuel");
 		} catch (Throwable var3) {
