@@ -9,6 +9,7 @@ import net.minecraft.server.*;
 
 public class TileEntityReactorChamber extends TileEntity implements IWrenchable, IEnergySource, IInventory, IReactorChamber {
 	public boolean addedToEnergyNet = false;
+	public TileEntityNuclearReactor reactor;
 
 	public void m() {
 		super.m();
@@ -67,62 +68,72 @@ public class TileEntityReactorChamber extends TileEntity implements IWrenchable,
 	}
 
 	public int getSize() {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		return tileentitynuclearreactor == null ? 0 : tileentitynuclearreactor.getSize();
+		if (reactor == null)
+			getReactor();
+		return reactor == null ? 0 : reactor.getSize();
 	}
 
 	public ItemStack getItem(int i) {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		return tileentitynuclearreactor == null ? null : tileentitynuclearreactor.getItem(i);
+		if (reactor == null)
+			getReactor();
+		return reactor == null ? null : reactor.getItem(i);
 	}
 
 	public ItemStack splitStack(int i, int j) {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		return tileentitynuclearreactor == null ? null : tileentitynuclearreactor.splitStack(i, j);
+		if (reactor == null)
+			getReactor();
+		return reactor == null ? null : reactor.splitStack(i, j);
 	}
 
 	public void setItem(int i, ItemStack itemstack) {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		if (tileentitynuclearreactor != null) {
-			tileentitynuclearreactor.setItem(i, itemstack);
+		if (reactor == null)
+			getReactor();
+		if (reactor != null) {
+			reactor.setItem(i, itemstack);
 		}
 	}
 
 	public String getName() {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		return tileentitynuclearreactor == null ? "Nuclear Reactor" : tileentitynuclearreactor.getName();
+		if (reactor == null)
+			getReactor();
+		return reactor == null ? "Nuclear Reactor" : reactor.getName();
 	}
 
 	public int getMaxStackSize() {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		return tileentitynuclearreactor == null ? 64 : tileentitynuclearreactor.getMaxStackSize();
+		if (reactor == null)
+			getReactor();
+		return reactor == null ? 64 : reactor.getMaxStackSize();
 	}
 
 	public void setMaxStackSize(int arg0) {
 	}
 
 	public boolean a(EntityHuman entityhuman) {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		return tileentitynuclearreactor != null && tileentitynuclearreactor.a(entityhuman);
+		if (reactor == null)
+			getReactor();
+		return reactor != null && reactor.a(entityhuman);
 	}
 
 	public void f() {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		if (tileentitynuclearreactor != null) {
-			tileentitynuclearreactor.f();
+		if (reactor == null)
+			getReactor();
+		if (reactor != null) {
+			reactor.f();
 		}
 	}
 
 	public void g() {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		if (tileentitynuclearreactor != null) {
-			tileentitynuclearreactor.g();
+		if (reactor == null)
+			getReactor();
+		if (reactor != null) {
+			reactor.g();
 		}
 	}
 
 	public ItemStack splitWithoutUpdate(int i) {
-		TileEntityNuclearReactor tileentitynuclearreactor = this.getReactor();
-		return tileentitynuclearreactor == null ? null : tileentitynuclearreactor.splitWithoutUpdate(i);
+		if (reactor == null)
+			getReactor();
+		return reactor == null ? null : reactor.splitWithoutUpdate(i);
 	}
 
 	public boolean emitsEnergyTo(TileEntity tileentity, Direction direction) {
@@ -137,48 +148,36 @@ public class TileEntityReactorChamber extends TileEntity implements IWrenchable,
 		return EnergyNet.getForWorld(this.world).emitEnergyFrom(this, i);
 	}
 
-	public TileEntityNuclearReactor getReactor() {
-		TileEntity tileentity = this.world.getTileEntity(this.x + 1, this.y, this.z);
-		if (tileentity instanceof TileEntityNuclearReactor) {
-			return (TileEntityNuclearReactor) tileentity;
+	public void getReactor() {
+		TileEntity tileEntity = this.world.getTileEntity(this.x + 1, this.y, this.z);
+		if (tileEntity instanceof TileEntityNuclearReactor) {
+			reactor = (TileEntityNuclearReactor) tileEntity;
+			return;
 		}
-		else {
-			tileentity = this.world.getTileEntity(this.x - 1, this.y, this.z);
-			if (tileentity instanceof TileEntityNuclearReactor) {
-				return (TileEntityNuclearReactor) tileentity;
-			}
-			else {
-				tileentity = this.world.getTileEntity(this.x, this.y + 1, this.z);
-				if (tileentity instanceof TileEntityNuclearReactor) {
-					return (TileEntityNuclearReactor) tileentity;
-				}
-				else {
-					tileentity = this.world.getTileEntity(this.x, this.y - 1, this.z);
-					if (tileentity instanceof TileEntityNuclearReactor) {
-						return (TileEntityNuclearReactor) tileentity;
-					}
-					else {
-						tileentity = this.world.getTileEntity(this.x, this.y, this.z + 1);
-						if (tileentity instanceof TileEntityNuclearReactor) {
-							return (TileEntityNuclearReactor) tileentity;
-						}
-						else {
-							tileentity = this.world.getTileEntity(this.x, this.y, this.z - 1);
-							if (tileentity instanceof TileEntityNuclearReactor) {
-								return (TileEntityNuclearReactor) tileentity;
-							}
-							else {
-								Block block = Block.byId[this.world.getTypeId(this.x, this.y, this.z)];
-								if (block != null) {
-									block.doPhysics(this.world, this.x, this.y, this.z, block.id);
-								}
-
-								return null;
-							}
-						}
-					}
-				}
-			}
+		tileEntity = this.world.getTileEntity(this.x - 1, this.y, this.z);
+		if (tileEntity instanceof TileEntityNuclearReactor) {
+			reactor = (TileEntityNuclearReactor) tileEntity;
+			return;
+		}
+		tileEntity = this.world.getTileEntity(this.x, this.y + 1, this.z);
+		if (tileEntity instanceof TileEntityNuclearReactor) {
+			reactor = (TileEntityNuclearReactor) tileEntity;
+			return;
+		}
+		tileEntity = this.world.getTileEntity(this.x, this.y - 1, this.z);
+		if (tileEntity instanceof TileEntityNuclearReactor) {
+			reactor = (TileEntityNuclearReactor) tileEntity;
+			return;
+		}
+		tileEntity = this.world.getTileEntity(this.x, this.y, this.z + 1);
+		if (tileEntity instanceof TileEntityNuclearReactor) {
+			reactor = (TileEntityNuclearReactor) tileEntity;
+			return;
+		}
+		tileEntity = this.world.getTileEntity(this.x, this.y, this.z - 1);
+		if (tileEntity instanceof TileEntityNuclearReactor) {
+			reactor = (TileEntityNuclearReactor) tileEntity;
+			return;
 		}
 	}
 
