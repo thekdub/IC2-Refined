@@ -67,7 +67,7 @@ public class TileEntityGeoGenerator extends TileEntityBaseGenerator implements I
 //	}
 
 	public boolean needsFuel() {
-		return this.fuel <= this.maxLava && this.storage + this.production * 200 <= this.maxStorage;
+		return this.fuel <= this.maxLava && this.storage + this.production <= this.maxStorage;
 	}
 
 	public int distributeLava(int i) {
