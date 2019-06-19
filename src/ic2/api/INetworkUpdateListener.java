@@ -1,5 +1,5 @@
 package ic2.api;
 
 public interface INetworkUpdateListener {
-	void onNetworkUpdate(String var1);
+  void onNetworkUpdate(String var1);
 }

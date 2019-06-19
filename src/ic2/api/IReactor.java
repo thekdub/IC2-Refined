@@ -5,19 +5,19 @@ import net.minecraft.server.ItemStack;
 import net.minecraft.server.World;
 
 public interface IReactor {
-	ChunkCoordinates getPosition();
+  ChunkCoordinates getPosition();
 
-	World getWorld();
+  World getWorld();
 
-	int getHeat();
+  int getHeat();
 
-	void setHeat(int var1);
+  void setHeat(int var1);
 
-	int addHeat(int var1);
+  int addHeat(int var1);
 
-	ItemStack getItemAt(int var1, int var2);
+  ItemStack getItemAt(int var1, int var2);
 
-	void setItemAt(int var1, int var2, ItemStack var3);
+  void setItemAt(int var1, int var2, ItemStack var3);
 
-	void explode();
+  void explode();
 }

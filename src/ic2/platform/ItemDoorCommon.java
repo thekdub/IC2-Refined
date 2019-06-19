@@ -5,11 +5,11 @@ import net.minecraft.server.ItemStack;
 import net.minecraft.server.Material;
 
 public class ItemDoorCommon extends ItemDoor {
-	public ItemDoorCommon(int i, Material material) {
-		super(i, material);
-	}
+  public ItemDoorCommon(int i, Material material) {
+    super(i, material);
+  }
 
-	public int rarity(ItemStack itemstack) {
-		return 0;
-	}
+  public int rarity(ItemStack itemstack) {
+    return 0;
+  }
 }

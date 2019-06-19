@@ -5,11 +5,11 @@ import net.minecraft.server.ItemSpade;
 import net.minecraft.server.ItemStack;
 
 public class ItemSpadeCommon extends ItemSpade {
-	public ItemSpadeCommon(int i, EnumToolMaterial enumtoolmaterial) {
-		super(i, enumtoolmaterial);
-	}
+  public ItemSpadeCommon(int i, EnumToolMaterial enumtoolmaterial) {
+    super(i, enumtoolmaterial);
+  }
 
-	public int rarity(ItemStack itemstack) {
-		return 0;
-	}
+  public int rarity(ItemStack itemstack) {
+    return 0;
+  }
 }

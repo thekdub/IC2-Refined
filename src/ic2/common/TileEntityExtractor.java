@@ -8,45 +8,45 @@ import java.util.List;
 import java.util.Vector;
 
 public class TileEntityExtractor extends TileEntityElectricMachine {
-	public static List recipes = new Vector();
+  public static List recipes = new Vector();
 
-	public TileEntityExtractor() {
-		super(3, 2, 400, 32);
-	}
+  public TileEntityExtractor() {
+    super(3, 2, 400, 32);
+  }
 
-	public static void init() {
-		if (Ic2Items.rubberSapling != null) {
-			Ic2Recipes.addExtractorRecipe(Ic2Items.rubberSapling, Ic2Items.rubber);
-		}
+  public static void init() {
+    if (Ic2Items.rubberSapling != null) {
+      Ic2Recipes.addExtractorRecipe(Ic2Items.rubberSapling, Ic2Items.rubber);
+    }
 
-		Ic2Recipes.addExtractorRecipe(Ic2Items.resin, StackUtil.copyWithSize(Ic2Items.rubber, 3));
-		Ic2Recipes.addExtractorRecipe(Ic2Items.bioCell, Ic2Items.biofuelCell);
-		Ic2Recipes.addExtractorRecipe(Ic2Items.hydratedCoalCell, Ic2Items.coalfuelCell);
-		Ic2Recipes.addExtractorRecipe(Ic2Items.waterCell, Ic2Items.coolingCell);
-		Ic2Recipes.addExtractorRecipe(Ic2Items.coolingCell, Ic2Items.hydratingCell);
-	}
+    Ic2Recipes.addExtractorRecipe(Ic2Items.resin, StackUtil.copyWithSize(Ic2Items.rubber, 3));
+    Ic2Recipes.addExtractorRecipe(Ic2Items.bioCell, Ic2Items.biofuelCell);
+    Ic2Recipes.addExtractorRecipe(Ic2Items.hydratedCoalCell, Ic2Items.coalfuelCell);
+    Ic2Recipes.addExtractorRecipe(Ic2Items.waterCell, Ic2Items.coolingCell);
+    Ic2Recipes.addExtractorRecipe(Ic2Items.coolingCell, Ic2Items.hydratingCell);
+  }
 
-	public ItemStack getResultFor(ItemStack itemstack, boolean flag) {
-		return Ic2Recipes.getExtractorOutputFor(itemstack, flag);
-	}
+  public ItemStack getResultFor(ItemStack itemstack, boolean flag) {
+    return Ic2Recipes.getExtractorOutputFor(itemstack, flag);
+  }
 
-	public String getName() {
-		return "Extractor";
-	}
+  public String getName() {
+    return "Extractor";
+  }
 
-	public String getGuiClassName(EntityHuman entityhuman) {
-		return "GuiExtractor";
-	}
+  public String getGuiClassName(EntityHuman entityhuman) {
+    return "GuiExtractor";
+  }
 
-	public String getStartSoundFile() {
-		return "Machines/ExtractorOp.ogg";
-	}
+  public String getStartSoundFile() {
+    return "Machines/ExtractorOp.ogg";
+  }
 
-	public String getInterruptSoundFile() {
-		return "Machines/InterruptOne.ogg";
-	}
+  public String getInterruptSoundFile() {
+    return "Machines/InterruptOne.ogg";
+  }
 
-	public float getWrenchDropRate() {
-		return 0.85F;
-	}
+  public float getWrenchDropRate() {
+    return 0.85F;
+  }
 }

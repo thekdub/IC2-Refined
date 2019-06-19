@@ -1,15 +1,15 @@
 package ic2.api;
 
 public interface IEnergyConductor extends IEnergyAcceptor, IEnergyEmitter {
-	double getConductionLoss();
+  double getConductionLoss();
 
-	int getInsulationEnergyAbsorption();
+  int getInsulationEnergyAbsorption();
 
-	int getInsulationBreakdownEnergy();
+  int getInsulationBreakdownEnergy();
 
-	int getConductorBreakdownEnergy();
+  int getConductorBreakdownEnergy();
 
-	void removeInsulation();
+  void removeInsulation();
 
-	void removeConductor();
+  void removeConductor();
 }

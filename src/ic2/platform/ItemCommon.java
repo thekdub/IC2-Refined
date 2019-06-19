@@ -6,22 +6,22 @@ import net.minecraft.server.ItemStack;
 import java.util.List;
 
 public class ItemCommon extends Item {
-	public ItemCommon(int i) {
-		super(i);
-	}
+  public ItemCommon(int i) {
+    super(i);
+  }
 
-	public int getIconFromDamage(int i) {
-		return 0;
-	}
+  public int getIconFromDamage(int i) {
+    return 0;
+  }
 
-	public String a(ItemStack itemstack) {
-		return null;
-	}
+  public String a(ItemStack itemstack) {
+    return null;
+  }
 
-	public void addInformation(ItemStack itemstack, List list) {
-	}
+  public void addInformation(ItemStack itemstack, List list) {
+  }
 
-	public int rarity(ItemStack itemstack) {
-		return 0;
-	}
+  public int rarity(ItemStack itemstack) {
+    return 0;
+  }
 }

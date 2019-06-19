@@ -9,24 +9,24 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class BlockTex extends BlockCommon implements ITextureProvider {
-	protected boolean addToCreative = true;
+  protected boolean addToCreative = true;
 
-	public BlockTex(int i, int j, Material material) {
-		super(i, j, material);
-	}
+  public BlockTex(int i, int j, Material material) {
+    super(i, j, material);
+  }
 
-	public String getTextureFile() {
-		return "/ic2/sprites/block_0.png";
-	}
+  public String getTextureFile() {
+    return "/ic2/sprites/block_0.png";
+  }
 
-	public int getDropType(int i, Random random, int j) {
-		return Ic2Items.uraniumOre != null && this.id == Ic2Items.uraniumOre.id ? Ic2Items.uraniumDrop.id : this.id;
-	}
+  public int getDropType(int i, Random random, int j) {
+    return Ic2Items.uraniumOre != null && this.id == Ic2Items.uraniumOre.id ? Ic2Items.uraniumDrop.id : this.id;
+  }
 
-	public void addCreativeItems(ArrayList arraylist) {
-		if (this.addToCreative) {
-			arraylist.add(new ItemStack(this));
-		}
+  public void addCreativeItems(ArrayList arraylist) {
+    if (this.addToCreative) {
+      arraylist.add(new ItemStack(this));
+    }
 
-	}
+  }
 }

@@ -1,15 +1,15 @@
 package ic2.api;
 
 public interface IElectricItem {
-	boolean canProvideEnergy();
+  boolean canProvideEnergy();
 
-	int getChargedItemId();
+  int getChargedItemId();
 
-	int getEmptyItemId();
+  int getEmptyItemId();
 
-	int getMaxCharge();
+  int getMaxCharge();
 
-	int getTier();
+  int getTier();
 
-	int getTransferLimit();
+  int getTransferLimit();
 }

@@ -3,13 +3,13 @@ package ic2.api;
 import net.minecraft.server.EntityHuman;
 
 public interface IWrenchable {
-	boolean wrenchCanSetFacing(EntityHuman var1, int var2);
+  boolean wrenchCanSetFacing(EntityHuman var1, int var2);
 
-	short getFacing();
+  short getFacing();
 
-	void setFacing(short var1);
+  void setFacing(short var1);
 
-	boolean wrenchCanRemove(EntityHuman var1);
+  boolean wrenchCanRemove(EntityHuman var1);
 
-	float getWrenchDropRate();
+  float getWrenchDropRate();
 }
