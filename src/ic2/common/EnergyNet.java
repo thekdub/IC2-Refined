@@ -16,23 +16,26 @@ public final class EnergyNet {
   private static Map<World, EnergyNet> worldToEnergyNetMap = new HashMap<>();
   private World world;
   private HashMap<IEnergySource, List<EnergyPath>> energySourceToEnergyPathMap = new HashMap<>();
-  //private HashMap<EntityLiving, Integer> entityLivingToShockEnergyMap = new HashMap<>();
+  private HashMap<EntityLiving, Integer> entityLivingToShockEnergyMap = new HashMap<>();
 
   /* TODO: Here's the plan for what this GIT branch is for:
 
   I want to make energy path finding asynchronous, that way it's no longer putting a massive
-  strain on the server thread. To do this, I'll have Energy Sources track what available
-  Energy Acceptors are connected, along with what the through-cable distance to each is and
-  what the energy loss is. All this will be done on a separate thread, scheduled by the last tick.
+    strain on the server thread. To do this, I'll have Energy Sources track what available
+    Energy Acceptors are connected, along with what the through-cable distance to each is and
+    what the energy loss is. All this will be done on a separate thread, scheduled by the last tick.
 
   In addition to this, I'll need to track some other things to be processed on the next server
-  tick.
+    tick.
   These things include: Cables and Machines to explode due to over-voltage.
 
   First thing on the list: Create an EnergyThread class for scheduling and processing
-  the path-finding work for each Energy Source. This will also be where much of the current
-  on-tick energy transfer code gets moved to, with several changes.
+    the path-finding work for each Energy Source. This will also be where much of the current
+    on-tick energy transfer code gets moved to, with several changes.
 
+  Unfortunate outcomes of this:
+    EU-Readers will only be able to be used on Energy Sources and Energy Acceptors. They will
+      give no reading when used on cables.
 
    */
 
@@ -56,15 +59,15 @@ public final class EnergyNet {
   }
 
   public static void onTick(World world) { //Shock entities
-//    Platform.profilerStartSection("Shocking");
-//    EnergyNet energyNet = getForWorld(world);
-//    for (EntityLiving entityLiving : energyNet.entityLivingToShockEnergyMap.keySet()) {
-//      int i = (energyNet.entityLivingToShockEnergyMap.get(entityLiving) + 63) / 64;
-//      if (entityLiving.isAlive())
-//        entityLiving.damageEntity(IC2DamageSource.electricity, i);
-//    }
-//    energyNet.entityLivingToShockEnergyMap.clear();
-//    Platform.profilerEndSection();
+    Platform.profilerStartSection("Shocking");
+    EnergyNet energyNet = getForWorld(world);
+    for (EntityLiving entityLiving : energyNet.entityLivingToShockEnergyMap.keySet()) {
+      int i = (energyNet.entityLivingToShockEnergyMap.get(entityLiving) + 63) / 64;
+      if (entityLiving.isAlive())
+        entityLiving.damageEntity(IC2DamageSource.electricity, i);
+    }
+    energyNet.entityLivingToShockEnergyMap.clear();
+    Platform.profilerEndSection();
   }
 
   public void addTileEntity(TileEntity tileentity) {
@@ -95,36 +98,36 @@ public final class EnergyNet {
             energySourceToEnergyPathMap.remove(iEnergySource);
           }
         }
-//				List<EnergyPath> energyPathList = discover(tileEntity, true, Integer.MAX_VALUE);
-//				Iterator<EnergyPath> energyPathIterator = energyPathList.iterator();
-//				label55:
-//				while (true) {
-//					while (true) {
-//						EnergyPath energyPath;
-//						IEnergySource iEnergySource;
-//						do {
-//							do {
-//								if (!energyPathIterator.hasNext()) {
-//									break label55;
-//								}
-//								energyPath = energyPathIterator.next();
-//								iEnergySource = (IEnergySource) energyPath.target;
-//							} while (!energySourceToEnergyPathMap.containsKey(iEnergySource));
-//						} while ((double) iEnergySource.getMaxEnergyOutput() <= energyPath.loss);
-//						if (tileEntity instanceof IEnergyConductor) {
-//							energySourceToEnergyPathMap.remove(iEnergySource);
-//						}
-//						else {
-//							Iterator<EnergyPath> iterator1 = energySourceToEnergyPathMap.get(iEnergySource).iterator();
-//							while (iterator1.hasNext()) {
-//								if ((iterator1.next()).target == tileEntity) {
-//									iterator1.remove();
-//									break;
-//								}
-//							}
-//						}
-//					}
-//				}
+        List<EnergyPath> energyPathList = discover(tileEntity, true, Integer.MAX_VALUE);
+        Iterator<EnergyPath> energyPathIterator = energyPathList.iterator();
+        label55:
+        while (true) {
+          while (true) {
+            EnergyPath energyPath;
+            IEnergySource iEnergySource;
+            do {
+              do {
+                if (!energyPathIterator.hasNext()) {
+                  break label55;
+                }
+                energyPath = energyPathIterator.next();
+                iEnergySource = (IEnergySource) energyPath.target;
+              } while (!energySourceToEnergyPathMap.containsKey(iEnergySource));
+            } while ((double) iEnergySource.getMaxEnergyOutput() <= energyPath.loss);
+            if (tileEntity instanceof IEnergyConductor) {
+              energySourceToEnergyPathMap.remove(iEnergySource);
+            }
+            else {
+              Iterator<EnergyPath> iterator1 = energySourceToEnergyPathMap.get(iEnergySource).iterator();
+              while (iterator1.hasNext()) {
+                if ((iterator1.next()).target == tileEntity) {
+                  iterator1.remove();
+                  break;
+                }
+              }
+            }
+          }
+        }
       }
     }
     else if (tileEntity instanceof IEnergySource) {
@@ -196,12 +199,12 @@ public final class EnergyNet {
                   }
                 }
               }
-//              if (entityLivingToShockEnergyMap.containsKey(entityLiving)) {
-//                entityLivingToShockEnergyMap.put(entityLiving, entityLivingToShockEnergyMap.get(entityLiving) + k1);
-//              }
-//              else {
-//                entityLivingToShockEnergyMap.put(entityLiving, k1);
-//              }
+              if (entityLivingToShockEnergyMap.containsKey(entityLiving)) {
+                entityLivingToShockEnergyMap.put(entityLiving, entityLivingToShockEnergyMap.get(entityLiving) + k1);
+              }
+              else {
+                entityLivingToShockEnergyMap.put(entityLiving, k1);
+              }
             }
             if (conducted >= energypath1.minInsulationBreakdownEnergy) {
               for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
