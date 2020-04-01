@@ -16,7 +16,27 @@ public final class EnergyNet {
   private static Map<World, EnergyNet> worldToEnergyNetMap = new HashMap<>();
   private World world;
   private HashMap<IEnergySource, List<EnergyPath>> energySourceToEnergyPathMap = new HashMap<>();
-  private HashMap<EntityLiving, Integer> entityLivingToShockEnergyMap = new HashMap<>();
+  //private HashMap<EntityLiving, Integer> entityLivingToShockEnergyMap = new HashMap<>();
+
+  /* TODO: Here's the plan for what this GIT branch is for:
+
+  I want to make energy path finding asynchronous, that way it's no longer putting a massive
+  strain on the server thread. To do this, I'll have Energy Sources track what available
+  Energy Acceptors are connected, along with what the through-cable distance to each is and
+  what the energy loss is. All this will be done on a separate thread, scheduled by the last tick.
+
+  In addition to this, I'll need to track some other things to be processed on the next server
+  tick.
+  These things include: Cables and Machines to explode due to over-voltage.
+
+  First thing on the list: Create an EnergyThread class for scheduling and processing
+  the path-finding work for each Energy Source. This will also be where much of the current
+  on-tick energy transfer code gets moved to, with several changes.
+
+
+   */
+
+
 
   private EnergyNet(World world) {
     this.world = world;
@@ -36,15 +56,15 @@ public final class EnergyNet {
   }
 
   public static void onTick(World world) { //Shock entities
-    Platform.profilerStartSection("Shocking");
-    EnergyNet energyNet = getForWorld(world);
-    for (EntityLiving entityLiving : energyNet.entityLivingToShockEnergyMap.keySet()) {
-      int i = (energyNet.entityLivingToShockEnergyMap.get(entityLiving) + 63) / 64;
-      if (entityLiving.isAlive())
-        entityLiving.damageEntity(IC2DamageSource.electricity, i);
-    }
-    energyNet.entityLivingToShockEnergyMap.clear();
-    Platform.profilerEndSection();
+//    Platform.profilerStartSection("Shocking");
+//    EnergyNet energyNet = getForWorld(world);
+//    for (EntityLiving entityLiving : energyNet.entityLivingToShockEnergyMap.keySet()) {
+//      int i = (energyNet.entityLivingToShockEnergyMap.get(entityLiving) + 63) / 64;
+//      if (entityLiving.isAlive())
+//        entityLiving.damageEntity(IC2DamageSource.electricity, i);
+//    }
+//    energyNet.entityLivingToShockEnergyMap.clear();
+//    Platform.profilerEndSection();
   }
 
   public void addTileEntity(TileEntity tileentity) {
@@ -139,7 +159,7 @@ public final class EnergyNet {
       }
       Iterator iterator1 = vector.iterator();
       while (true) {
-        int j1;
+        int conducted;
         EnergyPath energypath1;
         do {
           IEnergySink ienergysink1;
@@ -157,9 +177,9 @@ public final class EnergyNet {
 
           int i1 = ienergysink1.injectEnergy(energypath1.targetDirection, k - l);
           j += k - i1;
-          j1 = k - l - i1;
-          energypath1.totalEnergyConducted += (long) j1;
-          if (j1 > energypath1.minInsulationEnergyAbsorption) {
+          conducted = k - l - i1;
+          energypath1.totalEnergyConducted += (long) conducted;
+          if (conducted > energypath1.minInsulationEnergyAbsorption && false) {
             List<EntityLiving> list = world.a(EntityLiving.class, AxisAlignedBB.a((double) (energypath1.minX - 1), (double) (energypath1.minY - 1), (double) (energypath1.minZ - 1), (double) (energypath1.maxX + 2), (double) (energypath1.maxY + 2), (double) (energypath1.maxZ + 2)));
             for (EntityLiving entityLiving : list) {
               int k1 = 0;
@@ -167,7 +187,7 @@ public final class EnergyNet {
               for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
                 TileEntity tileentity = (TileEntity) iEnergyConductor;
                 if (entityLiving.boundingBox.a(AxisAlignedBB.a((double) (tileentity.x - 1), (double) (tileentity.y - 1), (double) (tileentity.z - 1), (double) (tileentity.x + 2), (double) (tileentity.y + 2), (double) (tileentity.z + 2)))) {
-                  int l1 = j1 - iEnergyConductor.getInsulationEnergyAbsorption();
+                  int l1 = conducted - iEnergyConductor.getInsulationEnergyAbsorption();
                   if (l1 > k1) {
                     k1 = l1;
                   }
@@ -176,16 +196,16 @@ public final class EnergyNet {
                   }
                 }
               }
-              if (entityLivingToShockEnergyMap.containsKey(entityLiving)) {
-                entityLivingToShockEnergyMap.put(entityLiving, entityLivingToShockEnergyMap.get(entityLiving) + k1);
-              }
-              else {
-                entityLivingToShockEnergyMap.put(entityLiving, k1);
-              }
+//              if (entityLivingToShockEnergyMap.containsKey(entityLiving)) {
+//                entityLivingToShockEnergyMap.put(entityLiving, entityLivingToShockEnergyMap.get(entityLiving) + k1);
+//              }
+//              else {
+//                entityLivingToShockEnergyMap.put(entityLiving, k1);
+//              }
             }
-            if (j1 >= energypath1.minInsulationBreakdownEnergy) {
+            if (conducted >= energypath1.minInsulationBreakdownEnergy) {
               for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
-                if (j1 >= iEnergyConductor.getInsulationBreakdownEnergy()) {
+                if (conducted >= iEnergyConductor.getInsulationBreakdownEnergy()) {
                   iEnergyConductor.removeInsulation();
                   if (iEnergyConductor.getInsulationEnergyAbsorption() < energypath1.minInsulationEnergyAbsorption) {
                     energypath1.minInsulationEnergyAbsorption = iEnergyConductor.getInsulationEnergyAbsorption();
@@ -194,9 +214,9 @@ public final class EnergyNet {
               }
             }
           }
-        } while (j1 < energypath1.minConductorBreakdownEnergy);
+        } while (conducted < energypath1.minConductorBreakdownEnergy);
         for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
-          if (j1 >= iEnergyConductor.getConductorBreakdownEnergy()) {
+          if (conducted >= iEnergyConductor.getConductorBreakdownEnergy()) {
             iEnergyConductor.removeConductor();
           }
         }
