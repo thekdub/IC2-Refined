@@ -288,11 +288,70 @@ public final class EnergyNet {
         energypath = (EnergyPath) iterator.next();
       }
     }
-    
+  
     return l;
   }
   
+  int tick = 0;
+  
+  private LinkedList<IEnergyAcceptor> newDiscover(TileEntity tileEntity, boolean flag,
+                                                  int eu) { // Todo: replace old discover with this
+    if (!(tileEntity instanceof IEnergyEmitter)) {
+      System.out.println("Trying to discover something that's not an emitter? what");
+    }
+    LinkedList<IEnergyAcceptor> acceptors = new LinkedList<>();
+    HashSet<IEnergyAcceptor> acceptorHashSet = new HashSet<>();
+    LinkedList<IEnergyConductor> path = new LinkedList<>();
+    HashSet<IEnergyConductor> pathHashSet = new HashSet<>();
+    if (tileEntity instanceof IEnergyAcceptor) { // Prevents things like MFSUs from powering themselves
+      acceptorHashSet.add((IEnergyAcceptor) tileEntity);
+    }
+    //get tile entity's neighbors* keep direction in check if it's a transformer or battery unit
+    
+    TileEntity target = tileEntity;
+    do {
+      while (target == null || target.world.getTypeId(target.x, target.y, target.z) < 1) {
+        target = (TileEntity) path.pop();
+      }
+      LinkedList<EnergyTarget> receivers = getValidReceivers(target, flag);
+      for (EnergyTarget energyTarget : receivers) { // Gets all valid receivers for the current block?
+        if (energyTarget == null) {
+          continue;
+        }
+        if (energyTarget instanceof IEnergyConductor) {
+          System.out.println("Conductor!");
+          if (!pathHashSet.contains(energyTarget)) {
+            path.add((IEnergyConductor) energyTarget);
+            pathHashSet.add((IEnergyConductor) energyTarget);
+          }
+        }
+        else if (energyTarget instanceof IEnergyAcceptor) {
+          System.out.println("Acceptor!");
+          if (!acceptorHashSet.contains(energyTarget)) {
+            acceptors.add((IEnergyAcceptor) energyTarget);
+            acceptorHashSet.add((IEnergyAcceptor) energyTarget);
+          }
+        }
+        System.out.println(String.format("%d, %d, %d (%d) facing (%d) -> %d, %d, %d (%d)", target.x, target.y,
+            target.z, target.world.getTypeId(target.x, target.y, target.z),
+            energyTarget.direction.toSideValue(), energyTarget.tileEntity.x, energyTarget.tileEntity.y,
+            energyTarget.tileEntity.z, target.world.getTypeId(energyTarget.tileEntity.x, energyTarget.tileEntity.y,
+                energyTarget.tileEntity.z)));
+        target = null;
+      }
+    } while (!path.isEmpty());
+    
+    for (IEnergyAcceptor acceptor : acceptors) {
+      TileEntity tile = (TileEntity) acceptor;
+      System.out.println(String.format("Found acceptor (%d) at %d, %d, %d", tile.world.getTypeId(tile.x, tile.y,
+          tile.z), tile.x, tile.y, tile.z));
+    }
+    
+    return acceptors;
+  }
+  
   private List<EnergyPath> discover(TileEntity tileentity, boolean flag, int i) {
+    newDiscover(tileentity, flag, i); // Todo: Remove this
     HashMap hashmap = new HashMap();
     LinkedList linkedlist = new LinkedList();
     linkedlist.add(tileentity);
@@ -440,7 +499,7 @@ public final class EnergyNet {
           } while (d + d1 >= (double) i);
         } while (hashmap.containsKey(energytarget.tileEntity) &&
             ((EnergyBlockLink) hashmap.get(energytarget.tileEntity)).loss <= d + d1);
-    
+  
         hashmap.put(energytarget.tileEntity, new EnergyBlockLink(energytarget.direction, d + d1));
         if (energytarget.tileEntity instanceof IEnergyConductor) {
           linkedlist.remove(energytarget.tileEntity);
@@ -450,8 +509,8 @@ public final class EnergyNet {
     }
   }
   
-  private List getValidReceivers(TileEntity tileentity, boolean flag) {
-    LinkedList linkedlist = new LinkedList();
+  private LinkedList<EnergyTarget> getValidReceivers(TileEntity tileentity, boolean flag) {
+    LinkedList<EnergyTarget> linkedlist = new LinkedList<>();
     Direction[] adirection = Direction.values();
     int i = adirection.length;
     
