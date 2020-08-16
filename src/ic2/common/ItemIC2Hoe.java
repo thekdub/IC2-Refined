@@ -9,7 +9,7 @@ public class ItemIC2Hoe extends ItemHoeCommon implements ITextureProvider {
     super(i, enumtoolmaterial);
     this.d(j);
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/item_0.png";
   }

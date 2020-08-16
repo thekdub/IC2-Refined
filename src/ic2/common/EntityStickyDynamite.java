@@ -8,7 +8,7 @@ public class EntityStickyDynamite extends EntityDynamite {
     super(world, 0.0D, 0.0D, 0.0D);
     this.sticky = true;
   }
-
+  
   public EntityStickyDynamite(World world, EntityLiving entityliving) {
     super(world, entityliving);
     this.sticky = true;

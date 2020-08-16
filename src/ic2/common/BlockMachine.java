@@ -28,15 +28,15 @@ public class BlockMachine extends BlockMultiID implements IRareBlock {
     Ic2Items.massFabricator = new ItemStack(this, 1, 14);
     Ic2Items.terraformer = new ItemStack(this, 1, 15);
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/block_machine.png";
   }
-
+  
   public int getDropType(int i, Random random, int j) {
     return this.id;
   }
-
+  
   protected int getDropData(int i) {
     switch (i) {
       case 1:
@@ -65,7 +65,7 @@ public class BlockMachine extends BlockMultiID implements IRareBlock {
         return 12;
     }
   }
-
+  
   public TileEntityBlock getBlockEntity(int i) {
     switch (i) {
       case 1:
@@ -101,7 +101,7 @@ public class BlockMachine extends BlockMultiID implements IRareBlock {
         return new TileEntityTerra();
     }
   }
-
+  
   public void randomDisplayTick(World world, int i, int j, int k, Random random) {
     if (Platform.isRendering()) {
       int l = world.getData(i, j, k);
@@ -119,40 +119,41 @@ public class BlockMachine extends BlockMultiID implements IRareBlock {
         f10 = random.nextFloat() * 0.6F - 0.3F;
         switch (word0) {
           case 2:
-            world.a("smoke", (double) (f3 + f10), (double) f4, (double) (f6 - f8), 0.0D, 0.0D, 0.0D);
-            world.a("flame", (double) (f3 + f10), (double) f4, (double) (f6 - f8), 0.0D, 0.0D, 0.0D);
+            world.a("smoke", f3 + f10, f4, f6 - f8, 0.0D, 0.0D, 0.0D);
+            world.a("flame", f3 + f10, f4, f6 - f8, 0.0D, 0.0D, 0.0D);
             break;
           case 3:
-            world.a("smoke", (double) (f3 + f10), (double) f4, (double) (f6 + f8), 0.0D, 0.0D, 0.0D);
-            world.a("flame", (double) (f3 + f10), (double) f4, (double) (f6 + f8), 0.0D, 0.0D, 0.0D);
+            world.a("smoke", f3 + f10, f4, f6 + f8, 0.0D, 0.0D, 0.0D);
+            world.a("flame", f3 + f10, f4, f6 + f8, 0.0D, 0.0D, 0.0D);
             break;
           case 4:
-            world.a("smoke", (double) (f3 - f8), (double) f4, (double) (f6 + f10), 0.0D, 0.0D, 0.0D);
-            world.a("flame", (double) (f3 - f8), (double) f4, (double) (f6 + f10), 0.0D, 0.0D, 0.0D);
+            world.a("smoke", f3 - f8, f4, f6 + f10, 0.0D, 0.0D, 0.0D);
+            world.a("flame", f3 - f8, f4, f6 + f10, 0.0D, 0.0D, 0.0D);
             break;
           case 5:
-            world.a("smoke", (double) (f3 + f8), (double) f4, (double) (f6 + f10), 0.0D, 0.0D, 0.0D);
-            world.a("flame", (double) (f3 + f8), (double) f4, (double) (f6 + f10), 0.0D, 0.0D, 0.0D);
+            world.a("smoke", f3 + f8, f4, f6 + f10, 0.0D, 0.0D, 0.0D);
+            world.a("flame", f3 + f8, f4, f6 + f10, 0.0D, 0.0D, 0.0D);
         }
       }
-
+  
       if (l == 3 && isActive(world, i, j, k)) {
         float f = (float) i + 1.0F;
         float f1 = (float) j + 1.0F;
         f3 = (float) k + 1.0F;
-
+    
         for (int i1 = 0; i1 < 4; ++i1) {
           f6 = -0.2F - random.nextFloat() * 0.6F;
           f8 = -0.1F + random.nextFloat() * 0.2F;
           f10 = -0.2F - random.nextFloat() * 0.6F;
-          world.a("smoke", (double) (f + f6), (double) (f1 + f8), (double) (f3 + f10), 0.0D, 0.0D, 0.0D);
+          world.a("smoke", f + f6, f1 + f8, f3 + f10, 0.0D, 0.0D, 0.0D);
         }
       }
-
+  
     }
   }
-
+  
   public int rarity(ItemStack itemstack) {
-    return itemstack.getData() != 14 ? (itemstack.getData() != 15 && itemstack.getData() != 13 && itemstack.getData() != 12 ? 0 : 1) : 2;
+    return itemstack.getData() != 14 ?
+        (itemstack.getData() != 15 && itemstack.getData() != 13 && itemstack.getData() != 12 ? 0 : 1) : 2;
   }
 }

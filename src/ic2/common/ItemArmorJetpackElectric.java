@@ -9,35 +9,35 @@ public class ItemArmorJetpackElectric extends ItemArmorJetpack implements IElect
     this.setMaxDurability(27);
     this.e(1);
   }
-
+  
   public int getCharge(ItemStack itemstack) {
     return ElectricItem.discharge(itemstack, Integer.MAX_VALUE, Integer.MAX_VALUE, true, true);
   }
-
+  
   public void use(ItemStack itemstack, int i) {
     ElectricItem.discharge(itemstack, i, Integer.MAX_VALUE, true, false);
   }
-
+  
   public boolean canProvideEnergy() {
     return false;
   }
-
+  
   public int getChargedItemId() {
     return this.id;
   }
-
+  
   public int getEmptyItemId() {
     return this.id;
   }
-
+  
   public int getMaxCharge() {
     return 30000;
   }
-
+  
   public int getTier() {
     return 1;
   }
-
+  
   public int getTransferLimit() {
     return 60;
   }

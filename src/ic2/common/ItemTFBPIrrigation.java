@@ -10,15 +10,15 @@ public class ItemTFBPIrrigation extends ItemTFBP {
   public ItemTFBPIrrigation(int i, int j) {
     super(i, j);
   }
-
+  
   public int getConsume() {
     return 3000;
   }
-
+  
   public int getRange() {
     return 60;
   }
-
+  
   public boolean terraform(World world, int i, int j, int k) {
     if (world.random.nextInt(48000) == 0) {
       world.getWorldData().setStorm(true);
@@ -38,21 +38,25 @@ public class ItemTFBPIrrigation extends ItemTFBP {
         }
         else {
           event.setCancelled(true);
-          if (TileEntityTerra.switchGround(world, net.minecraft.server.Block.SAND, net.minecraft.server.Block.DIRT, i, l, j, true)) {
-            TileEntityTerra.switchGround(world, net.minecraft.server.Block.SAND, net.minecraft.server.Block.DIRT, i, l, j, true);
+          if (TileEntityTerra
+              .switchGround(world, net.minecraft.server.Block.SAND, net.minecraft.server.Block.DIRT, i, l, j, true)) {
+            TileEntityTerra
+                .switchGround(world, net.minecraft.server.Block.SAND, net.minecraft.server.Block.DIRT, i, l, j, true);
             return true;
           }
           else {
             int i1 = world.getTypeId(i, l, j);
             if (i1 == net.minecraft.server.Block.LONG_GRASS.id) {
-              return this.spreadGrass(world, i + 1, l, j) || this.spreadGrass(world, i - 1, l, j) || this.spreadGrass(world, i, l, j + 1) || this.spreadGrass(world, i, l, j - 1);
+              return this.spreadGrass(world, i + 1, l, j) || this.spreadGrass(world, i - 1, l, j) ||
+                  this.spreadGrass(world, i, l, j + 1) || this.spreadGrass(world, i, l, j - 1);
             }
             else if (i1 == net.minecraft.server.Block.SAPLING.id) {
               ((BlockSapling) net.minecraft.server.Block.SAPLING).grow(world, i, l, j, world.random, false, null, null);
               return true;
             }
             else if (i1 == Ic2Items.rubberSapling.id) {
-              ((BlockRubSapling) net.minecraft.server.Block.byId[Ic2Items.rubberSapling.id]).grow(world, i, l, j, world.random);
+              ((BlockRubSapling) net.minecraft.server.Block.byId[Ic2Items.rubberSapling.id])
+                  .grow(world, i, l, j, world.random);
               return true;
             }
             else if (i1 == net.minecraft.server.Block.LOG.id) {
@@ -81,14 +85,14 @@ public class ItemTFBPIrrigation extends ItemTFBP {
       }
     }
   }
-
+  
   public void createLeaves(World world, int i, int j, int k, int l) {
     if (world.getTypeId(i, j, k) == 0) {
       world.setTypeIdAndData(i, j, k, net.minecraft.server.Block.LEAVES.id, l);
     }
-
+    
   }
-
+  
   public boolean spreadGrass(World world, int i, int j, int k) {
     if (world.random.nextBoolean()) {
       return false;

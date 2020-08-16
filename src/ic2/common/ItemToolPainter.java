@@ -1,10 +1,8 @@
 package ic2.common;
 
 import ic2.api.IPaintableBlock;
-import ic2.platform.AudioManager;
-import ic2.platform.Keyboard;
 import ic2.platform.NetworkManager;
-import ic2.platform.Platform;
+import ic2.platform.*;
 import net.minecraft.server.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -15,18 +13,18 @@ import java.util.List;
 
 public class ItemToolPainter extends ItemIC2 {
   public int color;
-
+  
   public ItemToolPainter(int i, int j) {
     super(i, 128);
     this.setMaxDurability(32);
     this.e(1);
     this.color = j;
   }
-
+  
   public int getIconFromDamage(int i) {
     return this.textureId + this.color;
   }
-
+  
   public boolean interactWith(ItemStack itemstack, EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     int i1 = world.getTypeId(i, j, k);
     Entity entity = entityhuman.getBukkitEntity();
@@ -37,11 +35,12 @@ public class ItemToolPainter extends ItemIC2 {
       if (event.isCancelled()) {
         return false;
       }
-
+      
       event.setCancelled(true);
     }
-
-    if (i1 > 0 && Block.byId[i1] instanceof IPaintableBlock && ((IPaintableBlock) Block.byId[i1]).colorBlock(world, i, j, k, this.color)) {
+    
+    if (i1 > 0 && Block.byId[i1] instanceof IPaintableBlock &&
+        ((IPaintableBlock) Block.byId[i1]).colorBlock(world, i, j, k, this.color)) {
       if (Platform.isSimulating()) {
         if (itemstack.getData() >= itemstack.i() - 1) {
           this.refillPainter(itemstack, entityhuman.inventory);
@@ -50,11 +49,11 @@ public class ItemToolPainter extends ItemIC2 {
           itemstack.damage(1, null);
         }
       }
-
+      
       if (Platform.isRendering()) {
         AudioManager.playOnce(entityhuman, PositionSpec.Hand, "Tools/Painter.ogg", true, AudioManager.defaultVolume);
       }
-
+      
       return true;
     }
     else if (i1 == Block.WOOL.id && world.getData(i, j, k) != 15 - this.color) {
@@ -66,18 +65,18 @@ public class ItemToolPainter extends ItemIC2 {
       else {
         itemstack.damage(1, null);
       }
-
+      
       if (Platform.isRendering()) {
         AudioManager.playOnce(entityhuman, PositionSpec.Hand, "Tools/Painter.ogg", true, AudioManager.defaultVolume);
       }
-
+      
       return true;
     }
     else {
       return false;
     }
   }
-
+  
   public ItemStack a(ItemStack itemstack, World world, EntityHuman entityhuman) {
     if (Platform.isSimulating() && Keyboard.isModeSwitchKeyDown(entityhuman)) {
       NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(itemstack);
@@ -90,26 +89,27 @@ public class ItemToolPainter extends ItemIC2 {
         Platform.messagePlayer(entityhuman, "Painter automatic refill mode disabled");
       }
     }
-
+    
     return itemstack;
   }
-
+  
   public void addInformation(ItemStack itemstack, List list) {
     list.add(LocaleI18n.get(Item.INK_SACK.a(new ItemStack(Item.INK_SACK, 1, this.color)) + ".name"));
   }
-
+  
   public void refillPainter(ItemStack itemstack, PlayerInventory playerinventory) {
     int i = -1;
     NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(itemstack);
     if (nbttagcompound.getBoolean("autoRefill")) {
       for (int j = 0; j < playerinventory.items.length; ++j) {
-        if (playerinventory.items[j] != null && playerinventory.items[j].id == Item.INK_SACK.id && playerinventory.items[j].getData() == this.color) {
+        if (playerinventory.items[j] != null && playerinventory.items[j].id == Item.INK_SACK.id &&
+            playerinventory.items[j].getData() == this.color) {
           i = j;
           break;
         }
       }
     }
-
+    
     if (i == -1) {
       playerinventory.items[playerinventory.itemInHandIndex] = Ic2Items.painter.cloneItemStack();
     }
@@ -118,10 +118,10 @@ public class ItemToolPainter extends ItemIC2 {
       if (playerinventory.items[i].count == 0) {
         playerinventory.items[i] = null;
       }
-
+      
       itemstack.setData(0);
     }
-
+    
     playerinventory.update();
   }
 }

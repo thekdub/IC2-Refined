@@ -12,17 +12,17 @@ import java.util.List;
 import java.util.Random;
 
 public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
-  private ItemStack itemStack;
-  private ItemStack[] inventory = new ItemStack[3];
-  private List transaction = new ArrayList(2);
-
+  private final ItemStack itemStack;
+  private final ItemStack[] inventory = new ItemStack[3];
+  private final List transaction = new ArrayList(2);
+  
   HandHeldCropnalyzer(EntityHuman entityhuman, ItemStack itemstack) {
     this.itemStack = itemstack;
     if (Platform.isSimulating()) {
       NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(itemstack);
       nbttagcompound.setInt("uid", (new Random()).nextInt());
       NBTTagList nbttaglist = nbttagcompound.getList("Items");
-
+      
       for (int i = 0; i < nbttaglist.size(); ++i) {
         NBTTagCompound nbttagcompound1 = (NBTTagCompound) nbttaglist.get(i);
         byte byte0 = nbttagcompound1.getByte("Slot");
@@ -30,20 +30,20 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
           this.inventory[byte0] = ItemStack.a(nbttagcompound1);
         }
       }
-
+      
       mod_IC2.addContinuousTickCallback(entityhuman.world, this);
     }
-
+    
   }
-
+  
   public int getSize() {
     return this.inventory.length;
   }
-
+  
   public ItemStack getItem(int i) {
     return this.inventory[i];
   }
-
+  
   public ItemStack splitStack(int i, int j) {
     if (this.inventory[i] != null) {
       ItemStack itemstack1;
@@ -57,7 +57,7 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
         if (this.inventory[i].count == 0) {
           this.inventory[i] = null;
         }
-
+  
         return itemstack1;
       }
     }
@@ -65,57 +65,57 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
       return null;
     }
   }
-
+  
   public void setItem(int i, ItemStack itemstack) {
     this.inventory[i] = itemstack;
     if (itemstack != null && itemstack.count > this.getMaxStackSize()) {
       itemstack.count = this.getMaxStackSize();
     }
-
+    
   }
-
+  
   public String getName() {
     return "Cropnalyzer";
   }
-
+  
   public int getMaxStackSize() {
     return 64;
   }
-
+  
   public void setMaxStackSize(int arg0) {
   }
-
+  
   public void update() {
   }
-
+  
   public boolean a(EntityHuman entityhuman) {
     return true;
   }
-
+  
   public void f() {
   }
-
+  
   public void g() {
   }
-
+  
   public ItemStack splitWithoutUpdate(int i) {
     return null;
   }
-
+  
   public ContainerIC2 getGuiContainer(EntityHuman entityhuman) {
     return new ContainerCropnalyzer(entityhuman, this);
   }
-
+  
   public String getGuiClassName(EntityHuman entityhuman) {
     return "GuiCropnalyzer";
   }
-
+  
   public void onGuiClosed(EntityHuman entityhuman) {
     if (Platform.isSimulating()) {
       mod_IC2.removeContinuousTickCallback(entityhuman.world, this);
       NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(this.itemStack);
       boolean flag = false;
-
+  
       for (int i = 0; i < this.getSize(); ++i) {
         if (this.inventory[i] != null) {
           NBTTagCompound nbttagcompound1 = StackUtil.getOrCreateNbtData(this.inventory[i]);
@@ -127,9 +127,9 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
           }
         }
       }
-
+  
       NBTTagList nbttaglist = new NBTTagList();
-
+  
       int k;
       for (k = 0; k < this.inventory.length; ++k) {
         if (this.inventory[k] != null) {
@@ -139,10 +139,12 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
           nbttaglist.add(nbttagcompound2);
         }
       }
-
+  
       nbttagcompound.set("Items", nbttaglist);
       if (flag) {
-        StackUtil.dropAsEntity(entityhuman.world, (int) entityhuman.locX, (int) entityhuman.locY, (int) entityhuman.locZ, this.itemStack);
+        StackUtil
+            .dropAsEntity(entityhuman.world, (int) entityhuman.locX, (int) entityhuman.locY, (int) entityhuman.locZ,
+                this.itemStack);
       }
       else {
         for (k = -1; k < entityhuman.inventory.getSize(); ++k) {
@@ -153,7 +155,7 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
           else {
             itemstack = entityhuman.inventory.getItem(k);
           }
-
+  
           if (itemstack != null) {
             NBTTagCompound nbttagcompound3 = StackUtil.getOrCreateNbtData(itemstack);
             if (nbttagcompound.getInt("uid") == nbttagcompound3.getInt("uid")) {
@@ -170,14 +172,14 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
         }
       }
     }
-
+    
   }
-
+  
   public void portOnClick(EntityHuman entityhuman) {
     if (Platform.isSimulating()) {
       NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(this.itemStack);
       boolean flag = false;
-
+  
       for (int i = 0; i < this.getSize(); ++i) {
         if (this.inventory[i] != null) {
           NBTTagCompound nbttagcompound1 = StackUtil.getOrCreateNbtData(this.inventory[i]);
@@ -189,9 +191,9 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
           }
         }
       }
-
+  
       NBTTagList nbttaglist = new NBTTagList();
-
+  
       int k;
       for (k = 0; k < this.inventory.length; ++k) {
         if (this.inventory[k] != null) {
@@ -201,10 +203,12 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
           nbttaglist.add(nbttagcompound2);
         }
       }
-
+  
       nbttagcompound.set("Items", nbttaglist);
       if (flag) {
-        StackUtil.dropAsEntity(entityhuman.world, (int) entityhuman.locX, (int) entityhuman.locY, (int) entityhuman.locZ, this.itemStack);
+        StackUtil
+            .dropAsEntity(entityhuman.world, (int) entityhuman.locX, (int) entityhuman.locY, (int) entityhuman.locZ,
+                this.itemStack);
       }
       else {
         for (k = -1; k < entityhuman.inventory.getSize(); ++k) {
@@ -215,7 +219,7 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
           else {
             itemstack = entityhuman.inventory.getItem(k);
           }
-
+  
           if (itemstack != null) {
             NBTTagCompound nbttagcompound3 = StackUtil.getOrCreateNbtData(itemstack);
             if (nbttagcompound.getInt("uid") == nbttagcompound3.getInt("uid")) {
@@ -232,9 +236,9 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
         }
       }
     }
-
+    
   }
-
+  
   public void tickCallback(World world) {
     if (this.inventory[1] == null && this.inventory[0] != null && this.inventory[0].id == Ic2Items.cropSeed.id) {
       byte byte0 = ItemCropSeed.getScannedFromStack(this.inventory[0]);
@@ -243,24 +247,24 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
         this.inventory[0] = null;
         return;
       }
-
+  
       if (this.inventory[2] == null || !(this.inventory[2].getItem() instanceof IElectricItem)) {
         return;
       }
-
+  
       int i = this.energyForLevel(byte0);
       int j = ElectricItem.discharge(this.inventory[2], i, 2, true, false);
       if (j < i) {
         return;
       }
-
+  
       ItemCropSeed.incrementScannedOfStack(this.inventory[0]);
       this.inventory[1] = this.inventory[0];
       this.inventory[0] = null;
     }
-
+    
   }
-
+  
   public int energyForLevel(int i) {
     switch (i) {
       case 1:
@@ -273,19 +277,20 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
         return 10;
     }
   }
-
+  
   public CropCard crop() {
     return CropCard.getCrop(ItemCropSeed.getIdFromStack(this.inventory[1]));
   }
-
+  
   public int getScannedLevel() {
-    return this.inventory[1] != null && this.inventory[1].getItem() == Ic2Items.cropSeed.getItem() ? ItemCropSeed.getScannedFromStack(this.inventory[1]) : -1;
+    return this.inventory[1] != null && this.inventory[1].getItem() == Ic2Items.cropSeed.getItem() ?
+        ItemCropSeed.getScannedFromStack(this.inventory[1]) : -1;
   }
-
+  
   public String getSeedName() {
     return this.crop().name();
   }
-
+  
   public String getSeedTier() {
     switch (this.crop().tier()) {
       case 1:
@@ -324,48 +329,48 @@ public class HandHeldCropnalyzer implements IHasGui, ITickCallback {
         return "0";
     }
   }
-
+  
   public String getSeedDiscovered() {
     return this.crop().discoveredBy();
   }
-
+  
   public String getSeedDesc(int i) {
     return this.crop().desc(i);
   }
-
+  
   public int getSeedGrowth() {
     return ItemCropSeed.getGrowthFromStack(this.inventory[1]);
   }
-
+  
   public int getSeedGain() {
     return ItemCropSeed.getGainFromStack(this.inventory[1]);
   }
-
+  
   public int getSeedResistence() {
     return ItemCropSeed.getResistanceFromStack(this.inventory[1]);
   }
-
+  
   public boolean matchesUid(int i) {
     NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(this.itemStack);
     return nbttagcompound.getInt("uid") == i;
   }
-
+  
   public ItemStack[] getContents() {
     return this.inventory;
   }
-
+  
   public InventoryHolder getOwner() {
     return null;
   }
-
+  
   public List getViewers() {
     return this.transaction;
   }
-
+  
   public void onClose(CraftHumanEntity arg0) {
     this.transaction.remove(arg0);
   }
-
+  
   public void onOpen(CraftHumanEntity arg0) {
     this.transaction.add(arg0);
   }

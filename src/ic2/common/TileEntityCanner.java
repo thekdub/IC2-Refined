@@ -11,27 +11,27 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
   public int operationLength = 600;
   public AudioSource audioSource;
   private int fuelQuality = 0;
-
+  
   public TileEntityCanner() {
     super(4, 1, 631, 32);
   }
-
+  
   public void a(NBTTagCompound nbttagcompound) {
     super.a(nbttagcompound);
-
+    
     try {
       this.fuelQuality = nbttagcompound.getInt("fuelQuality");
     } catch (Throwable var3) {
       this.fuelQuality = nbttagcompound.getShort("fuelQuality");
     }
-
+    
   }
-
+  
   public void b(NBTTagCompound nbttagcompound) {
     super.b(nbttagcompound);
     nbttagcompound.setInt("fuelQuality", this.fuelQuality);
   }
-
+  
   public int gaugeProgressScaled(int i) {
     int j = this.operationLength;
     if (this.getMode() == 1 && this.inventory[0] != null) {
@@ -40,14 +40,14 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
         j = 50 * k;
       }
     }
-
+    
     if (this.getMode() == 3) {
       j = 50;
     }
-
+    
     return this.progress * i / j;
   }
-
+  
   public int gaugeFuelScaled(int i) {
     if (this.energy <= 0) {
       return 0;
@@ -57,7 +57,7 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
       return j > i ? i : j;
     }
   }
-
+  
   public void q_() {
     super.q_();
     boolean flag = false;
@@ -65,9 +65,11 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
     if (this.energy <= this.energyconsume * this.operationLength && flag1) {
       flag = this.provideEnergy();
     }
-
+    
     boolean flag2 = this.getActive();
-    if (flag1 && (this.getMode() == 1 && this.progress >= this.getFoodValue(this.inventory[0]) * 50 || this.getMode() == 2 && this.progress > 0 && this.progress % 100 == 0 || this.getMode() == 3 && this.progress >= 50)) {
+    if (flag1 && (this.getMode() == 1 && this.progress >= this.getFoodValue(this.inventory[0]) * 50 ||
+        this.getMode() == 2 && this.progress > 0 && this.progress % 100 == 0 ||
+        this.getMode() == 3 && this.progress >= 50)) {
       if (this.getMode() != 1 && this.getMode() != 3 && this.progress < 600) {
         this.operate(true);
       }
@@ -77,17 +79,17 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
         this.progress = 0;
         flag2 = false;
       }
-
+      
       flag = true;
     }
-
+    
     if (flag2 && this.progress != 0) {
       if (!flag1 || this.energy < this.energyconsume) {
         if (!flag1 && this.getMode() != 2) {
           this.fuelQuality = 0;
           this.progress = 0;
         }
-
+  
         flag2 = false;
       }
     }
@@ -100,22 +102,22 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
       this.fuelQuality = 0;
       this.progress = 0;
     }
-
+    
     if (flag2) {
       ++this.progress;
       this.energy -= this.energyconsume;
     }
-
+    
     if (flag) {
       this.update();
     }
-
+    
     if (flag2 != this.getActive()) {
       this.setActive(flag2);
     }
-
+    
   }
-
+  
   public void operate(boolean flag) {
     switch (this.getMode()) {
       case 1:
@@ -124,17 +126,17 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
         if (this.inventory[0].getItem() == Item.MUSHROOM_SOUP && this.inventory[0].count <= 0) {
           this.inventory[0] = new ItemStack(Item.BOWL);
         }
-
+  
         if (this.inventory[0].count <= 0) {
           this.inventory[0] = null;
         }
-
+  
         ItemStack var10000 = this.inventory[3];
         var10000.count -= i;
         if (this.inventory[3].count <= 0) {
           this.inventory[3] = null;
         }
-
+  
         if (this.inventory[2] == null) {
           this.inventory[2] = new ItemStack(Ic2Items.filledTinCan.getItem(), i);
         }
@@ -149,7 +151,7 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
         if (this.inventory[0].count <= 0) {
           this.inventory[0] = null;
         }
-
+  
         this.fuelQuality += j;
         if (!flag) {
           if (this.inventory[3].getItem() instanceof ItemFuelCanEmpty) {
@@ -157,7 +159,7 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
             if (this.inventory[3].count <= 0) {
               this.inventory[3] = null;
             }
-
+  
             this.inventory[2] = Ic2Items.filledFuelCan.cloneItemStack();
             NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(this.inventory[2]);
             nbttagcompound.setInt("value", this.fuelQuality);
@@ -168,7 +170,7 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
             if (k < 1) {
               k = 1;
             }
-
+  
             this.inventory[3] = null;
             this.inventory[2] = new ItemStack(Ic2Items.jetpack.id, 1, k);
           }
@@ -180,24 +182,24 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
         if (this.inventory[0].count <= 0) {
           this.inventory[0] = null;
         }
-
+  
         if (this.inventory[0] == null || this.inventory[3].getData() <= 1) {
           this.inventory[2] = this.inventory[3];
           this.inventory[3] = null;
         }
     }
-
+    
   }
-
+  
   public void j() {
     if (this.audioSource != null) {
       AudioManager.removeSources(this);
       this.audioSource = null;
     }
-
+    
     super.j();
   }
-
+  
   public boolean canOperate() {
     if (this.inventory[0] == null) {
       return false;
@@ -206,10 +208,12 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
       switch (this.getMode()) {
         case 1:
           int i = this.getFoodValue(this.inventory[0]);
-          if (i <= 0 || i > this.inventory[3].count || this.inventory[2] != null && (this.inventory[2].count + i > this.inventory[2].getMaxStackSize() || this.inventory[2].id != Ic2Items.filledTinCan.id)) {
+          if (i <= 0 || i > this.inventory[3].count || this.inventory[2] != null &&
+              (this.inventory[2].count + i > this.inventory[2].getMaxStackSize() ||
+                  this.inventory[2].id != Ic2Items.filledTinCan.id)) {
             break;
           }
-
+    
           return true;
         case 2:
           int j = this.getFuelValue(this.inventory[0].id);
@@ -218,15 +222,16 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
           }
           break;
         case 3:
-          if (this.inventory[3].getData() > 2 && this.getPelletValue(this.inventory[0]) > 0 && this.inventory[2] == null) {
+          if (this.inventory[3].getData() > 2 && this.getPelletValue(this.inventory[0]) > 0 &&
+              this.inventory[2] == null) {
             return true;
           }
       }
-
+  
       return false;
     }
   }
-
+  
   public int getMode() {
     if (this.inventory[3] == null) {
       return 0;
@@ -234,18 +239,19 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
     else if (this.inventory[3].id == Ic2Items.tinCan.id) {
       return 1;
     }
-    else if (!(this.inventory[3].getItem() instanceof ItemFuelCanEmpty) && this.inventory[3].id != Ic2Items.jetpack.id) {
+    else if (!(this.inventory[3].getItem() instanceof ItemFuelCanEmpty) &&
+        this.inventory[3].id != Ic2Items.jetpack.id) {
       return this.inventory[3].id != Ic2Items.cfPack.id ? 0 : 3;
     }
     else {
       return 2;
     }
   }
-
+  
   public String getName() {
     return "Canning Machine";
   }
-
+  
   private int getFoodValue(ItemStack itemstack) {
     if (itemstack.getItem() instanceof ItemFood) {
       ItemFood itemfood = (ItemFood) itemstack.getItem();
@@ -255,7 +261,7 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
       return itemstack.id != Item.CAKE.id && itemstack.id != Block.CAKE_BLOCK.id ? 0 : 6;
     }
   }
-
+  
   public int getFuelValue(int i) {
     if (i == Ic2Items.coalfuelCell.id) {
       return 2548;
@@ -273,7 +279,7 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
       return i == Item.SULPHUR.id && this.fuelQuality > 0 ? (int) ((double) this.fuelQuality * 0.4D) : 0;
     }
   }
-
+  
   public int getPelletValue(ItemStack itemstack) {
     if (itemstack == null) {
       return 0;
@@ -282,26 +288,26 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
       return itemstack.id != Ic2Items.constructionFoamPellet.id ? 0 : itemstack.count;
     }
   }
-
+  
   public String getStartSoundFile() {
     return null;
   }
-
+  
   public String getInterruptSoundFile() {
     return null;
   }
-
+  
   public ContainerIC2 getGuiContainer(EntityHuman entityhuman) {
     return new ContainerCanner(entityhuman, this);
   }
-
+  
   public String getGuiClassName(EntityHuman entityhuman) {
     return "GuiCanner";
   }
-
+  
   public void onGuiClosed(EntityHuman entityhuman) {
   }
-
+  
   public int getStartInventorySide(int i) {
     byte byte0;
     switch (this.getFacing()) {
@@ -320,7 +326,7 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
       default:
         byte0 = 2;
     }
-
+    
     if (i == byte0) {
       return 1;
     }
@@ -335,11 +341,11 @@ public class TileEntityCanner extends TileEntityElecMachine implements IHasGui, 
       }
     }
   }
-
+  
   public int getSizeInventorySide(int i) {
     return 1;
   }
-
+  
   public float getWrenchDropRate() {
     return 0.85F;
   }

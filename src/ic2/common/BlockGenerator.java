@@ -8,7 +8,7 @@ import java.util.Random;
 public class BlockGenerator extends BlockMultiID implements IRareBlock {
   public static Class tileEntityGeoGeneratorClass = TileEntityGeoGenerator.class;
   public static Class tileEntityWaterGeneratorClass = TileEntityWaterGenerator.class;
-
+  
   public BlockGenerator(int i) {
     super(i, Material.ORE);
     this.c(3.0F);
@@ -21,15 +21,15 @@ public class BlockGenerator extends BlockMultiID implements IRareBlock {
     Ic2Items.windMill = new ItemStack(this, 1, 4);
     Ic2Items.nuclearReactor = new ItemStack(this, 1, 5);
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/block_generator.png";
   }
-
+  
   public int getDropType(int i, Random random, int j) {
     return this.id;
   }
-
+  
   protected int getDropData(int i) {
     switch (i) {
       case 2:
@@ -38,11 +38,11 @@ public class BlockGenerator extends BlockMultiID implements IRareBlock {
         return 0;
     }
   }
-
+  
   public int a(Random random) {
     return 1;
   }
-
+  
   public TileEntityBlock getBlockEntity(int i) {
     try {
       switch (i) {
@@ -65,7 +65,7 @@ public class BlockGenerator extends BlockMultiID implements IRareBlock {
       throw new RuntimeException(var3);
     }
   }
-
+  
   public void randomDisplayTick(World world, int i, int j, int k, Random random) {
     if (Platform.isRendering()) {
       int l = world.getData(i, j, k);
@@ -79,20 +79,20 @@ public class BlockGenerator extends BlockMultiID implements IRareBlock {
         float f4 = random.nextFloat() * 0.6F - 0.3F;
         switch (word0) {
           case 2:
-            world.a("smoke", (double) (f + f4), (double) f1, (double) (f2 - f3), 0.0D, 0.0D, 0.0D);
-            world.a("flame", (double) (f + f4), (double) f1, (double) (f2 - f3), 0.0D, 0.0D, 0.0D);
+            world.a("smoke", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
+            world.a("flame", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
             break;
           case 3:
-            world.a("smoke", (double) (f + f4), (double) f1, (double) (f2 + f3), 0.0D, 0.0D, 0.0D);
-            world.a("flame", (double) (f + f4), (double) f1, (double) (f2 + f3), 0.0D, 0.0D, 0.0D);
+            world.a("smoke", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
+            world.a("flame", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
             break;
           case 4:
-            world.a("smoke", (double) (f - f3), (double) f1, (double) (f2 + f4), 0.0D, 0.0D, 0.0D);
-            world.a("flame", (double) (f - f3), (double) f1, (double) (f2 + f4), 0.0D, 0.0D, 0.0D);
+            world.a("smoke", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+            world.a("flame", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
             break;
           case 5:
-            world.a("smoke", (double) (f + f3), (double) f1, (double) (f2 + f4), 0.0D, 0.0D, 0.0D);
-            world.a("flame", (double) (f + f3), (double) f1, (double) (f2 + f4), 0.0D, 0.0D, 0.0D);
+            world.a("smoke", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+            world.a("flame", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
         }
       }
       else if (l == 5) {
@@ -100,28 +100,31 @@ public class BlockGenerator extends BlockMultiID implements IRareBlock {
         if (i1 <= 0) {
           return;
         }
-
+  
         i1 = world.random.nextInt(i1);
-
+  
         int k1;
         for (k1 = 0; k1 < i1; ++k1) {
-          world.a("smoke", (double) ((float) i + random.nextFloat()), (double) ((float) j + 0.95F), (double) ((float) k + random.nextFloat()), 0.0D, 0.0D, 0.0D);
+          world.a("smoke", (float) i + random.nextFloat(), (float) j + 0.95F,
+              (float) k + random.nextFloat(), 0.0D, 0.0D, 0.0D);
         }
-
+  
         i1 -= world.random.nextInt(4) + 3;
-
+  
         for (k1 = 0; k1 < i1; ++k1) {
-          world.a("flame", (double) ((float) i + random.nextFloat()), (double) ((float) j + 1.0F), (double) ((float) k + random.nextFloat()), 0.0D, 0.0D, 0.0D);
+          world.a("flame", (float) i + random.nextFloat(), (float) j + 1.0F,
+              (float) k + random.nextFloat(), 0.0D, 0.0D, 0.0D);
         }
       }
-
+  
     }
   }
-
+  
   public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman) {
-    return (entityhuman.U() == null || !entityhuman.U().doMaterialsMatch(Ic2Items.reactorChamber)) && super.interact(world, i, j, k, entityhuman);
+    return (entityhuman.U() == null || !entityhuman.U().doMaterialsMatch(Ic2Items.reactorChamber)) &&
+        super.interact(world, i, j, k, entityhuman);
   }
-
+  
   public int rarity(ItemStack itemstack) {
     return itemstack.getData() != 5 ? 0 : 1;
   }

@@ -13,7 +13,7 @@ public class ItemFrequencyTransmitter extends ItemIC2 {
     this.maxStackSize = 1;
     this.setMaxDurability(0);
   }
-
+  
   public ItemStack a(ItemStack itemstack, World world, EntityHuman entityhuman) {
     if (Platform.isSimulating()) {
       NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(itemstack);
@@ -22,10 +22,10 @@ public class ItemFrequencyTransmitter extends ItemIC2 {
         Platform.messagePlayer(entityhuman, "Frequency Transmitter unlinked");
       }
     }
-
+    
     return itemstack;
   }
-
+  
   public boolean onItemUseFirst(ItemStack itemstack, EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     TileEntity tileentity = world.getTileEntity(i, j, k);
     if (tileentity instanceof TileEntityTeleporter) {
@@ -37,10 +37,10 @@ public class ItemFrequencyTransmitter extends ItemIC2 {
         if (breakev.isCancelled()) {
           return false;
         }
-
+  
         breakev.setCancelled(true);
       }
-
+  
       if (Platform.isSimulating()) {
         NBTTagCompound nbttagcompound = StackUtil.getOrCreateNbtData(itemstack);
         boolean flag = nbttagcompound.getBoolean("targetSet");
@@ -50,11 +50,12 @@ public class ItemFrequencyTransmitter extends ItemIC2 {
         TileEntityTeleporter tileentityteleporter = (TileEntityTeleporter) tileentity;
         if (flag) {
           Chunk chunk = Platform.getOrLoadChunk(world, i1 >> 4, k1 >> 4);
-          if (chunk == null || chunk.getTypeId(i1 & 15, j1, k1 & 15) != Ic2Items.teleporter.id || chunk.getData(i1 & 15, j1, k1 & 15) != Ic2Items.teleporter.getData()) {
+          if (chunk == null || chunk.getTypeId(i1 & 15, j1, k1 & 15) != Ic2Items.teleporter.id ||
+              chunk.getData(i1 & 15, j1, k1 & 15) != Ic2Items.teleporter.getData()) {
             flag = false;
           }
         }
-
+    
         if (!flag) {
           flag = true;
           i1 = tileentityteleporter.x;
@@ -65,7 +66,8 @@ public class ItemFrequencyTransmitter extends ItemIC2 {
         else if (tileentityteleporter.x == i1 && tileentityteleporter.y == j1 && tileentityteleporter.z == k1) {
           Platform.messagePlayer(entityhuman, "Can't link Teleporter to itself.");
         }
-        else if (tileentityteleporter.targetSet && tileentityteleporter.targetX == i1 && tileentityteleporter.targetY == j1 && tileentityteleporter.targetZ == k1) {
+        else if (tileentityteleporter.targetSet && tileentityteleporter.targetX == i1 &&
+            tileentityteleporter.targetY == j1 && tileentityteleporter.targetZ == k1) {
           Platform.messagePlayer(entityhuman, "Teleportation link unchanged.");
         }
         else {
@@ -77,16 +79,16 @@ public class ItemFrequencyTransmitter extends ItemIC2 {
               tileentityteleporter1.setTarget(tileentityteleporter.x, tileentityteleporter.y, tileentityteleporter.z);
             }
           }
-
+      
           Platform.messagePlayer(entityhuman, "Teleportation link established.");
         }
-
+    
         nbttagcompound.setBoolean("targetSet", flag);
         nbttagcompound.setInt("targetX", i1);
         nbttagcompound.setInt("targetY", j1);
         nbttagcompound.setInt("targetZ", k1);
       }
-
+  
       return true;
     }
     else {

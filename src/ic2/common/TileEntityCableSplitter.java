@@ -5,18 +5,18 @@ import ic2.platform.Platform;
 public class TileEntityCableSplitter extends TileEntityCable {
   public static final int tickRate = 20;
   public int ticksUntilNextUpdate = 0;
-
+  
   public TileEntityCableSplitter(short word0) {
     super(word0);
   }
-
+  
   public TileEntityCableSplitter() {
   }
-
+  
   public boolean canUpdate() {
     return Platform.isSimulating();
   }
-
+  
   public void q_() {
     if (this.ticksUntilNextUpdate == 0) {
       this.ticksUntilNextUpdate = 20;
@@ -30,10 +30,10 @@ public class TileEntityCableSplitter extends TileEntityCable {
           this.addedToEnergyNet = true;
         }
       }
-
+  
       this.setActive(this.addedToEnergyNet);
     }
-
+    
     --this.ticksUntilNextUpdate;
   }
 }

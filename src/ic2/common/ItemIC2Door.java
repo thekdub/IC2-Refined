@@ -6,17 +6,17 @@ import net.minecraft.server.*;
 
 public class ItemIC2Door extends ItemDoorCommon implements ITextureProvider {
   public Block block;
-
+  
   public ItemIC2Door(int i, int j, Block block1) {
     super(i, Material.ORE);
     this.d(j);
     this.block = block1;
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/item_0.png";
   }
-
+  
   public boolean interactWith(ItemStack itemstack, EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     if (l != 1) {
       return false;

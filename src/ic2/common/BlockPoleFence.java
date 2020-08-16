@@ -16,35 +16,42 @@ public class BlockPoleFence extends BlockTex {
     ModLoader.registerBlock(this, ItemBlockCommon.class);
     Ic2Items.ironFence = new ItemStack(this);
   }
-
+  
   public boolean a() {
     return false;
   }
-
+  
   public boolean b() {
     return false;
   }
-
+  
   public boolean isBlockNormalCube(World world, int i, int j, int k) {
     return false;
   }
-
+  
   public int c() {
     return mod_IC2.fenceRenderId;
   }
-
+  
   public AxisAlignedBB e(World world, int i, int j, int k) {
-    return this.material == Material.ORE && this.isPole(world, i, j, k) ? AxisAlignedBB.b((double) ((float) i + 0.375F), (double) ((float) j), (double) ((float) k + 0.375F), (double) ((float) i + 0.625F), (double) ((float) j + 1.0F), (double) ((float) k + 0.625F)) : AxisAlignedBB.b((double) i, (double) j, (double) k, (double) (i + 1), (double) ((float) j + 1.5F), (double) (k + 1));
+    return this.material == Material.ORE && this.isPole(world, i, j, k) ? AxisAlignedBB
+        .b((float) i + 0.375F, (float) j, (float) k + 0.375F,
+            (float) i + 0.625F, (float) j + 1.0F, (float) k + 0.625F) : AxisAlignedBB
+        .b(i, j, k, i + 1, (float) j + 1.5F, k + 1);
   }
-
+  
   public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int i, int j, int k) {
-    return this.material == Material.ORE && this.isPole(world, i, j, k) ? AxisAlignedBB.b((double) ((float) i + 0.375F), (double) ((float) j), (double) ((float) k + 0.375F), (double) ((float) i + 0.625F), (double) ((float) j + 1.0F), (double) ((float) k + 0.625F)) : AxisAlignedBB.b((double) i, (double) j, (double) k, (double) (i + 1), (double) (j + 1), (double) (k + 1));
+    return this.material == Material.ORE && this.isPole(world, i, j, k) ? AxisAlignedBB
+        .b((float) i + 0.375F, (float) j, (float) k + 0.375F,
+            (float) i + 0.625F, (float) j + 1.0F, (float) k + 0.625F) :
+        AxisAlignedBB.b(i, j, k, i + 1, j + 1, k + 1);
   }
-
+  
   public boolean isPole(World world, int i, int j, int k) {
-    return world.getTypeId(i - 1, j, k) != this.id && world.getTypeId(i + 1, j, k) != this.id && world.getTypeId(i, j, k - 1) != this.id && world.getTypeId(i, j, k + 1) != this.id;
+    return world.getTypeId(i - 1, j, k) != this.id && world.getTypeId(i + 1, j, k) != this.id &&
+        world.getTypeId(i, j, k - 1) != this.id && world.getTypeId(i, j, k + 1) != this.id;
   }
-
+  
   public void a(World world, int i, int j, int k, Entity entity) {
     if (this.material == Material.ORE && this.isPole(world, i, j, k) && entity instanceof EntityHuman) {
       boolean flag = world.getData(i, j, k) > 0;
@@ -53,11 +60,13 @@ public class BlockPoleFence extends BlockTex {
       ItemStack itemstack = entityhuman.inventory.armor[0];
       if (itemstack != null) {
         int l = itemstack.id;
-        if (l == Item.IRON_BOOTS.id || l == Item.GOLD_BOOTS.id || l == Item.CHAINMAIL_BOOTS.id || itemstack.getItem() instanceof IMetalArmor && ((IMetalArmor) itemstack.getItem()).isMetalArmor(itemstack, entityhuman)) {
+        if (l == Item.IRON_BOOTS.id || l == Item.GOLD_BOOTS.id || l == Item.CHAINMAIL_BOOTS.id ||
+            itemstack.getItem() instanceof IMetalArmor &&
+                ((IMetalArmor) itemstack.getItem()).isMetalArmor(itemstack, entityhuman)) {
           flag1 = true;
         }
       }
-
+  
       if (flag && flag1) {
         world.setRawData(i, j, k, world.getData(i, j, k) - 1);
         entityhuman.motY += 0.07500000298023224D;
@@ -65,7 +74,7 @@ public class BlockPoleFence extends BlockTex {
           entityhuman.motY *= 1.0299999713897705D;
           mod_IC2.setFallDistanceOfEntity(entityhuman, 0.0F);
         }
-
+    
         if (entityhuman.isSneaking()) {
           if (entityhuman.motY > 0.30000001192092896D) {
             entityhuman.motY = 0.30000001192092896D;
@@ -83,10 +92,10 @@ public class BlockPoleFence extends BlockTex {
           mod_IC2.setFallDistanceOfEntity(entityhuman, 0.0F);
         }
       }
-
+  
     }
   }
-
+  
   public void addCreativeItems(ArrayList arraylist) {
     arraylist.add(new ItemStack(this));
   }

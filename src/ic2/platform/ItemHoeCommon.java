@@ -8,7 +8,7 @@ public class ItemHoeCommon extends ItemHoe {
   public ItemHoeCommon(int i, EnumToolMaterial enumtoolmaterial) {
     super(i, enumtoolmaterial);
   }
-
+  
   public int rarity(ItemStack itemstack) {
     return 0;
   }

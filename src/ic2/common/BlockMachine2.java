@@ -1,9 +1,6 @@
 package ic2.common;
 
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.Material;
-import net.minecraft.server.ModLoader;
-import net.minecraft.server.World;
+import net.minecraft.server.*;
 
 import java.util.Random;
 
@@ -17,11 +14,11 @@ public class BlockMachine2 extends BlockMultiID implements IRareBlock {
     Ic2Items.teslaCoil = new ItemStack(this, 1, 1);
     Ic2Items.cropmatron = new ItemStack(this, 1, 2);
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/block_machine2.png";
   }
-
+  
   public int getDropType(int i, Random random, int j) {
     switch (i) {
       case 0:
@@ -30,7 +27,7 @@ public class BlockMachine2 extends BlockMultiID implements IRareBlock {
         return Ic2Items.machine.id;
     }
   }
-
+  
   protected int getDropData(int i) {
     switch (i) {
       case 0:
@@ -39,7 +36,7 @@ public class BlockMachine2 extends BlockMultiID implements IRareBlock {
         return Ic2Items.machine.getData();
     }
   }
-
+  
   public TileEntityBlock getBlockEntity(int i) {
     switch (i) {
       case 0:
@@ -52,11 +49,11 @@ public class BlockMachine2 extends BlockMultiID implements IRareBlock {
         return new TileEntityBlock();
     }
   }
-
+  
   public void randomDisplayTick(World world, int i, int j, int k, Random random) {
     world.getData(i, j, k);
   }
-
+  
   public int rarity(ItemStack itemstack) {
     return itemstack.getData() != 0 ? 0 : 2;
   }

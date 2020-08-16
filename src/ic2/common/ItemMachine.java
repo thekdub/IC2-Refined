@@ -9,11 +9,11 @@ public class ItemMachine extends ItemBlockCommon {
     this.setMaxDurability(0);
     this.a(true);
   }
-
+  
   public int filterData(int i) {
     return i;
   }
-
+  
   public String a(ItemStack itemstack) {
     int i = itemstack.getData();
     switch (i) {

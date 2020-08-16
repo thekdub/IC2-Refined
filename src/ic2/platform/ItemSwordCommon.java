@@ -8,7 +8,7 @@ public class ItemSwordCommon extends ItemSword {
   public ItemSwordCommon(int i, EnumToolMaterial enumtoolmaterial) {
     super(i, enumtoolmaterial);
   }
-
+  
   public int rarity(ItemStack itemstack) {
     return 0;
   }

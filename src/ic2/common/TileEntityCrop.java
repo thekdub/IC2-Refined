@@ -9,10 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class TileEntityCrop extends TECrop implements INetworkDataProvider, INetworkUpdateListener {
   public static char tickRate = 256;
@@ -24,7 +21,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
   public byte nutrients;
   public byte airQuality;
   private boolean created;
-
+  
   public TileEntityCrop() {
     this.ticker = (char) mod_IC2.random.nextInt(tickRate);
     this.dirty = true;
@@ -33,7 +30,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
     this.nutrients = -1;
     this.airQuality = -1;
   }
-
+  
   public void a(NBTTagCompound nbttagcompound) {
     super.a(nbttagcompound);
     this.id = nbttagcompound.getShort("cropid");
@@ -41,13 +38,13 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
     this.statGrowth = nbttagcompound.getByte("statGrowth");
     this.statGain = nbttagcompound.getByte("statGain");
     this.statResistance = nbttagcompound.getByte("statResistance");
-
+    
     for (int i = 0; i < this.custumData.length; ++i) {
       this.custumData[i] = nbttagcompound.getShort("data" + i);
     }
-
+    
     this.growthPoints = nbttagcompound.getInt("growthPoints");
-
+    
     try {
       this.nutrientStorage = nbttagcompound.getInt("nutrientStorage");
       this.waterStorage = nbttagcompound.getInt("waterStorage");
@@ -55,11 +52,11 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       this.nutrientStorage = nbttagcompound.getByte("nutrientStorage");
       this.waterStorage = nbttagcompound.getByte("waterStorage");
     }
-
+    
     this.upgraded = nbttagcompound.getBoolean("upgraded");
     this.scanLevel = nbttagcompound.getByte("scanLevel");
   }
-
+  
   public void b(NBTTagCompound nbttagcompound) {
     super.b(nbttagcompound);
     nbttagcompound.setShort("cropid", this.id);
@@ -67,30 +64,30 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
     nbttagcompound.setByte("statGrowth", this.statGrowth);
     nbttagcompound.setByte("statGain", this.statGain);
     nbttagcompound.setByte("statResistance", this.statResistance);
-
+    
     for (int i = 0; i < this.custumData.length; ++i) {
       nbttagcompound.setShort("data" + i, this.custumData[i]);
     }
-
+    
     nbttagcompound.setInt("growthPoints", this.growthPoints);
     nbttagcompound.setInt("nutrientStorage", this.nutrientStorage);
     nbttagcompound.setInt("waterStorage", this.waterStorage);
     nbttagcompound.setBoolean("upgraded", this.upgraded);
     nbttagcompound.setByte("scanLevel", this.scanLevel);
   }
-
+  
   public void q_() {
     super.q_();
     if (!this.created) {
       NetworkManager.requestInitialData(this);
       this.created = true;
     }
-
+    
     ++this.ticker;
     if (this.ticker % tickRate == 0) {
       this.tick();
     }
-
+    
     if (this.dirty) {
       this.dirty = false;
       this.world.notify(this.x, this.y, this.z);
@@ -99,7 +96,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         NetworkManager.announceBlockUpdate(this.world, this.x, this.y, this.z);
         if (!Platform.isRendering()) {
           Iterator iterator = this.getNetworkedFields().iterator();
-
+  
           while (iterator.hasNext()) {
             String s = (String) iterator.next();
             NetworkManager.updateTileEntityField(this, s);
@@ -107,9 +104,9 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         }
       }
     }
-
+    
   }
-
+  
   public List getNetworkedFields() {
     Vector vector = new Vector(2);
     vector.add("id");
@@ -118,35 +115,35 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
     vector.add("custumData");
     return vector;
   }
-
+  
   public void tick() {
     if (Platform.isSimulating()) {
       if (this.ticker % (tickRate << 2) == 0) {
         this.humidity = this.updateHumidity();
       }
-
+  
       if ((this.ticker + tickRate) % (tickRate << 2) == 0) {
         this.nutrients = this.updateNutrients();
       }
-
+  
       if ((this.ticker + tickRate * 2) % (tickRate << 2) == 0) {
         this.airQuality = this.updateAirQuality();
       }
-
+  
       if (this.id < 0 && (!this.upgraded || !this.attemptCrossing())) {
         if (mod_IC2.random.nextInt(100) != 0 || this.hasEx()) {
           if (this.exStorage > 0 && mod_IC2.random.nextInt(10) == 0) {
             --this.exStorage;
           }
-
+  
           return;
         }
-
+    
         this.reset();
         this.id = (short) IC2Crops.weed.getId();
         this.size = 1;
       }
-
+  
       this.crop().tick(this);
       if (this.crop().canGrow(this)) {
         this.growthPoints += this.calcGrowthRate();
@@ -156,22 +153,22 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
           this.dirty = true;
         }
       }
-
+  
       if (this.nutrientStorage > 0) {
         --this.nutrientStorage;
       }
-
+  
       if (this.waterStorage > 0) {
         --this.waterStorage;
       }
-
+  
       if (this.crop().isWeed(this) && mod_IC2.random.nextInt(50) - this.statGrowth <= 2) {
         this.generateWeed();
       }
-
+  
     }
   }
-
+  
   public void generateWeed() {
     int i = this.x;
     int j = this.y;
@@ -186,19 +183,20 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       case 3:
         --k;
     }
-
+    
     if (this.world.getTileEntity(i, j, k) instanceof TileEntityCrop) {
       TileEntityCrop tileentitycrop = (TileEntityCrop) this.world.getTileEntity(i, j, k);
-      if (tileentitycrop.id == -1 || !tileentitycrop.crop().isWeed(tileentitycrop) && mod_IC2.random.nextInt(32) >= tileentitycrop.statResistance && !tileentitycrop.hasEx()) {
+      if (tileentitycrop.id == -1 || !tileentitycrop.crop().isWeed(tileentitycrop) &&
+          mod_IC2.random.nextInt(32) >= tileentitycrop.statResistance && !tileentitycrop.hasEx()) {
         byte byte0 = this.statGrowth;
         if (tileentitycrop.statGrowth > byte0) {
           byte0 = tileentitycrop.statGrowth;
         }
-
+        
         if (byte0 < 31 && mod_IC2.random.nextBoolean()) {
           ++byte0;
         }
-
+        
         tileentitycrop.reset();
         tileentitycrop.id = 0;
         tileentitycrop.size = 1;
@@ -212,9 +210,9 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         this.world.setTypeIdAndData(i, j, k, Block.LONG_GRASS.id, 1);
       }
     }
-
+    
   }
-
+  
   public boolean hasEx() {
     if (this.exStorage > 0) {
       this.exStorage -= 5;
@@ -224,7 +222,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       return false;
     }
   }
-
+  
   public boolean attemptCrossing() {
     if (mod_IC2.random.nextInt(3) != 0) {
       return false;
@@ -240,7 +238,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       }
       else {
         int[] ai = new int[256];
-
+  
         int j;
         int i1;
         for (j = 1; j < ai.length; ++j) {
@@ -250,24 +248,24 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
             }
           }
         }
-
+  
         j = 0;
-
+  
         for (i1 = 0; i1 < ai.length; ++i1) {
           j += ai[i1];
         }
-
+  
         j = mod_IC2.random.nextInt(j);
-
+  
         for (i1 = 0; i1 < ai.length; ++i1) {
           if (ai[i1] > 0 && ai[i1] > j) {
             j = i1;
             break;
           }
-
+    
           j -= ai[i1];
         }
-
+  
         this.upgraded = false;
         this.id = (short) j;
         this.dirty = true;
@@ -275,13 +273,13 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         this.statGrowth = 0;
         this.statResistance = 0;
         this.statGain = 0;
-
+  
         for (i1 = 0; i1 < linkedlist.size(); ++i1) {
           this.statGrowth += ((TileEntityCrop) linkedlist.get(i1)).statGrowth;
           this.statResistance += ((TileEntityCrop) linkedlist.get(i1)).statResistance;
           this.statGain += ((TileEntityCrop) linkedlist.get(i1)).statGain;
         }
-
+  
         i1 = linkedlist.size();
         this.statGrowth = (byte) (this.statGrowth / i1);
         this.statResistance = (byte) (this.statResistance / i1);
@@ -290,34 +288,34 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         if (this.statGrowth < 0) {
           this.statGrowth = 0;
         }
-
+  
         if (this.statGrowth > 31) {
           this.statGrowth = 31;
         }
-
+  
         this.statGain = (byte) (this.statGain + (mod_IC2.random.nextInt(1 + 2 * i1) - i1));
         if (this.statGain < 0) {
           this.statGain = 0;
         }
-
+  
         if (this.statGain > 31) {
           this.statGain = 31;
         }
-
+  
         this.statResistance = (byte) (this.statResistance + (mod_IC2.random.nextInt(1 + 2 * i1) - i1));
         if (this.statResistance < 0) {
           this.statResistance = 0;
         }
-
+  
         if (this.statResistance > 31) {
           this.statResistance = 31;
         }
-
+  
         return true;
       }
     }
   }
-
+  
   public int calculateRatioFor(CropCard cropcard, CropCard cropcard1) {
     if (cropcard == cropcard1) {
       return 500;
@@ -325,14 +323,14 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
     else {
       int i = 0;
       int j = 0;
-
+  
       int k;
       while (j < 5) {
         k = cropcard.stat(j) - cropcard1.stat(j);
         if (k < 0) {
           k *= -1;
         }
-
+  
         switch (k) {
           default:
             --i;
@@ -344,7 +342,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
             ++j;
         }
       }
-
+  
       for (k = 0; k < cropcard.attributes().length; ++k) {
         for (int i1 = 0; i1 < cropcard1.attributes().length; ++i1) {
           if (cropcard.attributes()[k].equalsIgnoreCase(cropcard1.attributes()[i1])) {
@@ -352,23 +350,23 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
           }
         }
       }
-
+  
       if (cropcard1.tier() < cropcard.tier() - 1) {
         i -= 2 * (cropcard.tier() - cropcard1.tier());
       }
-
+  
       if (cropcard1.tier() - 3 > cropcard.tier()) {
         i -= cropcard1.tier() - cropcard.tier();
       }
-
+  
       if (i < 0) {
         i = 0;
       }
-
+  
       return i;
     }
   }
-
+  
   public void askCropJoinCross(int i, int j, int k, LinkedList linkedlist) {
     if (this.world.getTileEntity(i, j, k) instanceof TileEntityCrop) {
       TileEntityCrop tileentitycrop = (TileEntityCrop) this.world.getTileEntity(i, j, k);
@@ -378,24 +376,24 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
           if (tileentitycrop.statGrowth >= 16) {
             ++l;
           }
-
+  
           if (tileentitycrop.statGrowth >= 30) {
             ++l;
           }
-
+  
           if (tileentitycrop.statResistance >= 28) {
             l += 27 - tileentitycrop.statResistance;
           }
-
+  
           if (l >= mod_IC2.random.nextInt(20)) {
             linkedlist.add(tileentitycrop);
           }
-
+  
         }
       }
     }
   }
-
+  
   public boolean leftclick(EntityHuman entityhuman) {
     Entity bukkitentity = entityhuman.getBukkitEntity();
     if (bukkitentity instanceof Player) {
@@ -405,10 +403,10 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       if (breakev.isCancelled()) {
         return false;
       }
-
+  
       breakev.setCancelled(true);
     }
-
+    
     if (this.id < 0) {
       if (this.upgraded) {
         this.upgraded = false;
@@ -416,7 +414,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         if (Platform.isSimulating()) {
           StackUtil.dropAsEntity(this.world, this.x, this.y, this.z, new ItemStack(Ic2Items.crop.getItem()));
         }
-
+  
         return true;
       }
       else {
@@ -427,7 +425,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       return this.crop().leftclick(this, entityhuman);
     }
   }
-
+  
   public boolean pick(boolean flag) {
     if (this.id < 0) {
       return false;
@@ -435,28 +433,28 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
     else {
       boolean flag1 = this.harvest(false);
       float f = this.crop().dropSeedChance(this);
-
+  
       int j;
       for (j = 0; j < this.statResistance; ++j) {
         f *= 1.1F;
       }
-
+  
       j = 0;
       int i1;
       if (flag1) {
         if (mod_IC2.random.nextFloat() <= (f + 1.0F) * 0.8F) {
           ++j;
         }
-
+  
         float f1 = this.crop().dropSeedChance(this) + (float) this.statGrowth / 100.0F;
         if (!flag) {
           f1 *= 0.8F;
         }
-
+  
         for (i1 = 23; i1 < this.statGain; ++i1) {
           f1 *= 0.95F;
         }
-
+  
         if (mod_IC2.random.nextFloat() <= f1) {
           ++j;
         }
@@ -464,28 +462,28 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       else if (mod_IC2.random.nextFloat() <= f * 1.5F) {
         ++j;
       }
-
+  
       ItemStack[] aitemstack = new ItemStack[j];
-
+  
       for (i1 = 0; i1 < j; ++i1) {
         aitemstack[i1] = this.crop().getSeeds(this);
       }
-
+  
       this.reset();
       if (Platform.isSimulating() && aitemstack != null && aitemstack.length > 0) {
         for (i1 = 0; i1 < aitemstack.length; ++i1) {
           if (aitemstack[i1].id != Ic2Items.cropSeed.id) {
             aitemstack[i1].tag = null;
           }
-
+  
           StackUtil.dropAsEntity(this.world, this.x, this.y, this.z, aitemstack[i1]);
         }
       }
-
+  
       return true;
     }
   }
-
+  
   public boolean rightclick(EntityHuman entityhuman) {
     ItemStack itemstack = entityhuman.U();
     Entity bukkitentity = entityhuman.getBukkitEntity();
@@ -545,46 +543,46 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         }
         return false;
       }
-
+  
       if (itemstack.id == Item.INK_SACK.id && itemstack.getData() == 15 || itemstack.id == Ic2Items.fertilizer.id) {
         if (this.applyFertilizer(true)) {
           --itemstack.count;
           if (itemstack.count <= 0) {
             entityhuman.inventory.items[entityhuman.inventory.itemInHandIndex] = null;
           }
-
+  
           return true;
         }
-
+    
         return false;
       }
-
+  
       if (itemstack.id == Ic2Items.hydratingCell.id) {
         if (this.applyHydration(true, itemstack)) {
           if (itemstack.count <= 0) {
             entityhuman.inventory.items[entityhuman.inventory.itemInHandIndex] = null;
           }
-
+  
           return true;
         }
-
+    
         return false;
       }
-
+  
       if (itemstack.id == Ic2Items.weedEx.id && this.applyWeedEx(true)) {
         itemstack.damage(1, entityhuman);
         if (itemstack.getData() >= itemstack.i()) {
           --itemstack.count;
         }
-
+    
         if (itemstack.count <= 0) {
           entityhuman.inventory.items[entityhuman.inventory.itemInHandIndex] = null;
         }
-
+    
         return true;
       }
     }
-
+    
     if (this.id < 0) {
       return false;
     }
@@ -592,15 +590,16 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       return this.crop().rightclick(this, entityhuman);
     }
   }
-
+  
   public boolean applyBaseSeed(ItemStack itemstack, EntityHuman entityhuman) {
     BaseSeed baseseed = CropCard.getBaseSeed(itemstack);
     if (baseseed != null) {
       if (itemstack.count < baseseed.stackSize) {
         return false;
       }
-
-      if (this.tryPlantIn(baseseed.id, baseseed.size, baseseed.statGrowth, baseseed.statGain, baseseed.statResistance, 1)) {
+  
+      if (this
+          .tryPlantIn(baseseed.id, baseseed.size, baseseed.statGrowth, baseseed.statGain, baseseed.statResistance, 1)) {
         if (itemstack.getItem().k()) {
           itemstack.id = itemstack.getItem().j().id;
         }
@@ -610,14 +609,14 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
             entityhuman.inventory.items[entityhuman.inventory.itemInHandIndex] = null;
           }
         }
-
+    
         return true;
       }
     }
-
+    
     return false;
   }
-
+  
   public boolean tryPlantIn(int i, int j, int k, int l, int i1, int j1) {
     if (this.id <= -1 && i > 0 && !this.upgraded) {
       if (!CropCard.getCrop(i).canGrow(this)) {
@@ -638,7 +637,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       return false;
     }
   }
-
+  
   public boolean applyFertilizer(boolean flag) {
     if (this.nutrientStorage >= 100) {
       return false;
@@ -648,19 +647,19 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       return true;
     }
   }
-
+  
   public boolean applyHydration(boolean flag, ItemStack itemstack) {
     if ((flag || this.waterStorage < 180) && this.waterStorage < 200) {
       int i = flag ? 200 - this.waterStorage : 180 - this.waterStorage;
       if (i + itemstack.getData() > itemstack.i()) {
         i = itemstack.i() - itemstack.getData();
       }
-
+  
       itemstack.damage(i, null);
       if (itemstack.getData() >= itemstack.i()) {
         --itemstack.count;
       }
-
+  
       this.waterStorage += i;
       return true;
     }
@@ -668,7 +667,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       return false;
     }
   }
-
+  
   public boolean applyWeedEx(boolean flag) {
     if ((this.exStorage < 100 || !flag) && this.exStorage < 150) {
       this.exStorage += 50;
@@ -676,7 +675,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       if (flag) {
         flag1 = this.world.random.nextInt(5) == 0;
       }
-
+  
       if (this.id > 0 && this.exStorage >= 75 && flag1) {
         switch (this.world.random.nextInt(5)) {
           case 0:
@@ -693,31 +692,31 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
             }
         }
       }
-
+  
       return true;
     }
     else {
       return false;
     }
   }
-
+  
   public boolean harvest(boolean flag) {
     if (this.id >= 0 && this.crop().canBeHarvested(this)) {
       float f = this.crop().dropGainChance();
-
+  
       int j;
       for (j = 0; j < this.statGain; ++j) {
         f *= 1.03F;
       }
-
+  
       f -= mod_IC2.random.nextFloat();
-
+  
       for (j = 0; f > 0.0F; f -= mod_IC2.random.nextFloat()) {
         ++j;
       }
-
+  
       ItemStack[] aitemstack = new ItemStack[j];
-
+  
       int l;
       for (l = 0; l < j; ++l) {
         aitemstack[l] = this.crop().getGain(this);
@@ -725,7 +724,7 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
           ++aitemstack[l].count;
         }
       }
-
+  
       this.size = this.crop().getSizeAfterHarvest(this);
       this.dirty = true;
       if (Platform.isSimulating() && aitemstack != null && aitemstack.length > 0) {
@@ -733,118 +732,118 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
           StackUtil.dropAsEntity(this.world, this.x, this.y, this.z, aitemstack[l]);
         }
       }
-
+  
       return true;
     }
     else {
       return false;
     }
   }
-
+  
   public void onNeighbourChange() {
     if (this.id >= 0) {
       this.crop().onNeighbourChange(this);
     }
   }
-
+  
   public boolean emitRedstone() {
     return this.id >= 0 && this.crop().emitRedstone(this);
   }
-
+  
   public void onBlockDestroyed() {
     if (this.id >= 0) {
       this.crop().onBlockDestroyed(this);
     }
   }
-
+  
   public int getEmittedLight() {
     return this.id < 0 ? 0 : this.crop().getEmittedLight(this);
   }
-
+  
   public byte getHumidity() {
     if (this.humidity == -1) {
       this.humidity = this.updateHumidity();
     }
-
+    
     return this.humidity;
   }
-
+  
   public byte getNutrients() {
     if (this.nutrients == -1) {
       this.nutrients = this.updateNutrients();
     }
-
+    
     return this.nutrients;
   }
-
+  
   public byte getAirQuality() {
     if (this.airQuality == -1) {
       this.airQuality = this.updateAirQuality();
     }
-
+    
     return this.airQuality;
   }
-
+  
   public byte updateHumidity() {
     int i = 0;
     BiomeBase biomebase = this.world.getWorldChunkManager().getBiome(this.x, this.z);
     if (biomebase instanceof BiomeRiver || biomebase instanceof BiomeSwamp) {
       i += 2;
     }
-
+    
     if (biomebase instanceof BiomeForest || biomebase instanceof BiomeJungle) {
       ++i;
     }
-
+    
     if (biomebase instanceof BiomeDesert) {
       --i;
     }
-
+    
     if (this.world.getData(this.x, this.y - 1, this.z) >= 7) {
       i += 2;
     }
-
+    
     if (this.waterStorage >= 5) {
       i += 2;
     }
-
+    
     i += (this.waterStorage + 24) / 25;
     return (byte) i;
   }
-
+  
   public byte updateNutrients() {
     int i = 0;
     BiomeBase biomebase = this.world.getWorldChunkManager().getBiome(this.x, this.z);
     if (biomebase instanceof BiomeSwamp || biomebase instanceof BiomeMushrooms || biomebase instanceof BiomeJungle) {
       i += 2;
     }
-
+    
     if (biomebase instanceof BiomeForest) {
       ++i;
     }
-
+    
     for (int j = 2; j < 5 && this.world.getTypeId(this.x, this.y - j, this.z) == Block.DIRT.id; ++j) {
       ++i;
     }
-
+    
     i += (this.nutrientStorage + 19) / 20;
     return (byte) i;
   }
-
+  
   public byte updateAirQuality() {
     int i = 0;
     int j = (this.y - 64) / 15;
     if (j > 4) {
       j = 4;
     }
-
+    
     if (j < 0) {
       j = 0;
     }
-
+    
     i = i + j; //Removed int declaration: Already declared.
     int k = 9;
-
+    
     for (int l = this.x - 1; l < this.x + 1 && k > 0; ++l) {
       for (int i1 = this.z - 1; i1 < this.z + 1 && k > 0; ++i1) {
         if (this.world.r(l, this.y, i1) || this.world.getTileEntity(l, this.y, i1) instanceof TileEntityCrop) {
@@ -852,47 +851,50 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         }
       }
     }
-
+    
     i += k / 2;
     if (this.world.isChunkLoaded(this.x, this.y + 1, this.z)) {
       i += 2;
     }
-
+    
     return (byte) i;
   }
-
+  
   public byte updateMultiCulture() {
     LinkedList linkedlist = new LinkedList();
-
+    
     for (int i = -1; i < 1; ++i) {
       for (int j = -1; j < 1; ++j) {
         if (this.world.getTileEntity(i + this.x, this.y, j + this.z) instanceof TileEntityCrop) {
-          this.addIfNotPresent(((TileEntityCrop) this.world.getTileEntity(i + this.x, this.y, j + this.z)).crop(), linkedlist);
+          this.addIfNotPresent(((TileEntityCrop) this.world.getTileEntity(i + this.x, this.y, j + this.z)).crop(),
+              linkedlist);
         }
       }
     }
-
+    
     return (byte) (linkedlist.size() - 1);
   }
-
+  
   public void addIfNotPresent(CropCard cropcard, LinkedList linkedlist) {
     for (int i = 0; i < linkedlist.size(); ++i) {
       if (cropcard == linkedlist.get(i)) {
         return;
       }
     }
-
+    
     linkedlist.add(cropcard);
   }
-
+  
   public int calcGrowthRate() {
     int i = 3 + mod_IC2.random.nextInt(7) + this.statGrowth;
     int j = (this.crop().tier() - 1) * 4 + this.statGrowth + this.statGain + this.statResistance;
     if (j < 0) {
       j = 0;
     }
-
-    int k = this.crop().weightInfluences(this, (float) this.getHumidity(), (float) this.getNutrients(), (float) this.getAirQuality()) * 5;
+    
+    int k = this.crop()
+        .weightInfluences(this, this.getHumidity(), this.getNutrients(), this.getAirQuality()) *
+        5;
     if (k >= j) {
       i = i * (100 + (k - j)) / 100;
     }
@@ -909,24 +911,24 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
         }
       }
     }
-
+    
     return i;
   }
-
+  
   public void calcTrampling() {
     if (Platform.isSimulating()) {
       if (mod_IC2.random.nextInt(100) == 0 && mod_IC2.random.nextInt(40) > this.statResistance) {
         this.reset();
         this.world.setTypeIdAndData(this.x, this.y - 1, this.z, Block.DIRT.id, 0);
       }
-
+  
     }
   }
-
+  
   public CropCard crop() {
     return CropCard.getCrop(this.id);
   }
-
+  
   public int getSprite() {
     if (this.id < 0) {
       return this.upgraded ? 1 : 0;
@@ -935,16 +937,16 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
       return this.crop().getSpriteIndex(this);
     }
   }
-
+  
   public void onEntityCollision(net.minecraft.server.Entity entity) {
     if (this.id >= 0) {
       if (this.crop().onEntityCollision(this, entity)) {
         this.calcTrampling();
       }
-
+  
     }
   }
-
+  
   public void reset() {
     this.id = -1;
     this.size = 0;
@@ -960,43 +962,45 @@ public class TileEntityCrop extends TECrop implements INetworkDataProvider, INet
     this.upgraded = false;
     this.scanLevel = 0;
   }
-
+  
   public void updateState() {
     this.dirty = true;
   }
-
+  
   public String getScanned() {
     if (this.scanLevel > 0 && this.id >= 0) {
-      return this.scanLevel >= 4 ? this.crop().name() + " - Gr: " + this.statGrowth + " Ga: " + this.statGain + " Re: " + this.statResistance : this.crop().name();
+      return this.scanLevel >= 4 ?
+          this.crop().name() + " - Gr: " + this.statGrowth + " Ga: " + this.statGain + " Re: " + this.statResistance :
+          this.crop().name();
     }
     else {
       return null;
     }
   }
-
+  
   public boolean isBlockBelow(Block block) {
     for (int i = 1; i < 4; ++i) {
       int j = this.world.getTypeId(this.x, this.y - i, this.z);
       if (j == 0) {
         return false;
       }
-
+  
       if (Block.byId[j] == block) {
         return true;
       }
     }
-
+    
     return false;
   }
-
+  
   public ItemStack generateSeeds(short word0, byte byte0, byte byte1, byte byte2, byte byte3) {
     return ItemCropSeed.generateItemStackFromValues(word0, byte0, byte1, byte2, byte3);
   }
-
+  
   public void addLocal(String s, String s1) {
     Platform.AddLocalization(s, s1);
   }
-
+  
   public void onNetworkUpdate(String s) {
     this.dirty = true;
   }

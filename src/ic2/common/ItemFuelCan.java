@@ -7,7 +7,7 @@ public class ItemFuelCan extends ItemIC2 implements IBoxable {
   public ItemFuelCan(int i, int j) {
     super(i, j);
   }
-
+  
   public boolean canBeStoredInToolbox(ItemStack itemstack) {
     return false;
   }

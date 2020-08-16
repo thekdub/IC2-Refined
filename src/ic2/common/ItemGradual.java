@@ -9,7 +9,7 @@ public class ItemGradual extends ItemIC2 implements IBoxable {
     this.e(1);
     this.setMaxDurability(10000);
   }
-
+  
   public boolean canBeStoredInToolbox(ItemStack itemstack) {
     return itemstack.id == Ic2Items.hydratingCell.id;
   }

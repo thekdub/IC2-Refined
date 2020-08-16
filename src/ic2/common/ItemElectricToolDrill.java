@@ -5,7 +5,7 @@ import net.minecraft.server.*;
 
 public class ItemElectricToolDrill extends ItemElectricTool {
   public int soundTicker;
-
+  
   public ItemElectricToolDrill(int i, int j) {
     super(i, j, EnumToolMaterial.IRON, 50);
     this.soundTicker = 0;
@@ -14,13 +14,13 @@ public class ItemElectricToolDrill extends ItemElectricTool {
     this.tier = 1;
     this.a = 8.0F;
   }
-
+  
   public ItemElectricToolDrill(int i, int j, EnumToolMaterial enumtoolmaterial, int k) {
     this(i, j);
     this.b = enumtoolmaterial;
     this.operationEnergyCost = k;
   }
-
+  
   public void init() {
     this.mineableBlocks.add(Block.COBBLESTONE);
     this.mineableBlocks.add(Block.DOUBLE_STEP);
@@ -54,34 +54,34 @@ public class ItemElectricToolDrill extends ItemElectricTool {
     this.mineableBlocks.add(Block.SOIL);
     this.mineableBlocks.add(Block.SOUL_SAND);
   }
-
+  
   public boolean a(ItemStack itemstack, int i, int j, int k, int l, EntityLiving entityliving) {
     ElectricItem.use(itemstack, this.operationEnergyCost, (EntityHuman) entityliving);
     return true;
   }
-
+  
   public boolean canDestroySpecialBlock(Block block) {
     return block.material == Material.STONE || block.material == Material.ORE || super.canDestroySpecialBlock(block);
   }
-
+  
   public float getDestroySpeed(ItemStack itemstack, Block block) {
     ++this.soundTicker;
     if (this.soundTicker % 4 == 0) {
       Platform.playSoundSp(this.getRandomDrillSound(), 1.0F, 1.0F);
     }
-
+    
     return super.getDestroySpeed(itemstack, block);
   }
-
+  
   public float getStrVsBlock(ItemStack itemstack, Block block, int i) {
     ++this.soundTicker;
     if (this.soundTicker % 4 == 0) {
       Platform.playSoundSp(this.getRandomDrillSound(), 1.0F, 1.0F);
     }
-
+    
     return super.getStrVsBlock(itemstack, block, i);
   }
-
+  
   public String getRandomDrillSound() {
     switch (mod_IC2.random.nextInt(4)) {
       case 1:

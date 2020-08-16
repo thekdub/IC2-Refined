@@ -15,23 +15,23 @@ public class TileEntityGeoGeneratorBc22x extends TileEntityGeoGenerator implemen
       if (flag) {
         this.fuel += k;
       }
-
+  
       return k;
     }
   }
-
+  
   public int empty(int i, boolean flag) {
     return 0;
   }
-
+  
   public int getLiquidQuantity() {
     return this.fuel;
   }
-
+  
   public int getCapacity() {
     return this.maxLava;
   }
-
+  
   public int getLiquidId() {
     return Block.STATIONARY_LAVA.id;
   }

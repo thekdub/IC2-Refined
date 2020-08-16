@@ -18,11 +18,11 @@ public class BlockElectric extends BlockMultiID implements IRareBlock {
     Ic2Items.mvTransformer = new ItemStack(this, 1, 4);
     Ic2Items.hvTransformer = new ItemStack(this, 1, 5);
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/block_electric.png";
   }
-
+  
   public int getDropType(int i, Random random, int j) {
     switch (i) {
       case 0:
@@ -35,7 +35,7 @@ public class BlockElectric extends BlockMultiID implements IRareBlock {
         return this.id;
     }
   }
-
+  
   protected int getDropData(int i) {
     switch (i) {
       case 0:
@@ -48,11 +48,11 @@ public class BlockElectric extends BlockMultiID implements IRareBlock {
         return i;
     }
   }
-
+  
   public int a(Random random) {
     return 1;
   }
-
+  
   public boolean a(IBlockAccess iblockaccess, int i, int j, int k, int l) {
     TileEntity tileentity = iblockaccess.getTileEntity(i, j, k);
     if (tileentity instanceof TileEntityElectricBlock) {
@@ -63,15 +63,15 @@ public class BlockElectric extends BlockMultiID implements IRareBlock {
       return false;
     }
   }
-
+  
   public boolean isBlockNormalCube(World world, int i, int j, int k) {
     return false;
   }
-
+  
   public boolean isBlockSolidOnSide(World world, int i, int j, int k, int l) {
     return true;
   }
-
+  
   public TileEntityBlock getBlockEntity(int i) {
     switch (i) {
       case 0:
@@ -90,7 +90,7 @@ public class BlockElectric extends BlockMultiID implements IRareBlock {
         return null;
     }
   }
-
+  
   public void postPlace(World world, int i, int j, int k, EntityLiving entityliving) {
     if (Platform.isSimulating()) {
       TileEntityBlock tileentityblock = (TileEntityBlock) world.getTileEntity(i, j, k);
@@ -122,10 +122,10 @@ public class BlockElectric extends BlockMultiID implements IRareBlock {
           }
         }
       }
-
+  
     }
   }
-
+  
   public int rarity(ItemStack itemstack) {
     return itemstack.getData() != 2 && itemstack.getData() != 5 ? 0 : 1;
   }

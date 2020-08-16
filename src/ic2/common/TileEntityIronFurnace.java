@@ -8,11 +8,11 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
   public int fuel = 0;
   public int maxFuel = 0;
   public short progress = 0;
-
+  
   public TileEntityIronFurnace() {
     super(3);
   }
-
+  
   public static int getFuelValueFor(ItemStack itemstack) {
     if (itemstack == null) {
       return 0;
@@ -27,7 +27,7 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
         if (itemstack.getData() > 0) {
           nbttagcompound.setInt("value", itemstack.getData());
         }
-
+  
         return nbttagcompound.getInt("value") * 2;
       }
       else {
@@ -35,36 +35,36 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
       }
     }
   }
-
+  
   public void a(NBTTagCompound nbttagcompound) {
     super.a(nbttagcompound);
-
+    
     try {
       this.fuel = nbttagcompound.getInt("fuel");
     } catch (Throwable var4) {
       this.fuel = nbttagcompound.getShort("fuel");
     }
-
+    
     try {
       this.maxFuel = nbttagcompound.getInt("maxFuel");
     } catch (Throwable var3) {
       this.maxFuel = nbttagcompound.getShort("maxFuel");
     }
-
+    
     this.progress = nbttagcompound.getShort("progress");
   }
-
+  
   public void b(NBTTagCompound nbttagcompound) {
     super.b(nbttagcompound);
     nbttagcompound.setInt("fuel", this.fuel);
     nbttagcompound.setInt("maxFuel", this.maxFuel);
     nbttagcompound.setShort("progress", this.progress);
   }
-
+  
   public int gaugeProgressScaled(int i) {
     return this.progress * i / 160;
   }
-
+  
   public int gaugeFuelScaled(int i) {
     if (this.maxFuel == 0) {
       this.maxFuel = this.fuel;
@@ -72,10 +72,10 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
         this.maxFuel = 160;
       }
     }
-
+    
     return this.fuel * i / this.maxFuel;
   }
-
+  
   public void q_() {
     super.q_();
     boolean flag = this.isBurning();
@@ -89,15 +89,15 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
         else {
           --this.inventory[1].count;
         }
-
+  
         if (this.inventory[1].count <= 0) {
           this.inventory[1] = null;
         }
-
+  
         flag1 = true;
       }
     }
-
+    
     if (this.isBurning() && this.canOperate()) {
       ++this.progress;
       if (this.progress >= 160) {
@@ -109,22 +109,22 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
     else {
       this.progress = 0;
     }
-
+    
     if (this.fuel > 0) {
       --this.fuel;
     }
-
+    
     if (flag != this.isBurning()) {
       this.setActive(this.isBurning());
       flag1 = true;
     }
-
+    
     if (flag1) {
       this.update();
     }
-
+    
   }
-
+  
   public void operate() {
     if (this.canOperate()) {
       ItemStack itemstack = this.getResultFor(this.inventory[0]);
@@ -135,25 +135,25 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
         ItemStack var10000 = this.inventory[2];
         var10000.count += itemstack.count;
       }
-
+  
       if (this.inventory[0].getItem().k()) {
         this.inventory[0] = new ItemStack(this.inventory[0].getItem().j());
       }
       else {
         --this.inventory[0].count;
       }
-
+  
       if (this.inventory[0].count <= 0) {
         this.inventory[0] = null;
       }
-
+  
     }
   }
-
+  
   public boolean isBurning() {
     return this.fuel > 0;
   }
-
+  
   public boolean canOperate() {
     if (this.inventory[0] == null) {
       return false;
@@ -174,26 +174,26 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
       }
     }
   }
-
+  
   public ItemStack getResultFor(ItemStack itemstack) {
     return FurnaceRecipes.getInstance().getSmeltingResult(itemstack);
   }
-
+  
   public String getName() {
     return "Iron Furnace";
   }
-
+  
   public ContainerIC2 getGuiContainer(EntityHuman entityhuman) {
     return new ContainerIronFurnace(entityhuman, this);
   }
-
+  
   public String getGuiClassName(EntityHuman entityhuman) {
     return "GuiIronFurnace";
   }
-
+  
   public void onGuiClosed(EntityHuman entityhuman) {
   }
-
+  
   public int getStartInventorySide(int i) {
     switch (i) {
       case 0:
@@ -204,7 +204,7 @@ public class TileEntityIronFurnace extends TileEntityMachine implements IHasGui,
         return 2;
     }
   }
-
+  
   public int getSizeInventorySide(int i) {
     return 1;
   }

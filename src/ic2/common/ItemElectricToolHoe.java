@@ -16,18 +16,18 @@ public class ItemElectricToolHoe extends ItemElectricTool {
     this.tier = 1;
     this.a = 16.0F;
   }
-
+  
   public void init() {
     this.mineableBlocks.add(Block.DIRT);
     this.mineableBlocks.add(Block.GRASS);
     this.mineableBlocks.add(Block.MYCEL);
   }
-
+  
   public boolean a(ItemStack itemstack, int i, int j, int k, int l, EntityLiving entityliving) {
     ElectricItem.use(itemstack, this.operationEnergyCost, (EntityHuman) entityliving);
     return true;
   }
-
+  
   public boolean interactWith(ItemStack itemstack, EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     if (!entityhuman.d(i, j, k)) {
       return false;
@@ -46,7 +46,9 @@ public class ItemElectricToolHoe extends ItemElectricTool {
       }
       else {
         Block block = Block.SOIL;
-        world.makeSound((double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), block.stepSound.getName(), (block.stepSound.getVolume1() + 1.0F) / 2.0F, block.stepSound.getVolume2() * 0.8F);
+        world.makeSound((float) i + 0.5F, (float) j + 0.5F, (float) k + 0.5F,
+            block.stepSound.getName(), (block.stepSound.getVolume1() + 1.0F) / 2.0F,
+            block.stepSound.getVolume2() * 0.8F);
         if (!Platform.isSimulating()) {
           return true;
         }
@@ -59,10 +61,10 @@ public class ItemElectricToolHoe extends ItemElectricTool {
             if (breakev.isCancelled()) {
               return false;
             }
-
+      
             breakev.setCancelled(true);
           }
-
+    
           world.setTypeId(i, j, k, block.id);
           return true;
         }

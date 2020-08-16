@@ -15,7 +15,7 @@ public class ItemTreetap extends ItemIC2 {
     this.e(1);
     this.setMaxDurability(16);
   }
-
+  
   public static void ejectHarz(World world, int i, int j, int k, int l, int i1) {
     double d = (double) i + 0.5D;
     double d1 = (double) j + 0.5D;
@@ -32,15 +32,15 @@ public class ItemTreetap extends ItemIC2 {
     else if (l == 4) {
       d -= 0.3D;
     }
-
+    
     for (int j1 = 0; j1 < i1; ++j1) {
       EntityItem entityitem = new EntityItem(world, d, d1, d2, Ic2Items.resin.cloneItemStack());
       entityitem.pickupDelay = 10;
       world.addEntity(entityitem);
     }
-
+    
   }
-
+  
   public static boolean attemptExtract(EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     int i1 = world.getData(i, j, k);
     if (i1 >= 2 && i1 % 6 == l) {
@@ -52,11 +52,11 @@ public class ItemTreetap extends ItemIC2 {
           world.c(i, j, k, Ic2Items.rubberWood.id, Block.byId[Ic2Items.rubberWood.id].d());
           NetworkManager.announceBlockUpdate(world, i, j, k);
         }
-
+  
         if (Platform.isRendering()) {
           AudioManager.playOnce(entityhuman, PositionSpec.Hand, "Tools/Treetap.ogg", true, AudioManager.defaultVolume);
         }
-
+  
         return true;
       }
       else {
@@ -64,16 +64,17 @@ public class ItemTreetap extends ItemIC2 {
           world.setData(i, j, k, 1);
           NetworkManager.announceBlockUpdate(world, i, j, k);
         }
-
+  
         if (world.random.nextInt(5) == 0) {
           if (Platform.isSimulating()) {
             ejectHarz(world, i, j, k, l, 1);
           }
-
+    
           if (Platform.isRendering()) {
-            AudioManager.playOnce(entityhuman, PositionSpec.Hand, "Tools/Treetap.ogg", true, AudioManager.defaultVolume);
+            AudioManager
+                .playOnce(entityhuman, PositionSpec.Hand, "Tools/Treetap.ogg", true, AudioManager.defaultVolume);
           }
-
+    
           return true;
         }
         else {
@@ -85,7 +86,7 @@ public class ItemTreetap extends ItemIC2 {
       return false;
     }
   }
-
+  
   public boolean interactWith(ItemStack itemstack, EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     Entity bukkitentity = entityhuman.getBukkitEntity();
     if (bukkitentity instanceof Player) {
@@ -95,10 +96,10 @@ public class ItemTreetap extends ItemIC2 {
       if (breakev.isCancelled()) {
         return false;
       }
-
+  
       breakev.setCancelled(true);
     }
-
+    
     if (world.getTypeId(i, j, k) == Ic2Items.blockBarrel.id) {
       return ((TileEntityBarrel) world.getTileEntity(i, j, k)).useTreetapOn(entityhuman, l);
     }
@@ -107,7 +108,7 @@ public class ItemTreetap extends ItemIC2 {
       if (Platform.isSimulating()) {
         itemstack.damage(1, entityhuman);
       }
-
+      
       return true;
     }
     else {

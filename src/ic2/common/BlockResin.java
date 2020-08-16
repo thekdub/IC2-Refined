@@ -17,40 +17,40 @@ public class BlockResin extends BlockTex {
     ModLoader.registerBlock(this, ItemBlockCommon.class);
     Ic2Items.resinSheet = new ItemStack(this);
   }
-
+  
   public AxisAlignedBB e(World world, int i, int j, int k) {
     return null;
   }
-
+  
   public boolean a() {
     return false;
   }
-
+  
   public boolean b() {
     return false;
   }
-
+  
   public int getDropType(int i, Random random, int j) {
     return Ic2Items.resin.id;
   }
-
+  
   public int a(Random random) {
     return random.nextInt(5) != 0 ? 1 : 0;
   }
-
+  
   public boolean canPlace(World world, int i, int j, int k) {
     int l = world.getTypeId(i, j - 1, k);
     return (l != 0 && Block.byId[l].a()) && world.getMaterial(i, j - 1, k).isBuildable();
   }
-
+  
   public void doPhysics(World world, int i, int j, int k, int l) {
     if (!this.canPlace(world, i, j, k)) {
       this.b(world, i, j, k, world.getData(i, j, k), 0);
       world.setTypeId(i, j, k, 0);
     }
-
+    
   }
-
+  
   public void a(World world, int i, int j, int k, Entity entity) {
     mod_IC2.setFallDistanceOfEntity(entity, mod_IC2.getFallDistanceOfEntity(entity) * 0.75F);
     entity.motX *= 0.6000000238418579D;
