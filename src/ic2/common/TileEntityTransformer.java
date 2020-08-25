@@ -14,10 +14,10 @@ public abstract class TileEntityTransformer extends TileEntityBlock implements I
   public boolean redstone = false;
   public boolean addedToEnergyNet = false;
   
-  public TileEntityTransformer(int i, int j, int k) {
-    this.lowOutput = i;
-    this.highOutput = j;
-    this.maxStorage = k;
+  public TileEntityTransformer(int lowOutput, int highOutput, int maxStorage) {
+    this.lowOutput = lowOutput;
+    this.highOutput = highOutput;
+    this.maxStorage = maxStorage;
   }
   
   public void a(NBTTagCompound nbttagcompound) {
@@ -34,17 +34,41 @@ public abstract class TileEntityTransformer extends TileEntityBlock implements I
     return Platform.isSimulating();
   }
   
+  //  public void q_() {
+//    super.q_();
+//    this.updateRedstone();
+//    if (this.redstone) {
+//      if (this.energy >= this.highOutput) {
+//        this.energy -= this.highOutput - EnergyNet.getForWorld(this.world).emitEnergyFrom(this, this.highOutput);
+//      }
+//    }
+//    else {
+//      for (int i = 0; i < 4 && this.energy >= this.lowOutput; ++i) {
+//        this.energy -= this.lowOutput - EnergyNet.getForWorld(this.world).emitEnergyFrom(this, this.lowOutput);
+//      }
+//    }
+//
+//  }
+  // 2020-08-25 - Edit made to allow for greater throughput
   public void q_() {
     super.q_();
     this.updateRedstone();
+    int tempEnergy = -1; // Used to prevent infinite loops
+    int loopCount = 0;
+    EnergyNet energyNet = EnergyNet.getForWorld(world);
+    if (energyNet == null) {
+      return;
+    }
     if (this.redstone) {
-      if (this.energy >= this.highOutput) {
-        this.energy -= this.highOutput - EnergyNet.getForWorld(this.world).emitEnergyFrom(this, this.highOutput);
+      while (this.energy >= this.highOutput && tempEnergy != this.energy && loopCount++ < 128) {
+        tempEnergy = this.energy;
+        this.energy -= this.highOutput - energyNet.emitEnergyFrom(this, this.highOutput);
       }
     }
     else {
-      for (int i = 0; i < 4 && this.energy >= this.lowOutput; ++i) {
-        this.energy -= this.lowOutput - EnergyNet.getForWorld(this.world).emitEnergyFrom(this, this.lowOutput);
+      while (this.energy >= this.lowOutput && tempEnergy != this.energy && loopCount++ < 128) {
+        tempEnergy = this.energy;
+        this.energy -= this.lowOutput - energyNet.emitEnergyFrom(this, this.lowOutput);
       }
     }
     
