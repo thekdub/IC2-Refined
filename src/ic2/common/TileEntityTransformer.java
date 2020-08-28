@@ -66,7 +66,7 @@ public abstract class TileEntityTransformer extends TileEntityBlock implements I
       }
     }
     else {
-      while (this.energy >= this.lowOutput && tempEnergy != this.energy && loopCount++ < 128) {
+      while (this.energy >= this.lowOutput && tempEnergy != this.energy && loopCount++ < 512) {
         tempEnergy = this.energy;
         this.energy -= this.lowOutput - energyNet.emitEnergyFrom(this, this.lowOutput);
       }
