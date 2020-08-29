@@ -7,5 +7,10 @@ Changes:
 - Reactor Chamber reactor caching.
 - Cropmatron auto removal of stacked Weed-Ex.
 - (PLANNED) EnergyNet rewritten to reduce load and remove excessive pathfinding. Cable EU loss removal.
+- Transformer energy output increased 128x:
+    > HV Transformer - 262,144 EU/t instead of 2048 EU/t.\
+    MV Transformer - 65,536 EU/t instead of 512 EU/t.\
+    LV Transformer - 16,384 EU/t instead of 128 EU/t.\
+    All transformers still output their regular 512 EU (2048 EU inverted), 128 EU (512 EU inverted), and 32 EU (128 EU inverted) packets respectively. The number of packets sent has been increased.
 
 The original IndustrialCraft 2 was made by sfPlayer1. All credits to them.
