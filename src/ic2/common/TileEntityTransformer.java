@@ -4,7 +4,10 @@ import ic2.api.Direction;
 import ic2.api.IEnergySink;
 import ic2.api.IEnergySource;
 import ic2.platform.Platform;
-import net.minecraft.server.*;
+import net.minecraft.server.EntityHuman;
+import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.TileEntity;
+import net.minecraft.server.mod_IC2;
 
 public abstract class TileEntityTransformer extends TileEntityBlock implements IEnergySink, IEnergySource {
   public int lowOutput;
@@ -65,6 +68,7 @@ public abstract class TileEntityTransformer extends TileEntityBlock implements I
         this.energy -= this.highOutput - energyNet.emitEnergyFrom(this, this.highOutput);
       }
     }
+
     else {
       while (this.energy >= this.lowOutput && tempEnergy != this.energy && loopCount++ < 512) {
         tempEnergy = this.energy;
