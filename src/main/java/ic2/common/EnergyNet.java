@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 
 public final class EnergyNet {
   public static final double minConductionLoss = 1.0E-4D;
-  static final boolean $assertionsDisabled = !EnergyNet.class.desiredAssertionStatus();
   private static final Map<World, EnergyNet> worldToEnergyNetMap = new HashMap<>();
   private final World world;
   private final HashMap<IEnergySource, List<EnergyPath>> energySourceToEnergyPathMap = new HashMap<>();
@@ -135,7 +134,7 @@ public final class EnergyNet {
       Vector<EnergyPath> vector = new Vector<>();
       double d = 0.0D;
       for (EnergyPath energypath : energySourceToEnergyPathMap.get(ienergysource)) {
-        if (!$assertionsDisabled && !(energypath.target instanceof IEnergySink)) {
+        if (!EnergyNet.class.desiredAssertionStatus() && !(energypath.target instanceof IEnergySink)) {
           throw new AssertionError();
         }
         IEnergySink ienergysink = (IEnergySink) energypath.target;

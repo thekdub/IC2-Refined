@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Create temp server folder
-mkdir ./server && cd ./server
+mkdir -p ./server && cd ./server
 
 # Unzip all the tekkit server contents
 unzip -o ../lib/Tekkit_Server_3.1.2.zip
