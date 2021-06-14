@@ -1,0 +1,9 @@
+# IDEA
+.idea
+
+# Gradle
+.gradle/
+
+# Build
+build
+server/

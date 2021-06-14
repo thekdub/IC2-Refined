@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group 'com.unknowntekkit'
+version '1.0.1'
+
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
+repositories {
+    mavenCentral()
+
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    implementation name: 'Tekkit'
+    implementation name: 'buildcraft-2.2.14-mcpc1.2.5-r8'
+}
+
+test {
+    useJUnitPlatform()
+}
