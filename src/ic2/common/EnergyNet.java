@@ -284,7 +284,7 @@ public final class EnergyNet {
     EnergyPath energypath;
     if (tileentity instanceof IEnergySource && energySourceToEnergyPathMap.containsKey(tileentity)) {
       for (Iterator iterator = ((List) energySourceToEnergyPathMap.get(tileentity)).iterator(); iterator.hasNext();
-           l += energypath.totalEnergyConducted) {
+            l += energypath.totalEnergyConducted) {
         energypath = (EnergyPath) iterator.next();
       }
     }
@@ -294,8 +294,9 @@ public final class EnergyNet {
   
   int tick = 0;
   
-  private LinkedList<IEnergyAcceptor> newDiscover(TileEntity tileEntity, boolean flag,
-                                                  int eu) { // Todo: replace old discover with this
+  // Todo: replace old discover with this
+  // Not gonna lie, I started with this a long time ago and I don't remember what the fuck I was doing here...
+  private LinkedList<IEnergyAcceptor> newDiscover(TileEntity tileEntity, boolean flag, int eu) {
     if (!(tileEntity instanceof IEnergyEmitter)) {
       System.out.println("Trying to discover something that's not an emitter? what");
     }
@@ -309,10 +310,16 @@ public final class EnergyNet {
     //get tile entity's neighbors* keep direction in check if it's a transformer or battery unit
     
     TileEntity target = tileEntity;
+    outerLoop:
     do {
       while (target == null || target.world.getTypeId(target.x, target.y, target.z) < 1) {
+        if (path.isEmpty()) {
+          break outerLoop;
+        }
         target = (TileEntity) path.pop();
       }
+      System.out.println(String.format("Targeted %d, %d, %d (%d)", target.x, target.y, target.z,
+            target.world.getTypeId(target.x, target.y, target.z)));
       LinkedList<EnergyTarget> receivers = getValidReceivers(target, flag);
       for (EnergyTarget energyTarget : receivers) { // Gets all valid receivers for the current block?
         if (energyTarget == null) {
@@ -332,11 +339,10 @@ public final class EnergyNet {
             acceptorHashSet.add((IEnergyAcceptor) energyTarget);
           }
         }
-        System.out.println(String.format("%d, %d, %d (%d) facing (%d) -> %d, %d, %d (%d)", target.x, target.y,
-            target.z, target.world.getTypeId(target.x, target.y, target.z),
-            energyTarget.direction.toSideValue(), energyTarget.tileEntity.x, energyTarget.tileEntity.y,
-            energyTarget.tileEntity.z, target.world.getTypeId(energyTarget.tileEntity.x, energyTarget.tileEntity.y,
-                energyTarget.tileEntity.z)));
+        System.out.println(String.format("Checked %d, %d, %d (%d)", energyTarget.tileEntity.x,
+              energyTarget.tileEntity.y, energyTarget.tileEntity.z,
+              energyTarget.tileEntity.world.getTypeId(energyTarget.tileEntity.x, energyTarget.tileEntity.y,
+                    energyTarget.tileEntity.z)));
         target = null;
       }
     } while (!path.isEmpty());
@@ -344,166 +350,148 @@ public final class EnergyNet {
     for (IEnergyAcceptor acceptor : acceptors) {
       TileEntity tile = (TileEntity) acceptor;
       System.out.println(String.format("Found acceptor (%d) at %d, %d, %d", tile.world.getTypeId(tile.x, tile.y,
-          tile.z), tile.x, tile.y, tile.z));
+            tile.z), tile.x, tile.y, tile.z));
     }
     
     return acceptors;
   }
   
-  private List<EnergyPath> discover(TileEntity tileentity, boolean flag, int i) {
-    newDiscover(tileentity, flag, i); // Todo: Remove this
-    HashMap hashmap = new HashMap();
-    LinkedList linkedlist = new LinkedList();
-    linkedlist.add(tileentity);
+  private List<EnergyPath> discover(TileEntity tileEntity, boolean flag, int i) {
+    //newDiscover(tileEntity, flag, i); // Todo: Remove this
+    HashMap<TileEntity, EnergyBlockLink> tileEntityEnergyBlockLinkHashMap = new HashMap<>();
+    LinkedList<TileEntity> tileEntityLinkedList = new LinkedList<>();
+    tileEntityLinkedList.add(tileEntity);
     
-    label144:
+    discover_1:
     while (true) {
-      TileEntity tileentity1;
+      TileEntity tileEntity1;
       do {
-        if (linkedlist.isEmpty()) {
-          LinkedList linkedlist1 = new LinkedList();
-          Iterator iterator = hashmap.entrySet().iterator();
-  
+        if (tileEntityLinkedList.isEmpty()) {
+          LinkedList<EnergyPath> energyPaths = new LinkedList<>();
+          Iterator<Entry<TileEntity, EnergyBlockLink>> tileEntityEnergyBlockLinkIterator =
+                tileEntityEnergyBlockLinkHashMap.entrySet().iterator();
+          
           while (true) {
-            label112:
+            discover_2:
             while (true) {
-              Entry entry;
-              TileEntity tileentity2;
+              Entry<TileEntity, EnergyBlockLink> tileEntityEnergyBlockLinkEntry;
+              TileEntity energyPathTarget;
               do {
-                if (!iterator.hasNext()) {
-                  return linkedlist1;
+                if (!tileEntityEnergyBlockLinkIterator.hasNext()) {
+                  return energyPaths;
                 }
-    
-                entry = (Entry) iterator.next();
-                tileentity2 = (TileEntity) entry.getKey();
-              } while ((flag || !(tileentity2 instanceof IEnergySink)) &&
-                  (!flag || !(tileentity2 instanceof IEnergySource)));
-  
-              EnergyBlockLink energyblocklink = (EnergyBlockLink) entry.getValue();
-              EnergyPath energypath = new EnergyPath();
-              if (energyblocklink.loss > 0.1D) {
-                energypath.loss = energyblocklink.loss;
-              }
-              else {
-                energypath.loss = 0.1D;
-              }
-  
-              energypath.target = tileentity2;
-              energypath.targetDirection = energyblocklink.direction;
-              if (!flag && tileentity instanceof IEnergySource) {
+                
+                tileEntityEnergyBlockLinkEntry = tileEntityEnergyBlockLinkIterator.next();
+                energyPathTarget = tileEntityEnergyBlockLinkEntry.getKey();
+              } while ((flag || !(energyPathTarget instanceof IEnergySink)) &&
+                    (!flag || !(energyPathTarget instanceof IEnergySource)));
+              
+              EnergyBlockLink energyBlockLink = tileEntityEnergyBlockLinkEntry.getValue();
+              EnergyPath energyPath = new EnergyPath();
+              energyPath.loss = Math.max(energyBlockLink.loss, 0.1D);
+              
+              energyPath.target = energyPathTarget;
+              energyPath.targetDirection = energyBlockLink.direction;
+              
+              if (!flag && tileEntity instanceof IEnergySource) {
                 while (true) {
-                  tileentity2 = energyblocklink.direction.applyToTileEntity(tileentity2);
-                  if (tileentity2 == tileentity) {
+                  assert energyBlockLink != null;
+                  energyPathTarget = energyBlockLink.direction.applyToTileEntity(energyPathTarget);
+                  if (energyPathTarget == tileEntity) {
                     break;
                   }
-  
-                  if (!(tileentity2 instanceof IEnergyConductor)) {
-                    if (tileentity2 != null) {
-                      System.out.println(
-                          "EnergyNet: EnergyBlockLink corrupted (" + energypath.target + " [" + energypath.target.x +
-                              " " + energypath.target.y + " " + energypath.target.z + "] -> " + tileentity2 + " [" +
-                              tileentity2.x + " " + tileentity2.y + " " + tileentity2.z + "] -> " + tileentity + " [" +
-                              tileentity.x + " " + tileentity.y + " " + tileentity.z + "])");
+                  
+                  if (!(energyPathTarget instanceof IEnergyConductor)) {
+                    if (energyPathTarget != null) {
+                      System.out.println("EnergyNet: EnergyBlockLink corrupted (" + energyPath.target + " [" +
+                            energyPath.target.x + " " + energyPath.target.y + " " + energyPath.target.z + "] -> " +
+                            energyPathTarget + " [" + energyPathTarget.x + " " + energyPathTarget.y + " " +
+                            energyPathTarget.z + "] -> " + tileEntity + " [" + tileEntity.x + " " + tileEntity.y +
+                            " " + tileEntity.z + "])");
                     }
-                    continue label112;
+                    continue discover_2;
                   }
-  
-                  IEnergyConductor ienergyconductor = (IEnergyConductor) tileentity2;
-                  if (tileentity2.x < energypath.minX) {
-                    energypath.minX = tileentity2.x;
-                  }
-  
-                  if (tileentity2.y < energypath.minY) {
-                    energypath.minY = tileentity2.y;
-                  }
-  
-                  if (tileentity2.z < energypath.minZ) {
-                    energypath.minZ = tileentity2.z;
-                  }
-  
-                  if (tileentity2.x > energypath.maxX) {
-                    energypath.maxX = tileentity2.x;
-                  }
-  
-                  if (tileentity2.y > energypath.maxY) {
-                    energypath.maxY = tileentity2.y;
-                  }
-  
-                  if (tileentity2.z > energypath.maxZ) {
-                    energypath.maxZ = tileentity2.z;
-                  }
-  
-                  energypath.conductors.add(ienergyconductor);
-                  if (ienergyconductor.getInsulationEnergyAbsorption() < energypath.minInsulationEnergyAbsorption) {
-                    energypath.minInsulationEnergyAbsorption = ienergyconductor.getInsulationEnergyAbsorption();
-                  }
-  
-                  if (ienergyconductor.getInsulationBreakdownEnergy() < energypath.minInsulationBreakdownEnergy) {
-                    energypath.minInsulationBreakdownEnergy = ienergyconductor.getInsulationBreakdownEnergy();
-                  }
-  
-                  if (ienergyconductor.getConductorBreakdownEnergy() < energypath.minConductorBreakdownEnergy) {
-                    energypath.minConductorBreakdownEnergy = ienergyconductor.getConductorBreakdownEnergy();
-                  }
-  
-                  energyblocklink = (EnergyBlockLink) hashmap.get(tileentity2);
-                  if (energyblocklink == null) {
-                    Platform.displayError(
-                        "An energy network pathfinding entry is corrupted.\nThis could happen due to incorrect Minecraft behavior or a bug.\n\n(Technical information: energyBlockLink, tile entities below)\nE: " +
-                            tileentity + " (" + tileentity.x + "," + tileentity.y + "," + tileentity.z + ")\n" + "C: " +
-                            tileentity2 + " (" + tileentity2.x + "," + tileentity2.y + "," + tileentity2.z + ")\n" +
-                            "R: " + energypath.target + " (" + energypath.target.x + "," + energypath.target.y + "," +
-                            energypath.target.z + ")");
+                  
+                  IEnergyConductor iEnergyConductor = (IEnergyConductor) energyPathTarget;
+                  
+                  energyPath.minX = Math.min(energyPath.minX, energyPathTarget.x);
+                  energyPath.minY = Math.min(energyPath.minY, energyPathTarget.y);
+                  energyPath.minZ = Math.min(energyPath.minZ, energyPathTarget.z);
+                  energyPath.maxX = Math.max(energyPath.maxX, energyPathTarget.x);
+                  energyPath.maxY = Math.max(energyPath.maxY, energyPathTarget.y);
+                  energyPath.maxZ = Math.max(energyPath.maxZ, energyPathTarget.z);
+                  
+                  energyPath.conductors.add(iEnergyConductor);
+                  
+                  energyPath.minInsulationEnergyAbsorption = Math.min(iEnergyConductor.getInsulationEnergyAbsorption(),
+                        energyPath.minInsulationEnergyAbsorption);
+                  energyPath.minInsulationBreakdownEnergy = Math.min(iEnergyConductor.getInsulationBreakdownEnergy(),
+                        energyPath.minInsulationBreakdownEnergy);
+                  energyPath.minConductorBreakdownEnergy = Math.min(iEnergyConductor.getConductorBreakdownEnergy(),
+                        energyPath.minConductorBreakdownEnergy);
+                  
+                  energyBlockLink = tileEntityEnergyBlockLinkHashMap.get(energyPathTarget);
+                  if (energyBlockLink == null) {
+                    Platform.displayError("An energy network pathfinding entry is corrupted.\nThis could happen " +
+                          "due to incorrect Minecraft behavior or a bug.\n\n(Technical information: energyBlockLink, " +
+                          "tile entities below)\nE: " + tileEntity + " (" + tileEntity.x + "," + tileEntity.y + "," +
+                          tileEntity.z + ")\n" + "C: " + energyPathTarget + " (" + energyPathTarget.x + "," +
+                          energyPathTarget.y + "," + energyPathTarget.z + ")\n" + "R: " + energyPath.target +
+                          " (" + energyPath.target.x + "," + energyPath.target.y + "," + energyPath.target.z + ")");
                   }
                 }
               }
-  
-              linkedlist1.add(energypath);
+              
+              energyPaths.add(energyPath);
             }
           }
         }
-  
-        tileentity1 = (TileEntity) linkedlist.remove();
-      } while (tileentity1.l());
-  
-      double d = 0.0D;
-      if (tileentity1 != tileentity) {
-        d = ((EnergyBlockLink) hashmap.get(tileentity1)).loss;
+        
+        tileEntity1 = tileEntityLinkedList.remove();
+      } while (tileEntity1.l());
+      
+      double energyBlockLinkLoss = 0.0D;
+      if (tileEntity1 != tileEntity) {
+        energyBlockLinkLoss = tileEntityEnergyBlockLinkHashMap.get(tileEntity1).loss;
       }
-  
-      List list = getValidReceivers(tileentity1, flag);
-      Iterator iterator1 = list.iterator();
-  
+      
+      List<EnergyNet.EnergyTarget> energyTargetList = getValidReceivers(tileEntity1, flag);
+      Iterator<EnergyNet.EnergyTarget> energyTargetIterator = energyTargetList.iterator();
+      
       while (true) {
-        EnergyTarget energytarget;
-        double d1;
-        do {
-          do {
-            do {
-              if (!iterator1.hasNext()) {
-                continue label144;
+        EnergyTarget energyTarget;
+        double energyConductorConductionLoss;
+        do { // ... while tileEntityEnergyBlockLinkHashMap contains energyTarget.tileEntity AND
+          //            tileEntityEnergyBlockLinkHashMap.get(energyTarget.tileEntity).loss
+          //                <= energyBlockLinkLoss + energyConductorConductionLoss
+          
+          do { // ... while energyBlockLinkLoss + energyConductorConductionLoss >= 1
+            
+            do { // ... while energyTarget.tileEntity == tileEntity (from method args)
+              if (!energyTargetIterator.hasNext()) {
+                continue discover_1;
               }
-  
-              energytarget = (EnergyTarget) iterator1.next();
-            } while (energytarget.tileEntity == tileentity);
-  
-            d1 = 0.0D;
-            if (!(energytarget.tileEntity instanceof IEnergyConductor)) {
+              energyTarget = energyTargetIterator.next();
+            } while (energyTarget.tileEntity == tileEntity);
+            
+            energyConductorConductionLoss = 0.0D;
+            if (!(energyTarget.tileEntity instanceof IEnergyConductor)) {
               break;
             }
-  
-            d1 = ((IEnergyConductor) energytarget.tileEntity).getConductionLoss();
-            if (d1 < 1.0E-4D) {
-              d1 = 1.0E-4D;
-            }
-          } while (d + d1 >= (double) i);
-        } while (hashmap.containsKey(energytarget.tileEntity) &&
-            ((EnergyBlockLink) hashmap.get(energytarget.tileEntity)).loss <= d + d1);
-  
-        hashmap.put(energytarget.tileEntity, new EnergyBlockLink(energytarget.direction, d + d1));
-        if (energytarget.tileEntity instanceof IEnergyConductor) {
-          linkedlist.remove(energytarget.tileEntity);
-          linkedlist.add(energytarget.tileEntity);
+            energyConductorConductionLoss = ((IEnergyConductor) energyTarget.tileEntity).getConductionLoss();
+            energyConductorConductionLoss = Math.max(energyConductorConductionLoss, 1.0E-4D);
+          } while (energyBlockLinkLoss + energyConductorConductionLoss >= i);
+          
+        } while (tileEntityEnergyBlockLinkHashMap.containsKey(energyTarget.tileEntity) &&
+              tileEntityEnergyBlockLinkHashMap.get(energyTarget.tileEntity).loss
+                    <= energyBlockLinkLoss + energyConductorConductionLoss);
+        
+        tileEntityEnergyBlockLinkHashMap.put(energyTarget.tileEntity,
+              new EnergyBlockLink(energyTarget.direction, energyBlockLinkLoss + energyConductorConductionLoss));
+        
+        if (energyTarget.tileEntity instanceof IEnergyConductor) {
+          tileEntityLinkedList.remove(energyTarget.tileEntity);
+          tileEntityLinkedList.add(energyTarget.tileEntity);
         }
       }
     }
