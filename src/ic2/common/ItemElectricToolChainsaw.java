@@ -17,7 +17,7 @@ import java.util.Iterator;
 public class ItemElectricToolChainsaw extends ItemElectricTool implements IHitSoundOverride, IEntityInteractHandler {
   public static boolean wasEquipped = false;
   public static AudioSource audioSource;
-
+  
   public ItemElectricToolChainsaw(int i, int j) {
     super(i, j, EnumToolMaterial.IRON, 50);
     this.maxCharge = 10000;
@@ -27,7 +27,7 @@ public class ItemElectricToolChainsaw extends ItemElectricTool implements IHitSo
     this.bV = 1;
     MinecraftForge.registerEntityInteractHandler(this);
   }
-
+  
   public void init() {
     this.mineableBlocks.add(Block.WOOD);
     this.mineableBlocks.add(Block.BOOKSHELF);
@@ -39,50 +39,56 @@ public class ItemElectricToolChainsaw extends ItemElectricTool implements IHitSo
     if (Ic2Items.rubberLeaves != null) {
       this.mineableBlocks.add(Block.byId[Ic2Items.rubberLeaves.id]);
     }
-
+    
   }
-
+  
   public boolean a(ItemStack itemstack, int i, int j, int k, int l, EntityLiving entityliving) {
     ElectricItem.use(itemstack, this.operationEnergyCost, (EntityHuman) entityliving);
     return true;
   }
-
+  
   public boolean a(ItemStack itemstack, EntityLiving entityliving, EntityLiving entityliving1) {
-    if (ElectricItem.use(itemstack, this.operationEnergyCost, (EntityHuman) entityliving1) && ElectricItem.use(itemstack, this.operationEnergyCost, (EntityHuman) entityliving1)) {
+    if (ElectricItem.use(itemstack, this.operationEnergyCost, (EntityHuman) entityliving1) &&
+        ElectricItem.use(itemstack, this.operationEnergyCost, (EntityHuman) entityliving1)) {
       entityliving.damageEntity(DamageSource.playerAttack((EntityHuman) entityliving1), 10);
     }
     else {
       entityliving.damageEntity(DamageSource.playerAttack((EntityHuman) entityliving1), 1);
     }
-
+    
     if (entityliving instanceof EntityCreeper && entityliving.getHealth() <= 0) {
       IC2Achievements.issueAchievement((EntityHuman) entityliving1, "killCreeperChainsaw");
     }
-
+    
     return false;
   }
-
+  
   public boolean canDestroySpecialBlock(Block block) {
     return block.material == Material.WOOD || super.canDestroySpecialBlock(block);
   }
-
+  
   public boolean onEntityInteract(EntityHuman entityhuman, Entity entity, boolean flag) {
     if (!entity.world.isStatic && !flag) {
       ItemStack itemstack = entityhuman.U();
-      if (itemstack != null && itemstack.id == this.id && entity instanceof IShearable && ElectricItem.use(itemstack, this.operationEnergyCost, entityhuman) && ElectricItem.use(itemstack, this.operationEnergyCost, entityhuman)) {
+      if (itemstack != null && itemstack.id == this.id && entity instanceof IShearable &&
+          ElectricItem.use(itemstack, this.operationEnergyCost, entityhuman) &&
+          ElectricItem.use(itemstack, this.operationEnergyCost, entityhuman)) {
         IShearable ishearable = (IShearable) entity;
         if (ishearable.isShearable(itemstack, entity.world, (int) entity.locX, (int) entity.locY, (int) entity.locZ)) {
-          ArrayList arraylist = ishearable.onSheared(itemstack, entity.world, (int) entity.locX, (int) entity.locY, (int) entity.locZ, EnchantmentManager.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS.id, itemstack));
-
+          ArrayList arraylist = ishearable
+              .onSheared(itemstack, entity.world, (int) entity.locX, (int) entity.locY, (int) entity.locZ,
+                  EnchantmentManager.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS.id, itemstack));
+      
           EntityItem entityitem;
-          for (Iterator iterator = arraylist.iterator(); iterator.hasNext(); entityitem.motZ += (double) ((c.nextFloat() - c.nextFloat()) * 0.1F)) {
+          for (Iterator iterator = arraylist.iterator(); iterator.hasNext();
+               entityitem.motZ += (c.nextFloat() - c.nextFloat()) * 0.1F) {
             ItemStack itemstack1 = (ItemStack) iterator.next();
             entityitem = entity.a(itemstack1, 1.0F);
-            entityitem.motY += (double) (c.nextFloat() * 0.05F);
-            entityitem.motX += (double) ((c.nextFloat() - c.nextFloat()) * 0.1F);
+            entityitem.motY += c.nextFloat() * 0.05F;
+            entityitem.motX += (c.nextFloat() - c.nextFloat()) * 0.1F;
           }
         }
-
+    
         return false;
       }
       else {
@@ -93,7 +99,7 @@ public class ItemElectricToolChainsaw extends ItemElectricTool implements IHitSo
       return true;
     }
   }
-
+  
   public boolean onBlockStartBreak(ItemStack itemstack, int i, int j, int k, EntityHuman entityhuman) {
     if (entityhuman.world.isStatic) {
       return false;
@@ -110,39 +116,45 @@ public class ItemElectricToolChainsaw extends ItemElectricTool implements IHitSo
             return false;
           }
         }
-
+  
         IShearable ishearable = (IShearable) Block.byId[l];
-        if (ishearable.isShearable(itemstack, entityhuman.world, i, j, k) && ElectricItem.use(itemstack, this.operationEnergyCost, null) && ElectricItem.use(itemstack, this.operationEnergyCost, null)) {
-          ArrayList arraylist = ishearable.onSheared(itemstack, entityhuman.world, i, j, k, EnchantmentManager.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS.id, itemstack));
+        if (ishearable.isShearable(itemstack, entityhuman.world, i, j, k) &&
+            ElectricItem.use(itemstack, this.operationEnergyCost, null) &&
+            ElectricItem.use(itemstack, this.operationEnergyCost, null)) {
+          ArrayList arraylist = ishearable.onSheared(itemstack, entityhuman.world, i, j, k,
+              EnchantmentManager.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS.id, itemstack));
           Iterator iterator = arraylist.iterator();
-
+    
           while (iterator.hasNext()) {
             ItemStack itemstack1 = (ItemStack) iterator.next();
             float f = 0.7F;
             double d = (double) (c.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d1 = (double) (c.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d2 = (double) (c.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            EntityItem entityitem = new EntityItem(entityhuman.world, (double) i + d, (double) j + d1, (double) k + d2, itemstack1);
+            EntityItem entityitem =
+                new EntityItem(entityhuman.world, (double) i + d, (double) j + d1, (double) k + d2, itemstack1);
             entityitem.pickupDelay = 10;
             entityhuman.world.addEntity(entityitem);
           }
-
+    
           entityhuman.a(StatisticList.C[l], 1);
         }
       }
-
+  
       return false;
     }
   }
-
+  
   public void a(ItemStack itemstack, World world, Entity entity, int i, boolean flag) {
     boolean flag1 = flag && entity instanceof EntityLiving;
     if (Platform.isRendering()) {
       if (flag1 && !wasEquipped) {
         if (audioSource == null) {
-          audioSource = AudioManager.createSource(entity, PositionSpec.Hand, "Tools/Chainsaw/ChainsawIdle.ogg", true, false, AudioManager.defaultVolume);
+          audioSource = AudioManager
+              .createSource(entity, PositionSpec.Hand, "Tools/Chainsaw/ChainsawIdle.ogg", true, false,
+                  AudioManager.defaultVolume);
         }
-
+  
         if (audioSource != null) {
           audioSource.play();
         }
@@ -152,18 +164,19 @@ public class ItemElectricToolChainsaw extends ItemElectricTool implements IHitSo
         audioSource.remove();
         audioSource = null;
         if (entity instanceof EntityLiving) {
-          AudioManager.playOnce(entity, PositionSpec.Hand, "Tools/Chainsaw/ChainsawStop.ogg", true, AudioManager.defaultVolume);
+          AudioManager
+              .playOnce(entity, PositionSpec.Hand, "Tools/Chainsaw/ChainsawStop.ogg", true, AudioManager.defaultVolume);
         }
       }
       else if (audioSource != null) {
         audioSource.updatePosition();
       }
-
+  
       wasEquipped = flag1;
     }
-
+    
   }
-
+  
   public String getHitSoundForBlock(int i, int j, int k) {
     String[] as = new String[]{"Tools/Chainsaw/ChainsawUseOne.ogg", "Tools/Chainsaw/ChainsawUseTwo.ogg"};
     return as[c.nextInt(as.length)];

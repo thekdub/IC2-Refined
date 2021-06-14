@@ -1,10 +1,7 @@
 package ic2.common;
 
 import ic2.platform.ItemBlockCommon;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.Material;
-import net.minecraft.server.ModLoader;
-import net.minecraft.server.World;
+import net.minecraft.server.*;
 
 import java.util.Random;
 
@@ -18,11 +15,11 @@ public class BlockMiningTip extends BlockTex {
     ModLoader.registerBlock(this, ItemBlockCommon.class);
     Ic2Items.miningPipeTip = new ItemStack(this);
   }
-
+  
   public boolean canPlace(World world, int i, int j, int k) {
     return false;
   }
-
+  
   public int getDropType(int i, Random random, int j) {
     return Ic2Items.miningPipe.id;
   }

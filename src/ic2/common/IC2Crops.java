@@ -13,8 +13,10 @@ public class IC2Crops {
   public static CropCard cropMelon = new CropMelon();
   public static CropCard cropYellowFlower = new CropColorFlower("Dandelion", new String[]{"Yellow", "Flower"}, 15, 11);
   public static CropCard cropRedFlower = new CropColorFlower("Rose", new String[]{"Red", "Flower", "Rose"}, 21, 1);
-  public static CropCard cropBlackFlower = new CropColorFlower("Blackthorn", new String[]{"Black", "Flower", "Rose"}, 22, 0);
-  public static CropCard cropPurpleFlower = new CropColorFlower("Tulip", new String[]{"Purple", "Flower", "Tulip"}, 23, 5);
+  public static CropCard cropBlackFlower =
+      new CropColorFlower("Blackthorn", new String[]{"Black", "Flower", "Rose"}, 22, 0);
+  public static CropCard cropPurpleFlower =
+      new CropColorFlower("Tulip", new String[]{"Purple", "Flower", "Tulip"}, 23, 5);
   public static CropCard cropBlueFlower = new CropColorFlower("Cyazint", new String[]{"Blue", "Flower"}, 24, 6);
   public static CropCard cropVenomilia = new CropVenomilia();
   public static CropCard cropReed = new CropReed();
@@ -27,20 +29,30 @@ public class IC2Crops {
   public static CropCard cropTerraWart = new CropTerraWart();
   public static CropCard cropCoffee = new CropCoffee();
   public static CropCard cropHops = new CropHops();
-
+  
   public static void init() {
     registerCrops();
     registerBaseSeeds();
   }
-
+  
   public static void registerCrops() {
     CropCard.nameReference = new TileEntityCrop();
-    if (!CropCard.registerCrop(weed, 0) || !CropCard.registerCrop(cropWheat, 1) || !CropCard.registerCrop(cropPumpkin, 2) || !CropCard.registerCrop(cropMelon, 3) || !CropCard.registerCrop(cropYellowFlower, 4) || !CropCard.registerCrop(cropRedFlower, 5) || !CropCard.registerCrop(cropBlackFlower, 6) || !CropCard.registerCrop(cropPurpleFlower, 7) || !CropCard.registerCrop(cropBlueFlower, 8) || !CropCard.registerCrop(cropVenomilia, 9) || !CropCard.registerCrop(cropReed, 10) || !CropCard.registerCrop(cropStickReed, 11) || !CropCard.registerCrop(cropCocoa, 12) || !CropCard.registerCrop(cropFerru, 13) || !CropCard.registerCrop(cropAurelia, 14) || !CropCard.registerCrop(cropRedwheat, 15) || !CropCard.registerCrop(cropNetherWart, 16) || !CropCard.registerCrop(cropTerraWart, 17) || !CropCard.registerCrop(cropCoffee, 18) || !CropCard.registerCrop(cropHops, 19)) {
-      Platform.displayError("One or more crops have failed to initialize.\nThis could happen due to a crop addon using a crop ID already taken\nby a crop from IndustrialCraft 2.");
+    if (!CropCard.registerCrop(weed, 0) || !CropCard.registerCrop(cropWheat, 1) ||
+        !CropCard.registerCrop(cropPumpkin, 2) || !CropCard.registerCrop(cropMelon, 3) ||
+        !CropCard.registerCrop(cropYellowFlower, 4) || !CropCard.registerCrop(cropRedFlower, 5) ||
+        !CropCard.registerCrop(cropBlackFlower, 6) || !CropCard.registerCrop(cropPurpleFlower, 7) ||
+        !CropCard.registerCrop(cropBlueFlower, 8) || !CropCard.registerCrop(cropVenomilia, 9) ||
+        !CropCard.registerCrop(cropReed, 10) || !CropCard.registerCrop(cropStickReed, 11) ||
+        !CropCard.registerCrop(cropCocoa, 12) || !CropCard.registerCrop(cropFerru, 13) ||
+        !CropCard.registerCrop(cropAurelia, 14) || !CropCard.registerCrop(cropRedwheat, 15) ||
+        !CropCard.registerCrop(cropNetherWart, 16) || !CropCard.registerCrop(cropTerraWart, 17) ||
+        !CropCard.registerCrop(cropCoffee, 18) || !CropCard.registerCrop(cropHops, 19)) {
+      Platform.displayError(
+          "One or more crops have failed to initialize.\nThis could happen due to a crop addon using a crop ID already taken\nby a crop from IndustrialCraft 2.");
     }
-
+    
   }
-
+  
   public static void registerBaseSeeds() {
     CropCard.registerBaseSeed(new ItemStack(Item.SEEDS.id, 1, -1), cropWheat.getId(), 1, 1, 1, 1);
     CropCard.registerBaseSeed(new ItemStack(Item.PUMPKIN_SEEDS.id, 1, -1), cropPumpkin.getId(), 1, 1, 1, 1);

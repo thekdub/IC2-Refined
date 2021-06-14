@@ -3,10 +3,7 @@ package ic2.common;
 import forge.ITextureProvider;
 import ic2.platform.ItemFoodCommon;
 import ic2.platform.Platform;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.MobEffectList;
-import net.minecraft.server.World;
+import net.minecraft.server.*;
 
 public class ItemTerraWart extends ItemFoodCommon implements ITextureProvider {
   public ItemTerraWart(int i, int j) {
@@ -14,7 +11,7 @@ public class ItemTerraWart extends ItemFoodCommon implements ITextureProvider {
     this.textureId = j;
     this.r();
   }
-
+  
   public ItemStack b(ItemStack itemstack, World world, EntityHuman entityhuman) {
     --itemstack.count;
     world.makeSound(entityhuman, "random.burp", 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
@@ -25,11 +22,11 @@ public class ItemTerraWart extends ItemFoodCommon implements ITextureProvider {
     Platform.removePotionFrom(entityhuman, MobEffectList.WEAKNESS.id);
     return itemstack;
   }
-
+  
   public int rarity(ItemStack itemstack) {
     return 2;
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/item_0.png";
   }

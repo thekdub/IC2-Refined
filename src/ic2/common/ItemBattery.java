@@ -2,10 +2,7 @@ package ic2.common;
 
 import ic2.api.IElectricItem;
 import ic2.platform.Platform;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.Item;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.World;
+import net.minecraft.server.*;
 
 public class ItemBattery extends ElectricItem {
   public ItemBattery(int i, int j, int k, int l, int i1) {
@@ -14,15 +11,15 @@ public class ItemBattery extends ElectricItem {
     this.transferLimit = l;
     this.tier = i1;
   }
-
+  
   public boolean canProvideEnergy() {
     return true;
   }
-
+  
   public int getEmptyItemId() {
     return this.id == Ic2Items.chargedReBattery.id ? Ic2Items.reBattery.id : super.getEmptyItemId();
   }
-
+  
   public int getIconFromDamage(int i) {
     if (i <= 1) {
       return this.textureId + 4;
@@ -37,15 +34,15 @@ public class ItemBattery extends ElectricItem {
       return i <= 20 ? this.textureId + 1 : this.textureId;
     }
   }
-
+  
   public int getIconFromChargeLevel(float f) {
     return this.getIconFromDamage(1 + (int) Math.round((1.0D - (double) f) * (double) (this.getMaxDurability() - 2)));
   }
-
+  
   public ItemStack a(ItemStack itemstack, World world, EntityHuman entityhuman) {
     if (Platform.isSimulating() && itemstack.id == Ic2Items.chargedReBattery.id) {
       boolean flag = false;
-
+  
       for (int i = 0; i < 9; ++i) {
         ItemStack itemstack1 = entityhuman.inventory.items[i];
         if (itemstack1 != null && Item.byId[itemstack1.id] instanceof IElectricItem && itemstack1 != itemstack) {
@@ -56,16 +53,16 @@ public class ItemBattery extends ElectricItem {
           if (j == 0) {
             break;
           }
-
+  
           flag = true;
         }
       }
-
+  
       if (flag && !Platform.isRendering()) {
         entityhuman.activeContainer.a();
       }
     }
-
+    
     return itemstack;
   }
 }

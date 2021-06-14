@@ -8,7 +8,7 @@ public class ItemArmorCommon extends ItemArmor {
   public ItemArmorCommon(int i, EnumArmorMaterial enumarmormaterial, int j, int k) {
     super(i, enumarmormaterial, j, k);
   }
-
+  
   public int rarity(ItemStack itemstack) {
     return 0;
   }

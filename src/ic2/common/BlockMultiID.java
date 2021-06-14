@@ -9,28 +9,31 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public abstract class BlockMultiID extends BlockContainerCommon implements ITextureProvider {
-  public static final int[][] sideAndFacingToSpriteOffset = new int[][]{{3, 2, 0, 0, 0, 0}, {2, 3, 1, 1, 1, 1}, {1, 1, 3, 2, 5, 4}, {0, 0, 2, 3, 4, 5}, {4, 5, 4, 5, 3, 2}, {5, 4, 5, 4, 2, 3}};
-
+  public static final int[][] sideAndFacingToSpriteOffset =
+      new int[][]{{3, 2, 0, 0, 0, 0}, {2, 3, 1, 1, 1, 1}, {1, 1, 3, 2, 5, 4}, {0, 0, 2, 3, 4, 5}, {4, 5, 4, 5, 3, 2},
+          {5, 4, 5, 4, 2, 3}};
+  
   protected BlockMultiID(int i, Material material) {
     super(i, material);
   }
-
+  
   public static boolean isActive(IBlockAccess iblockaccess, int i, int j, int k) {
     TileEntity tileentity = iblockaccess.getTileEntity(i, j, k);
     return tileentity instanceof TileEntityBlock && ((TileEntityBlock) tileentity).getActive();
   }
-
+  
   public int getBlockTexture(IBlockAccess iblockaccess, int i, int j, int k, int l) {
     TileEntity tileentity = iblockaccess.getTileEntity(i, j, k);
     short word0 = tileentity instanceof TileEntityBlock ? ((TileEntityBlock) tileentity).getFacing() : 0;
     int i1 = iblockaccess.getData(i, j, k);
-    return isActive(iblockaccess, i, j, k) ? i1 + (sideAndFacingToSpriteOffset[l][word0] + 6) * 16 : i1 + sideAndFacingToSpriteOffset[l][word0] * 16;
+    return isActive(iblockaccess, i, j, k) ? i1 + (sideAndFacingToSpriteOffset[l][word0] + 6) * 16 :
+        i1 + sideAndFacingToSpriteOffset[l][word0] * 16;
   }
-
+  
   public int a(int i, int j) {
     return j + sideAndFacingToSpriteOffset[i][3] * 16;
   }
-
+  
   public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman) {
     if (entityhuman.isSneaking()) {
       return false;
@@ -45,13 +48,13 @@ public abstract class BlockMultiID extends BlockContainerCommon implements IText
       }
     }
   }
-
+  
   public ArrayList getBlockDropped(World world, int i, int j, int k, int l, int i1) {
     ArrayList arraylist = super.getBlockDropped(world, i, j, k, l, i1);
     TileEntity tileentity = world.getTileEntity(i, j, k);
     if (tileentity instanceof IInventory) {
       IInventory iinventory = (IInventory) tileentity;
-
+  
       for (int j1 = 0; j1 < iinventory.getSize(); ++j1) {
         ItemStack itemstack = iinventory.getItem(j1);
         if (itemstack != null) {
@@ -60,23 +63,23 @@ public abstract class BlockMultiID extends BlockContainerCommon implements IText
         }
       }
     }
-
+    
     return arraylist;
   }
-
+  
   public TileEntityBlock getBlockEntity() {
     return null;
   }
-
+  
   public abstract TileEntityBlock getBlockEntity(int var1);
-
+  
   public void onPlace(World world, int i, int j, int k) {
   }
-
+  
   public void remove(World world, int i, int j, int k) {
     boolean flag = true;
     Iterator iterator = this.getBlockDropped(world, i, j, k, world.getData(i, j, k), 0).iterator();
-
+    
     while (iterator.hasNext()) {
       ItemStack itemstack = (ItemStack) iterator.next();
       if (flag) {
@@ -86,10 +89,10 @@ public abstract class BlockMultiID extends BlockContainerCommon implements IText
         StackUtil.dropAsEntity(world, i, j, k, itemstack);
       }
     }
-
+    
     super.remove(world, i, j, k);
   }
-
+  
   public void postPlace(World world, int i, int j, int k, EntityLiving entityliving) {
     if (Platform.isSimulating()) {
       TileEntityBlock tileentityblock = (TileEntityBlock) world.getTileEntity(i, j, k);
@@ -112,10 +115,10 @@ public abstract class BlockMultiID extends BlockContainerCommon implements IText
             tileentityblock.setFacing((short) 4);
         }
       }
-
+  
     }
   }
-
+  
   public void addCreativeItems(ArrayList arraylist) {
     for (int i = 0; i < 16; ++i) {
       ItemStack itemstack = new ItemStack(this, 1, i);
@@ -123,9 +126,9 @@ public abstract class BlockMultiID extends BlockContainerCommon implements IText
         arraylist.add(itemstack);
       }
     }
-
+    
   }
-
+  
   public TileEntity a_() {
     return this.getBlockEntity();
   }

@@ -1,16 +1,13 @@
 package ic2.common;
 
-import ic2.platform.BlockLeavesBaseCommon;
-import ic2.platform.ColorizerFoliageCommon;
-import ic2.platform.ItemBlockCommon;
-import ic2.platform.Platform;
+import ic2.platform.*;
 import net.minecraft.server.*;
 
 import java.util.Random;
 
 public class BlockRubLeaves extends BlockLeavesBaseCommon {
   int[] adjacentTreeBlocks;
-
+  
   public BlockRubLeaves(int i) {
     super(i, 52, Material.LEAVES, false);
     this.a(true);
@@ -22,7 +19,7 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
     ModLoader.registerBlock(this, ItemBlockCommon.class);
     Ic2Items.rubberLeaves = new ItemStack(this);
   }
-
+  
   public void remove(World world, int i, int j, int k) {
     int l = 1;
     int i1 = l + 1;
@@ -39,9 +36,9 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
         }
       }
     }
-
+    
   }
-
+  
   public void a(World world, int i, int j, int k, Random random) {
     if (Platform.isSimulating()) {
       int l = world.getData(i, j, k);
@@ -54,11 +51,11 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
         if (this.adjacentTreeBlocks == null) {
           this.adjacentTreeBlocks = new int[byte1 * byte1 * byte1];
         }
-
+  
         int i2;
         if (world.a(i - i1, j - i1, k - i1, i + i1, j + i1, k + i1)) {
           i2 = -byte0;
-
+  
           label112:
           while (true) {
             int l2;
@@ -66,12 +63,12 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
             int l3;
             if (i2 > byte0) {
               i2 = 1;
-
+  
               while (true) {
                 if (i2 > 4) {
                   break label112;
                 }
-
+    
                 for (l2 = -byte0; l2 <= byte0; ++l2) {
                   for (j3 = -byte0; j3 <= byte0; ++j3) {
                     for (l3 = -byte0; l3 <= byte0; ++l3) {
@@ -79,23 +76,23 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
                         if (this.adjacentTreeBlocks[(l2 + k1 - 1) * j1 + (j3 + k1) * byte1 + l3 + k1] == -2) {
                           this.adjacentTreeBlocks[(l2 + k1 - 1) * j1 + (j3 + k1) * byte1 + l3 + k1] = i2;
                         }
-
+  
                         if (this.adjacentTreeBlocks[(l2 + k1 + 1) * j1 + (j3 + k1) * byte1 + l3 + k1] == -2) {
                           this.adjacentTreeBlocks[(l2 + k1 + 1) * j1 + (j3 + k1) * byte1 + l3 + k1] = i2;
                         }
-
+  
                         if (this.adjacentTreeBlocks[(l2 + k1) * j1 + (j3 + k1 - 1) * byte1 + l3 + k1] == -2) {
                           this.adjacentTreeBlocks[(l2 + k1) * j1 + (j3 + k1 - 1) * byte1 + l3 + k1] = i2;
                         }
-
+  
                         if (this.adjacentTreeBlocks[(l2 + k1) * j1 + (j3 + k1 + 1) * byte1 + l3 + k1] == -2) {
                           this.adjacentTreeBlocks[(l2 + k1) * j1 + (j3 + k1 + 1) * byte1 + l3 + k1] = i2;
                         }
-
+  
                         if (this.adjacentTreeBlocks[(l2 + k1) * j1 + (j3 + k1) * byte1 + (l3 + k1 - 1)] == -2) {
                           this.adjacentTreeBlocks[(l2 + k1) * j1 + (j3 + k1) * byte1 + (l3 + k1 - 1)] = i2;
                         }
-
+  
                         if (this.adjacentTreeBlocks[(l2 + k1) * j1 + (j3 + k1) * byte1 + l3 + k1 + 1] == -2) {
                           this.adjacentTreeBlocks[(l2 + k1) * j1 + (j3 + k1) * byte1 + l3 + k1 + 1] = i2;
                         }
@@ -103,11 +100,11 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
                     }
                   }
                 }
-
+    
                 ++i2;
               }
             }
-
+  
             for (l2 = -byte0; l2 <= byte0; ++l2) {
               for (j3 = -byte0; j3 <= byte0; ++j3) {
                 l3 = world.getTypeId(i + i2, j + l2, k + j3);
@@ -122,11 +119,11 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
                 }
               }
             }
-
+  
             ++i2;
           }
         }
-
+  
         i2 = this.adjacentTreeBlocks[k1 * j1 + k1 * byte1 + k1];
         if (i2 >= 0) {
           world.setRawData(i, j, k, l & -9);
@@ -135,15 +132,15 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
           this.removeLeaves(world, i, j, k);
         }
       }
-
+  
     }
   }
-
+  
   private void removeLeaves(World world, int i, int j, int k) {
     this.b(world, i, j, k, world.getData(i, j, k), 0);
     world.setTypeId(i, j, k, 0);
   }
-
+  
   public void a(World world, EntityHuman entityhuman, int i, int j, int k, int l) {
     if (Platform.isSimulating() && entityhuman.U() != null && entityhuman.U().id == Item.SHEARS.id) {
       entityhuman.a(StatisticList.C[this.id], 1);
@@ -152,37 +149,37 @@ public class BlockRubLeaves extends BlockLeavesBaseCommon {
     else {
       super.a(world, entityhuman, i, j, k, l);
     }
-
+    
   }
-
+  
   protected int getDropData(int i) {
     return 0;
   }
-
+  
   public boolean a() {
     return false;
   }
-
+  
   public int a(int i, int j) {
     return this.textureId;
   }
-
+  
   public int getRenderColor(int i) {
     return ColorizerFoliageCommon.getFoliageColorBirch();
   }
-
+  
   public int colorMultiplier(IBlockAccess iblockaccess, int i, int j, int k) {
     return ColorizerFoliageCommon.getFoliageColorBirch();
   }
-
+  
   public int a(Random random) {
     return random.nextInt(35) == 0 ? 1 : 0;
   }
-
+  
   public int getDropType(int i, Random random, int j) {
     return Ic2Items.rubberSapling.id;
   }
-
+  
   public boolean shouldSideBeRendered(IBlockAccess iblockaccess, int i, int j, int k, int l) {
     if (l == 0 && this.minY > 0.0D) {
       return true;

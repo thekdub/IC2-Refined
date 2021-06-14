@@ -16,14 +16,14 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
   public byte foamed = 0;
   public byte foamColor = 0;
   public boolean addedToEnergyNet = false;
-
+  
   public TileEntityCable(short word0) {
     this.cableType = word0;
   }
-
+  
   public TileEntityCable() {
   }
-
+  
   public static float getCableThickness(int i) {
     float f = 1.0F;
     switch (i) {
@@ -69,10 +69,10 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
       case 13:
         f = 16.0F;
     }
-
+    
     return f / 16.0F;
   }
-
+  
   public void a(NBTTagCompound nbttagcompound) {
     super.a(nbttagcompound);
     this.cableType = nbttagcompound.getShort("cableType");
@@ -85,9 +85,9 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
     else {
       this.foamed = byte0;
     }
-
+    
   }
-
+  
   public void b(NBTTagCompound nbttagcompound) {
     super.b(nbttagcompound);
     nbttagcompound.setShort("cableType", this.cableType);
@@ -95,7 +95,7 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
     nbttagcompound.setByte("foamed", this.foamed);
     nbttagcompound.setByte("foamColor", this.foamColor);
   }
-
+  
   public void onCreated() {
     super.onCreated();
     if (Platform.isSimulating()) {
@@ -105,20 +105,22 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
       } catch (NullPointerException var2) {
       }
     }
-
+    
   }
-
+  
   public void j() {
     if (Platform.isSimulating() && this.addedToEnergyNet) {
       EnergyNet.getForWorld(this.world).removeTileEntity(this);
       this.addedToEnergyNet = false;
     }
-
+    
     super.j();
   }
-
+  
   public boolean changeColor(int i) {
-    if (this.foamed == 0 && (this.color == i || this.cableType == 1 || this.cableType == 2 || this.cableType == 5 || this.cableType == 10 || this.cableType == 11 || this.cableType == 12) || this.foamed > 0 && this.foamColor == i) {
+    if (this.foamed == 0 &&
+        (this.color == i || this.cableType == 1 || this.cableType == 2 || this.cableType == 5 || this.cableType == 10 ||
+            this.cableType == 11 || this.cableType == 12) || this.foamed > 0 && this.foamColor == i) {
       return false;
     }
     else {
@@ -127,7 +129,7 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
           if (this.addedToEnergyNet) {
             EnergyNet.getForWorld(this.world).removeTileEntity(this);
           }
-
+          
           this.addedToEnergyNet = false;
           this.color = (short) i;
           EnergyNet.getForWorld(this.world).addTileEntity(this);
@@ -139,15 +141,15 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
           NetworkManager.updateTileEntityField(this, "foamColor");
         }
       }
-
+      
       return true;
     }
   }
-
+  
   public boolean changeFoam(byte byte0) {
     return this.changeFoam(byte0, false);
   }
-
+  
   public boolean tryAddInsulation() {
     short word0;
     switch (this.cableType) {
@@ -173,19 +175,19 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
       case 7:
         word0 = 8;
     }
-
+    
     if (word0 != this.cableType) {
       if (Platform.isSimulating()) {
         this.changeType(word0);
       }
-
+      
       return true;
     }
     else {
       return false;
     }
   }
-
+  
   public boolean tryRemoveInsulation() {
     short word0;
     switch (this.cableType) {
@@ -213,57 +215,58 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
       case 8:
         word0 = 7;
     }
-
+    
     if (word0 != this.cableType) {
       if (Platform.isSimulating()) {
         this.changeType(word0);
       }
-
+      
       return true;
     }
     else {
       return false;
     }
   }
-
+  
   public void changeType(short word0) {
     this.world.setRawData(this.x, this.y, this.z, word0);
     if (this.addedToEnergyNet) {
       EnergyNet.getForWorld(this.world).removeTileEntity(this);
     }
-
+    
     this.addedToEnergyNet = false;
     this.cableType = word0;
     EnergyNet.getForWorld(this.world).addTileEntity(this);
     this.addedToEnergyNet = true;
     NetworkManager.updateTileEntityField(this, "cableType");
   }
-
+  
   public boolean wrenchCanSetFacing(EntityHuman entityhuman, int i) {
     return false;
   }
-
+  
   public boolean wrenchCanRemove(EntityHuman entityhuman) {
     return false;
   }
-
+  
   public boolean isAddedToEnergyNet() {
     return this.addedToEnergyNet;
   }
-
+  
   public boolean acceptsEnergyFrom(TileEntity tileentity, Direction direction) {
     return !(tileentity instanceof TileEntityCable) || this.canInteractWithCable((TileEntityCable) tileentity);
   }
-
+  
   public boolean emitsEnergyTo(TileEntity tileentity, Direction direction) {
     if (tileentity instanceof TileEntityCable && !this.canInteractWithCable((TileEntityCable) tileentity)) {
       return false;
     }
     else {
-      return !(tileentity instanceof TileEntityLuminator) || ((TileEntityLuminator) tileentity).canCableConnectFrom(this.x, this.y, this.z);
+      return !(tileentity instanceof TileEntityLuminator) ||
+          ((TileEntityLuminator) tileentity).canCableConnectFrom(this.x, this.y, this.z);
     }
   }
-
+  
   public boolean canInteractWith(TileEntity tileentity) {
     if (tileentity instanceof TileEntityCable) {
       return this.canInteractWithCable((TileEntityCable) tileentity);
@@ -272,18 +275,19 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
       return ((TileEntityLuminator) tileentity).canCableConnectFrom(this.x, this.y, this.z);
     }
     else {
-      return tileentity instanceof IEnergySink || tileentity instanceof IEnergySource || tileentity instanceof IEnergyConductor;
+      return tileentity instanceof IEnergySink || tileentity instanceof IEnergySource ||
+          tileentity instanceof IEnergyConductor;
     }
   }
-
+  
   public boolean canInteractWithCable(TileEntityCable tileentitycable) {
     return this.color == 0 || tileentitycable.color == 0 || this.color == tileentitycable.color;
   }
-
+  
   public float getCableThickness() {
     return this.foamed == 2 ? 1.0F : getCableThickness(this.cableType);
   }
-
+  
   public double getConductionLoss() {
     switch (this.cableType) {
       case 0:
@@ -316,7 +320,7 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
         return 0.025D;
     }
   }
-
+  
   public int getInsulationEnergyAbsorption() {
     switch (this.cableType) {
       case 0:
@@ -349,11 +353,11 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
         return 0;
     }
   }
-
+  
   public int getInsulationBreakdownEnergy() {
     return 9001;
   }
-
+  
   public int getConductorBreakdownEnergy() {
     switch (this.cableType) {
       case 0:
@@ -386,15 +390,15 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
         return 0;
     }
   }
-
+  
   public void removeInsulation() {
   }
-
+  
   public void removeConductor() {
     this.world.setTypeId(this.x, this.y, this.z, 0);
     NetworkManager.initiateTileEntityEvent(this, 0, true);
   }
-
+  
   public List getNetworkedFields() {
     Vector vector = new Vector();
     vector.add("cableType");
@@ -404,34 +408,40 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
     vector.addAll(super.getNetworkedFields());
     return vector;
   }
-
+  
   public void onNetworkUpdate(String s) {
     if (s.equals("cableType") || s.equals("color") || s.equals("foamed") || s.equals("foamColor")) {
       this.world.notify(this.x, this.y, this.z);
     }
-
+    
     super.onNetworkUpdate(s);
   }
-
+  
   public void onNetworkEvent(int i) {
     switch (i) {
       case 0:
-        this.world.makeSound((double) ((float) this.x + 0.5F), (double) ((float) this.y + 0.5F), (double) ((float) this.z + 0.5F), "random.fizz", 0.5F, 2.6F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.8F);
-
+        this.world.makeSound((float) this.x + 0.5F, (float) this.y + 0.5F,
+            (float) this.z + 0.5F, "random.fizz", 0.5F,
+            2.6F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.8F);
+    
         for (int j = 0; j < 8; ++j) {
-          this.world.a("largesmoke", (double) this.x + Math.random(), (double) this.y + 1.2D, (double) this.z + Math.random(), 0.0D, 0.0D, 0.0D);
+          this.world
+              .a("largesmoke", (double) this.x + Math.random(), (double) this.y + 1.2D, (double) this.z + Math.random(),
+                  0.0D, 0.0D, 0.0D);
         }
-
+    
         return;
       default:
-        Platform.displayError("An unknown event type was received over multiplayer.\nThis could happen due to corrupted data or a bug.\n\n(Technical information: event ID " + i + ", tile entity below)\n" + "T: " + this + " (" + this.x + "," + this.y + "," + this.z + ")");
+        Platform.displayError(
+            "An unknown event type was received over multiplayer.\nThis could happen due to corrupted data or a bug.\n\n(Technical information: event ID " +
+                i + ", tile entity below)\n" + "T: " + this + " (" + this.x + "," + this.y + "," + this.z + ")");
     }
   }
-
+  
   public float getWrenchDropRate() {
     return 0.0F;
   }
-
+  
   private boolean changeFoam(byte byte0, boolean flag) {
     if (this.foamed == byte0) {
       return false;
@@ -443,11 +453,13 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
           this.foamColor = 7;
           mod_IC2.addContinuousTickCallback(this.world, new ITickCallback() {
             public void tickCallback(World world) {
-              if (TileEntityCable.this.l() || TileEntityCable.this.foamed != 1 || world.random.nextInt(500) == 0 && world.getLightLevel(TileEntityCable.this.x, TileEntityCable.this.y, TileEntityCable.this.z) * 6 >= world.random.nextInt(1000)) {
+              if (TileEntityCable.this.l() || TileEntityCable.this.foamed != 1 || world.random.nextInt(500) == 0 &&
+                  world.getLightLevel(TileEntityCable.this.x, TileEntityCable.this.y, TileEntityCable.this.z) * 6 >=
+                      world.random.nextInt(1000)) {
                 TileEntityCable.this.changeFoam((byte) 2);
                 mod_IC2.removeContinuousTickCallback(world, this);
               }
-
+  
             }
           });
         }
@@ -455,12 +467,12 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
           this.world.setData(this.x, this.y, this.z, 13);
           NetworkManager.announceBlockUpdate(this.world, this.x, this.y, this.z);
         }
-
+  
         if (!flag) {
           NetworkManager.updateTileEntityField(this, "foamed");
         }
       }
-
+  
       return true;
     }
   }

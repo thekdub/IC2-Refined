@@ -18,20 +18,20 @@ public class BlockWall extends BlockTex implements IPaintableBlock {
     ModLoader.registerBlock(this, ItemBlockCommon.class);
     Ic2Items.constructionFoamWall = new ItemStack(this);
   }
-
+  
   public int getBlockTexture(IBlockAccess iblockaccess, int i, int j, int k, int l) {
     int i1 = iblockaccess.getData(i, j, k);
     return this.textureId + i1;
   }
-
+  
   public int a(int i, int j) {
     return this.textureId + j;
   }
-
+  
   public int a(Random random) {
     return 0;
   }
-
+  
   public boolean colorBlock(World world, int i, int j, int k, int l) {
     if (l != world.getData(i, j, k)) {
       world.setRawData(i, j, k, l);
@@ -42,7 +42,7 @@ public class BlockWall extends BlockTex implements IPaintableBlock {
       return false;
     }
   }
-
+  
   protected ItemStack a_(int i) {
     return null;
   }

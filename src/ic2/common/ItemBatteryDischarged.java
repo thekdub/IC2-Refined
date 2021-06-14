@@ -11,19 +11,19 @@ public class ItemBatteryDischarged extends ItemBattery implements IBoxable {
     this.setMaxDurability(0);
     this.e(16);
   }
-
+  
   public int getChargedItemId() {
     return Ic2Items.chargedReBattery.id;
   }
-
+  
   public int getIconFromDamage(int i) {
     return this.textureId;
   }
-
+  
   public void addCreativeItems(ArrayList arraylist) {
     arraylist.add(new ItemStack(this));
   }
-
+  
   public boolean canBeStoredInToolbox(ItemStack itemstack) {
     return true;
   }

@@ -1,9 +1,6 @@
 package ic2.common;
 
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.EnumToolMaterial;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.World;
+import net.minecraft.server.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,7 +13,7 @@ public class ItemTreetapElectric extends ItemElectricTool {
     this.transferLimit = 100;
     this.tier = 1;
   }
-
+  
   public boolean interactWith(ItemStack itemstack, EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     Entity bukkitentity = entityhuman.getBukkitEntity();
     if (bukkitentity instanceof Player) {
@@ -26,10 +23,10 @@ public class ItemTreetapElectric extends ItemElectricTool {
       if (breakev.isCancelled()) {
         return false;
       }
-
+  
       breakev.setCancelled(true);
     }
-
+    
     if (world.getTypeId(i, j, k) != Ic2Items.rubberWood.id) {
       return false;
     }

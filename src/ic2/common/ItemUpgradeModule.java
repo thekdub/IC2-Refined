@@ -12,11 +12,11 @@ public class ItemUpgradeModule extends ItemIC2 {
     Ic2Items.transformerUpgrade = new ItemStack(this, 1, 1);
     Ic2Items.energyStorageUpgrade = new ItemStack(this, 1, 2);
   }
-
+  
   public int getIconFromDamage(int i) {
     return this.textureId + i;
   }
-
+  
   public String a(ItemStack itemstack) {
     switch (itemstack.getData()) {
       case 0:
@@ -29,16 +29,16 @@ public class ItemUpgradeModule extends ItemIC2 {
         return null;
     }
   }
-
+  
   public void addCreativeItems(ArrayList arraylist) {
     for (int i = 0; i <= 32767; ++i) {
       ItemStack itemstack = new ItemStack(this, 1, i);
       if (this.a(itemstack) == null) {
         break;
       }
-
+  
       arraylist.add(itemstack);
     }
-
+    
   }
 }

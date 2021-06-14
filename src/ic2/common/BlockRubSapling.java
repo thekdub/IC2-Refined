@@ -17,15 +17,15 @@ public class BlockRubSapling extends BlockSapling implements ITextureProvider {
     ModLoader.registerBlock(this, ItemBlockCommon.class);
     Ic2Items.rubberSapling = new ItemStack(this);
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/block_0.png";
   }
-
+  
   public int a(int i, int j) {
     return this.textureId;
   }
-
+  
   public void a(World world, int i, int j, int k, Random random) {
     if (Platform.isSimulating()) {
       if (!this.f(world, i, j, k)) {
@@ -36,19 +36,19 @@ public class BlockRubSapling extends BlockSapling implements ITextureProvider {
         if (world.getLightLevel(i, j + 1, k) >= 9 && random.nextInt(30) == 0) {
           this.grow(world, i, j, k, random);
         }
-
+  
       }
     }
   }
-
+  
   public void grow(World world, int i, int j, int k, Random random) {
     (new WorldGenRubTree()).grow(world, i, j, k, random);
   }
-
+  
   protected int getDropData(int i) {
     return 0;
   }
-
+  
   public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman) {
     if (!Platform.isSimulating()) {
       return false;
@@ -63,12 +63,12 @@ public class BlockRubSapling extends BlockSapling implements ITextureProvider {
           this.grow(world, i, j, k, world.random);
           --itemstack.count;
         }
-
+  
         return false;
       }
     }
   }
-
+  
   public void addCreativeItems(ArrayList arraylist) {
     arraylist.add(new ItemStack(this));
   }

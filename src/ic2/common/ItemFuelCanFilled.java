@@ -10,7 +10,7 @@ public class ItemFuelCanFilled extends ItemFuelCan implements IFuelHandler {
     super(i, j);
     MinecraftForge.registerFuelHandler(this);
   }
-
+  
   public int getItemBurnTime(ItemStack itemstack) {
     if (itemstack.id != this.id) {
       return 0;
@@ -20,7 +20,7 @@ public class ItemFuelCanFilled extends ItemFuelCan implements IFuelHandler {
       if (itemstack.getData() > 0) {
         nbttagcompound.setInt("value", itemstack.getData());
       }
-
+  
       int i = nbttagcompound.getInt("value") * 2;
       return i <= 32767 ? i : 32767;
     }

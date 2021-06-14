@@ -12,7 +12,7 @@ public final class Items {
       return null;
     }
   }
-
+  
   private static String getPackage() {
     Package package1 = Items.class.getPackage();
     return package1 != null ? package1.getName().substring(0, package1.getName().lastIndexOf(46)) : "ic2";

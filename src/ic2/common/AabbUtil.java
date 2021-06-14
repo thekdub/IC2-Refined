@@ -38,7 +38,7 @@ public class AabbUtil {
       else {
         vec3d4 = Vec3D.a(axisalignedbb.a, axisalignedbb.b, axisalignedbb.c);
       }
-
+  
       Vec3D vec3d5 = null;
       switch (direction.ordinal() + 1) {
         case 1:
@@ -53,7 +53,7 @@ public class AabbUtil {
         case 6:
           vec3d5 = Vec3D.a(0.0D, 0.0D, 1.0D);
       }
-
+  
       Vec3D vec3d6 = getIntersectionWithPlane(vec3d, vec3d3, vec3d4, vec3d5);
       vec3d2.a = vec3d6.a;
       vec3d2.b = vec3d6.b;
@@ -61,7 +61,7 @@ public class AabbUtil {
       return direction;
     }
   }
-
+  
   public static Direction intersects(Vec3D vec3d, Vec3D vec3d1, AxisAlignedBB axisalignedbb) {
     double[] ad = getRay(vec3d, vec3d1);
     if (vec3d1.a < 0.0D && vec3d1.b < 0.0D && vec3d1.c < 0.0D) {
@@ -92,7 +92,8 @@ public class AabbUtil {
       else if (side(ad, getEdgeRay(Edge.BF, axisalignedbb)) < 0.0D) {
         return null;
       }
-      else if (side(ad, getEdgeRay(Edge.HG, axisalignedbb)) > 0.0D && side(ad, getEdgeRay(Edge.FG, axisalignedbb)) < 0.0D) {
+      else if (side(ad, getEdgeRay(Edge.HG, axisalignedbb)) > 0.0D &&
+          side(ad, getEdgeRay(Edge.FG, axisalignedbb)) < 0.0D) {
         return Direction.ZP;
       }
       else {
@@ -127,7 +128,8 @@ public class AabbUtil {
       else if (side(ad, getEdgeRay(Edge.FG, axisalignedbb)) < 0.0D) {
         return null;
       }
-      else if (side(ad, getEdgeRay(Edge.DC, axisalignedbb)) > 0.0D && side(ad, getEdgeRay(Edge.CG, axisalignedbb)) > 0.0D) {
+      else if (side(ad, getEdgeRay(Edge.DC, axisalignedbb)) > 0.0D &&
+          side(ad, getEdgeRay(Edge.CG, axisalignedbb)) > 0.0D) {
         return Direction.XP;
       }
       else {
@@ -162,7 +164,8 @@ public class AabbUtil {
       else if (side(ad, getEdgeRay(Edge.CG, axisalignedbb)) < 0.0D) {
         return null;
       }
-      else if (side(ad, getEdgeRay(Edge.EH, axisalignedbb)) > 0.0D && side(ad, getEdgeRay(Edge.HG, axisalignedbb)) > 0.0D) {
+      else if (side(ad, getEdgeRay(Edge.EH, axisalignedbb)) > 0.0D &&
+          side(ad, getEdgeRay(Edge.HG, axisalignedbb)) > 0.0D) {
         return Direction.ZP;
       }
       else {
@@ -197,7 +200,8 @@ public class AabbUtil {
       else if (side(ad, getEdgeRay(Edge.HG, axisalignedbb)) > 0.0D) {
         return null;
       }
-      else if (side(ad, getEdgeRay(Edge.AD, axisalignedbb)) > 0.0D && side(ad, getEdgeRay(Edge.DH, axisalignedbb)) > 0.0D) {
+      else if (side(ad, getEdgeRay(Edge.AD, axisalignedbb)) > 0.0D &&
+          side(ad, getEdgeRay(Edge.DH, axisalignedbb)) > 0.0D) {
         return Direction.YN;
       }
       else {
@@ -232,7 +236,8 @@ public class AabbUtil {
       else if (side(ad, getEdgeRay(Edge.BC, axisalignedbb)) > 0.0D) {
         return null;
       }
-      else if (side(ad, getEdgeRay(Edge.EF, axisalignedbb)) > 0.0D && side(ad, getEdgeRay(Edge.BF, axisalignedbb)) < 0.0D) {
+      else if (side(ad, getEdgeRay(Edge.EF, axisalignedbb)) > 0.0D &&
+          side(ad, getEdgeRay(Edge.BF, axisalignedbb)) < 0.0D) {
         return Direction.XN;
       }
       else {
@@ -267,7 +272,8 @@ public class AabbUtil {
       else if (side(ad, getEdgeRay(Edge.CG, axisalignedbb)) > 0.0D) {
         return null;
       }
-      else if (side(ad, getEdgeRay(Edge.AB, axisalignedbb)) > 0.0D && side(ad, getEdgeRay(Edge.BC, axisalignedbb)) > 0.0D) {
+      else if (side(ad, getEdgeRay(Edge.AB, axisalignedbb)) > 0.0D &&
+          side(ad, getEdgeRay(Edge.BC, axisalignedbb)) > 0.0D) {
         return Direction.ZN;
       }
       else {
@@ -302,7 +308,8 @@ public class AabbUtil {
       else if (side(ad, getEdgeRay(Edge.FG, axisalignedbb)) > 0.0D) {
         return null;
       }
-      else if (side(ad, getEdgeRay(Edge.AE, axisalignedbb)) > 0.0D && side(ad, getEdgeRay(Edge.EF, axisalignedbb)) > 0.0D) {
+      else if (side(ad, getEdgeRay(Edge.AE, axisalignedbb)) > 0.0D &&
+          side(ad, getEdgeRay(Edge.EF, axisalignedbb)) > 0.0D) {
         return Direction.XN;
       }
       else {
@@ -336,19 +343,22 @@ public class AabbUtil {
     else if (side(ad, getEdgeRay(Edge.BF, axisalignedbb)) > 0.0D) {
       return null;
     }
-    else if (side(ad, getEdgeRay(Edge.AB, axisalignedbb)) < 0.0D && side(ad, getEdgeRay(Edge.AE, axisalignedbb)) > 0.0D) {
+    else if (side(ad, getEdgeRay(Edge.AB, axisalignedbb)) < 0.0D &&
+        side(ad, getEdgeRay(Edge.AE, axisalignedbb)) > 0.0D) {
       return Direction.XN;
     }
     else {
       return side(ad, getEdgeRay(Edge.AD, axisalignedbb)) < 0.0D ? Direction.ZN : Direction.YN;
     }
   }
-
+  
   private static double[] getRay(Vec3D vec3d, Vec3D vec3d1) {
-    double[] ad = new double[]{vec3d.a * vec3d1.b - vec3d1.a * vec3d.b, vec3d.a * vec3d1.c - vec3d1.a * vec3d.c, -vec3d1.a, vec3d.b * vec3d1.c - vec3d1.b * vec3d.c, -vec3d1.c, vec3d1.b};
+    double[] ad =
+        new double[]{vec3d.a * vec3d1.b - vec3d1.a * vec3d.b, vec3d.a * vec3d1.c - vec3d1.a * vec3d.c, -vec3d1.a,
+            vec3d.b * vec3d1.c - vec3d1.b * vec3d.c, -vec3d1.c, vec3d1.b};
     return ad;
   }
-
+  
   private static double[] getEdgeRay(Edge edge, AxisAlignedBB axisalignedbb) {
     switch (edge.ordinal() + 1) {
       case 1:
@@ -379,25 +389,25 @@ public class AabbUtil {
         return new double[0];
     }
   }
-
+  
   private static double side(double[] ad, double[] ad1) {
     return ad[2] * ad1[3] + ad[5] * ad1[1] + ad[4] * ad1[0] + ad[1] * ad1[5] + ad[0] * ad1[4] + ad[3] * ad1[2];
   }
-
+  
   private static Vec3D getIntersectionWithPlane(Vec3D vec3d, Vec3D vec3d1, Vec3D vec3d2, Vec3D vec3d3) {
     double d = getDistanceToPlane(vec3d, vec3d1, vec3d2, vec3d3);
     return Vec3D.a(vec3d.a + vec3d1.a * d, vec3d.b + vec3d1.b * d, vec3d.c + vec3d1.c * d);
   }
-
+  
   private static double getDistanceToPlane(Vec3D vec3d, Vec3D vec3d1, Vec3D vec3d2, Vec3D vec3d3) {
     Vec3D vec3d4 = Vec3D.a(vec3d2.a - vec3d.a, vec3d2.b - vec3d.b, vec3d2.c - vec3d.c);
     return dotProduct(vec3d4, vec3d3) / dotProduct(vec3d1, vec3d3);
   }
-
+  
   private static double dotProduct(Vec3D vec3d, Vec3D vec3d1) {
     return vec3d.a * vec3d1.a + vec3d.b * vec3d1.b + vec3d.c * vec3d1.c;
   }
-
+  
   enum Edge {
     AD,
     AB,

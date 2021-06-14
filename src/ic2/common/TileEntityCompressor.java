@@ -1,10 +1,7 @@
 package ic2.common;
 
 import ic2.api.Ic2Recipes;
-import net.minecraft.server.Block;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.Item;
-import net.minecraft.server.ItemStack;
+import net.minecraft.server.*;
 
 import java.util.List;
 import java.util.Vector;
@@ -12,11 +9,11 @@ import java.util.Vector;
 public class TileEntityCompressor extends TileEntityElectricMachine {
   public static List recipes = new Vector();
   public TileEntityPump validPump;
-
+  
   public TileEntityCompressor() {
     super(3, 2, 400, 32);
   }
-
+  
   public static void init() {
     Ic2Recipes.addCompressorRecipe(Ic2Items.plantBall, Ic2Items.compressedPlantBall);
     Ic2Recipes.addCompressorRecipe(Ic2Items.hydratedCoalDust, Ic2Items.hydratedCoalClump);
@@ -30,33 +27,34 @@ public class TileEntityCompressor extends TileEntityElectricMachine {
     Ic2Recipes.addCompressorRecipe(Ic2Items.coalChunk, new ItemStack(Item.DIAMOND));
     Ic2Recipes.addCompressorRecipe(Ic2Items.constructionFoam, Ic2Items.constructionFoamPellet);
   }
-
+  
   public ItemStack getResultFor(ItemStack itemstack, boolean flag) {
     return Ic2Recipes.getCompressorOutputFor(itemstack, flag);
   }
-
+  
   public boolean canOperate() {
     if (this.getValidPump() == null) {
       return super.canOperate();
     }
     else {
-      return this.inventory[2] == null || this.inventory[2].doMaterialsMatch(new ItemStack(Item.SNOW_BALL)) && this.inventory[2].count < Item.SNOW_BALL.getMaxStackSize();
+      return this.inventory[2] == null || this.inventory[2].doMaterialsMatch(new ItemStack(Item.SNOW_BALL)) &&
+          this.inventory[2].count < Item.SNOW_BALL.getMaxStackSize();
     }
   }
-
+  
   public void operate() {
     if (this.canOperate()) {
       ItemStack itemstack = null;
       if (this.inventory[0] != null) {
         itemstack = this.getResultFor(this.inventory[0], false);
       }
-
+  
       if (itemstack == null) {
         TileEntityPump tileentitypump = this.getValidPump();
         if (tileentitypump == null) {
           return;
         }
-
+    
         tileentitypump.pumpCharge = 0;
         this.world.setTypeId(tileentitypump.x, tileentitypump.y - 1, tileentitypump.z, 0);
         if (this.inventory[2] == null) {
@@ -69,10 +67,10 @@ public class TileEntityCompressor extends TileEntityElectricMachine {
       else {
         super.operate();
       }
-
+  
     }
   }
-
+  
   public TileEntityPump getValidPump() {
     if (this.validPump != null && this.validPump.isPumpReady() && this.validPump.isWaterBelow()) {
       return this.validPump;
@@ -85,55 +83,55 @@ public class TileEntityCompressor extends TileEntityElectricMachine {
           return this.validPump = tileentitypump4;
         }
       }
-
+  
       if (this.world.getTileEntity(this.x + 1, this.y, this.z) instanceof TileEntityPump) {
         tileentitypump4 = (TileEntityPump) this.world.getTileEntity(this.x + 1, this.y, this.z);
         if (tileentitypump4.isPumpReady() && tileentitypump4.isWaterBelow()) {
           return this.validPump = tileentitypump4;
         }
       }
-
+  
       if (this.world.getTileEntity(this.x - 1, this.y, this.z) instanceof TileEntityPump) {
         tileentitypump4 = (TileEntityPump) this.world.getTileEntity(this.x - 1, this.y, this.z);
         if (tileentitypump4.isPumpReady() && tileentitypump4.isWaterBelow()) {
           return this.validPump = tileentitypump4;
         }
       }
-
+  
       if (this.world.getTileEntity(this.x, this.y, this.z + 1) instanceof TileEntityPump) {
         tileentitypump4 = (TileEntityPump) this.world.getTileEntity(this.x, this.y, this.z + 1);
         if (tileentitypump4.isPumpReady() && tileentitypump4.isWaterBelow()) {
           return this.validPump = tileentitypump4;
         }
       }
-
+  
       if (this.world.getTileEntity(this.x, this.y, this.z - 1) instanceof TileEntityPump) {
         tileentitypump4 = (TileEntityPump) this.world.getTileEntity(this.x, this.y, this.z - 1);
         if (tileentitypump4.isPumpReady() && tileentitypump4.isWaterBelow()) {
           return this.validPump = tileentitypump4;
         }
       }
-
+  
       return null;
     }
   }
-
+  
   public String getName() {
     return "Compressor";
   }
-
+  
   public String getGuiClassName(EntityHuman entityhuman) {
     return "GuiCompressor";
   }
-
+  
   public String getStartSoundFile() {
     return "Machines/CompressorOp.ogg";
   }
-
+  
   public String getInterruptSoundFile() {
     return "Machines/InterruptOne.ogg";
   }
-
+  
   public float getWrenchDropRate() {
     return 0.85F;
   }

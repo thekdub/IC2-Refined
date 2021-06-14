@@ -14,7 +14,7 @@ public class ItemMug extends ItemIC2 {
     super(i, j);
     this.e(1);
   }
-
+  
   public boolean interactWith(ItemStack itemstack, EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     if (world.getTypeId(i, j, k) == Ic2Items.blockBarrel.id) {
       TileEntityBarrel tileentitybarrel = (TileEntityBarrel) world.getTileEntity(i, j, k);
@@ -27,10 +27,10 @@ public class ItemMug extends ItemIC2 {
           if (breakev.isCancelled()) {
             return false;
           }
-
+  
           breakev.setCancelled(true);
         }
-
+  
         int i1 = tileentitybarrel.calculateMetaValue();
         if (tileentitybarrel.drainLiquid(1) && Platform.isSimulating()) {
           ItemStack itemstack1 = new ItemStack(Ic2Items.mugBooze.id, 1, i1);
@@ -43,7 +43,7 @@ public class ItemMug extends ItemIC2 {
           else {
             entityhuman.inventory.items[entityhuman.inventory.itemInHandIndex] = itemstack1;
           }
-
+  
           return true;
         }
         else {

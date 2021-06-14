@@ -9,11 +9,11 @@ import java.util.Vector;
 
 public class ItemScrapbox extends ItemIC2 {
   public static List dropList = new Vector();
-
+  
   public ItemScrapbox(int i, int j) {
     super(i, j);
   }
-
+  
   public static void init() {
     if (mod_IC2.suddenlyHoes) {
       addDrop(Item.WOOD_HOE, 9001.0F);
@@ -21,7 +21,7 @@ public class ItemScrapbox extends ItemIC2 {
     else {
       addDrop(Item.WOOD_HOE, 5.01F);
     }
-
+    
     addDrop(Block.DIRT, 5.0F);
     addDrop(Item.STICK, 4.0F);
     addDrop(Block.GRASS, 3.0F);
@@ -63,42 +63,42 @@ public class ItemScrapbox extends ItemIC2 {
     if (Ic2Items.copperOre != null) {
       addDrop(Ic2Items.copperOre.getItem(), 0.7F);
     }
-
+    
     if (Ic2Items.tinOre != null) {
       addDrop(Ic2Items.tinOre.getItem(), 0.7F);
     }
-
+    
   }
-
+  
   public static void addDrop(Item item) {
     addDrop(new ItemStack(item), 1.0F);
   }
-
+  
   public static void addDrop(Item item, float f) {
     addDrop(new ItemStack(item), f);
   }
-
+  
   public static void addDrop(Block block) {
     addDrop(new ItemStack(block), 1.0F);
   }
-
+  
   public static void addDrop(Block block, float f) {
     addDrop(new ItemStack(block), f);
   }
-
+  
   public static void addDrop(ItemStack itemstack) {
     addDrop(itemstack, 1.0F);
   }
-
+  
   public static void addDrop(ItemStack itemstack, float f) {
     dropList.add(new Drop(itemstack, f));
   }
-
+  
   public static ItemStack getDrop(World world) {
     if (!dropList.isEmpty()) {
       float f = world.random.nextFloat() * ((Drop) dropList.get(dropList.size() - 1)).upperChanceBound;
       Iterator iterator = dropList.iterator();
-
+  
       while (iterator.hasNext()) {
         Drop drop = (Drop) iterator.next();
         if (drop.upperChanceBound >= f) {
@@ -106,48 +106,49 @@ public class ItemScrapbox extends ItemIC2 {
         }
       }
     }
-
+    
     return null;
   }
-
+  
   public static List getDropList() {
     Vector vector = new Vector();
     Iterator iterator = dropList.iterator();
-
+    
     while (iterator.hasNext()) {
       Drop drop = (Drop) iterator.next();
       vector.add(new SimpleEntry(drop.itemStack, drop.upperChanceBound));
     }
-
+    
     return vector;
   }
-
+  
   public ItemStack a(ItemStack itemstack, World world, EntityHuman entityhuman) {
     if (!entityhuman.abilities.canInstantlyBuild) {
       --itemstack.count;
     }
-
+    
     ItemStack itemstack1 = getDrop(world);
     if (itemstack1 != null) {
       entityhuman.drop(itemstack1);
     }
-
+    
     return itemstack;
   }
-
+  
   static class Drop {
     ItemStack itemStack;
     float upperChanceBound;
-
+    
     Drop(ItemStack itemstack, float f) {
       this.itemStack = itemstack;
       if (ItemScrapbox.dropList.isEmpty()) {
         this.upperChanceBound = f;
       }
       else {
-        this.upperChanceBound = ((Drop) ItemScrapbox.dropList.get(ItemScrapbox.dropList.size() - 1)).upperChanceBound + f;
+        this.upperChanceBound =
+            ((Drop) ItemScrapbox.dropList.get(ItemScrapbox.dropList.size() - 1)).upperChanceBound + f;
       }
-
+      
     }
   }
 }

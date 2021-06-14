@@ -17,7 +17,7 @@ public class BlockRubWood extends BlockTex {
     ModLoader.registerBlock(this, ItemBlockCommon.class);
     Ic2Items.rubberWood = new ItemStack(this);
   }
-
+  
   public int getBlockTexture(IBlockAccess iblockaccess, int i, int j, int k, int l) {
     int i1 = iblockaccess.getData(i, j, k);
     if (l < 2) {
@@ -30,31 +30,31 @@ public class BlockRubWood extends BlockTex {
       return 44;
     }
   }
-
+  
   public int a(int i, int j) {
     return i >= 2 ? 44 : 47;
   }
-
+  
   public void dropNaturally(World world, int i, int j, int k, int l, float f, int i1) {
     if (Platform.isSimulating()) {
       int j1 = this.a(world.random);
-
+  
       for (int k1 = 0; k1 < j1; ++k1) {
         if (world.random.nextFloat() <= f) {
           int l1 = this.getDropType(l, world.random, 0);
           if (l1 > 0) {
             this.a(world, i, j, k, new ItemStack(l1, 1, 0));
           }
-
+  
           if (l != 0 && world.random.nextInt(6) == 0) {
             this.a(world, i, j, k, new ItemStack(Ic2Items.resin.getItem()));
           }
         }
       }
-
+  
     }
   }
-
+  
   public void remove(World world, int i, int j, int k) {
     byte byte0 = 4;
     int l = byte0 + 1;
@@ -73,9 +73,9 @@ public class BlockRubWood extends BlockTex {
         }
       }
     }
-
+    
   }
-
+  
   public void a(World world, int i, int j, int k, Random random) {
     int l = world.getData(i, j, k);
     if (l >= 6) {
@@ -86,14 +86,14 @@ public class BlockRubWood extends BlockTex {
       else {
         world.c(i, j, k, this.id, this.d());
       }
-
+  
     }
   }
-
+  
   public int d() {
     return 100;
   }
-
+  
   public int g() {
     return 2;
   }

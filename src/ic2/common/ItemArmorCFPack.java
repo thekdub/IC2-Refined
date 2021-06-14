@@ -8,7 +8,7 @@ public class ItemArmorCFPack extends ItemArmorUtility {
     super(i, j, k, 1);
     this.setMaxDurability(260);
   }
-
+  
   public boolean getCFPellet(EntityHuman entityhuman, ItemStack itemstack) {
     if (itemstack.getData() < itemstack.i() - 1) {
       itemstack.setData(itemstack.getData() + 1);
@@ -18,7 +18,7 @@ public class ItemArmorCFPack extends ItemArmorUtility {
       return false;
     }
   }
-
+  
   public boolean isRepairable() {
     return true;
   }

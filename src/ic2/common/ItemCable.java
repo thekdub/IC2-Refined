@@ -1,10 +1,7 @@
 package ic2.common;
 
 import ic2.api.IBoxable;
-import net.minecraft.server.Block;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.World;
+import net.minecraft.server.*;
 import org.bukkit.craftbukkit.block.CraftBlockState;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -29,11 +26,11 @@ public class ItemCable extends ItemIC2 implements IBoxable {
     Ic2Items.detectorCableItem = new ItemStack(this, 1, 11);
     Ic2Items.splitterCableItem = new ItemStack(this, 1, 12);
   }
-
+  
   public int getIconFromDamage(int i) {
     return this.textureId + i;
   }
-
+  
   public String a(ItemStack itemstack) {
     int i = itemstack.getData();
     switch (i) {
@@ -67,7 +64,7 @@ public class ItemCable extends ItemIC2 implements IBoxable {
         return null;
     }
   }
-
+  
   public boolean interactWith(ItemStack itemstack, EntityHuman entityhuman, World world, int i, int j, int k, int l) {
     int clickedX = i;
     int clickedY = j;
@@ -99,43 +96,45 @@ public class ItemCable extends ItemIC2 implements IBoxable {
         }
       }
     }
-
+    
     BlockCable blockcable = (BlockCable) Block.byId[Ic2Items.insulatedCopperCableBlock.id];
-    if ((i1 == 0 || world.mayPlace(i1, i, j, k, true, l)) && world.containsEntity(blockcable.getCollisionBoundingBoxFromPool(world, i, j, k, itemstack.getData()))) {
+    if ((i1 == 0 || world.mayPlace(i1, i, j, k, true, l)) &&
+        world.containsEntity(blockcable.getCollisionBoundingBoxFromPool(world, i, j, k, itemstack.getData()))) {
       CraftBlockState replacedBlockState = CraftBlockState.getBlockState(world, i, j, k);
       if (world.setRawTypeIdAndData(i, j, k, blockcable.id, itemstack.getData())) {
-        BlockPlaceEvent event = CraftEventFactory.callBlockPlaceEvent(world, entityhuman, replacedBlockState, clickedX, clickedY, clickedZ);
+        BlockPlaceEvent event =
+            CraftEventFactory.callBlockPlaceEvent(world, entityhuman, replacedBlockState, clickedX, clickedY, clickedZ);
         if (event.isCancelled() || !event.canBuild()) {
           world.setTypeIdAndData(i, j, k, replacedBlockState.getTypeId(), replacedBlockState.getRawData());
           return true;
         }
-
+        
         world.notify(i, j, k);
         world.applyPhysics(i, j, k, i1);
         blockcable.postPlace(world, i, j, k, l);
         blockcable.postPlace(world, i, j, k, entityhuman);
         --itemstack.count;
       }
-
+      
       return true;
     }
     else {
       return false;
     }
   }
-
+  
   public void addCreativeItems(ArrayList arraylist) {
     for (int i = 0; i < 32767; ++i) {
       ItemStack itemstack = new ItemStack(this, 1, i);
       if (this.a(itemstack) == null) {
         break;
       }
-
+  
       arraylist.add(itemstack);
     }
-
+    
   }
-
+  
   public boolean canBeStoredInToolbox(ItemStack itemstack) {
     return true;
   }

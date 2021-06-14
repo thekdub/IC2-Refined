@@ -8,7 +8,7 @@ public class ItemAxeCommon extends ItemAxe {
   public ItemAxeCommon(int i, EnumToolMaterial enumtoolmaterial) {
     super(i, enumtoolmaterial);
   }
-
+  
   public int rarity(ItemStack itemstack) {
     return 0;
   }

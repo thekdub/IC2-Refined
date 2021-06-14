@@ -16,11 +16,11 @@ public class BlockMetal extends Block implements ITextureProvider {
     Ic2Items.tinBlock = new ItemStack(this, 1, 1);
     Ic2Items.uraniumBlock = new ItemStack(this, 1, 3);
   }
-
+  
   protected int getDropData(int i) {
     return i;
   }
-
+  
   public int a(int i, int j) {
     switch (j) {
       case 0:
@@ -35,11 +35,11 @@ public class BlockMetal extends Block implements ITextureProvider {
         return 0;
     }
   }
-
+  
   public String getTextureFile() {
     return "/ic2/sprites/block_0.png";
   }
-
+  
   public void addCreativeItems(ArrayList arraylist) {
     for (int i = 0; i < 16; ++i) {
       ItemStack itemstack = new ItemStack(this, 1, i);
@@ -47,6 +47,6 @@ public class BlockMetal extends Block implements ITextureProvider {
         arraylist.add(itemstack);
       }
     }
-
+    
   }
 }

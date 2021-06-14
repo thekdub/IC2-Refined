@@ -13,23 +13,23 @@ public class BlockDynamite extends BlockTex {
     this.addToCreative = false;
     ModLoader.registerBlock(this, ItemBlockCommon.class);
   }
-
+  
   public AxisAlignedBB e(World world, int i, int j, int k) {
     return null;
   }
-
+  
   public boolean a() {
     return false;
   }
-
+  
   public boolean b() {
     return false;
   }
-
+  
   public int c() {
     return 2;
   }
-
+  
   public boolean canPlace(World world, int i, int j, int k) {
     if (world.e(i - 1, j, k)) {
       return true;
@@ -44,40 +44,40 @@ public class BlockDynamite extends BlockTex {
       return world.e(i, j, k + 1) || world.e(i, j - 1, k);
     }
   }
-
+  
   public void postPlace(World world, int i, int j, int k, int l) {
     int i1 = world.getData(i, j, k);
     if (l == 1 && world.e(i, j - 1, k)) {
       i1 = 5;
     }
-
+    
     if (l == 2 && world.e(i, j, k + 1)) {
       i1 = 4;
     }
-
+    
     if (l == 3 && world.e(i, j, k - 1)) {
       i1 = 3;
     }
-
+    
     if (l == 4 && world.e(i + 1, j, k)) {
       i1 = 2;
     }
-
+    
     if (l == 5 && world.e(i - 1, j, k)) {
       i1 = 1;
     }
-
+    
     world.setData(i, j, k, i1);
   }
-
+  
   public void a(World world, int i, int j, int k, Random random) {
     super.a(world, i, j, k, random);
     if (world.getData(i, j, k) == 0) {
       this.onPlace(world, i, j, k);
     }
-
+    
   }
-
+  
   public void onPlace(World world, int i, int j, int k) {
     if (world.isBlockIndirectlyPowered(i, j, k)) {
       this.postBreak(world, i, j, k, 1);
@@ -99,34 +99,37 @@ public class BlockDynamite extends BlockTex {
       else if (world.e(i, j, k + 1)) {
         world.setData(i, j, k, 4);
       }
-
+  
       this.dropBlockIfCantStay(world, i, j, k);
     }
   }
-
+  
   public int a(Random random) {
     return 0;
   }
-
+  
   public int getDropType(int i, Random random, int j) {
     return Ic2Items.dynamite.id;
   }
-
+  
   public void wasExploded(World world, int i, int j, int k) {
-    EntityDynamite entitydynamite = new EntityDynamite(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
+    EntityDynamite entitydynamite = new EntityDynamite(world, (float) i + 0.5F, (float) j + 0.5F,
+        (float) k + 0.5F);
     entitydynamite.fuse = 5;
     world.addEntity(entitydynamite);
   }
-
+  
   public void postBreak(World world, int i, int j, int k, int l) {
     if (Platform.isSimulating()) {
-      EntityDynamite entitydynamite = new EntityDynamite(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
+      EntityDynamite entitydynamite =
+          new EntityDynamite(world, (float) i + 0.5F, (float) j + 0.5F,
+              (float) k + 0.5F);
       entitydynamite.fuse = 40;
       world.addEntity(entitydynamite);
       world.makeSound(entitydynamite, "random.fuse", 1.0F, 1.0F);
     }
   }
-
+  
   public void doPhysics(World world, int i, int j, int k, int l) {
     if (l > 0 && Block.byId[l].isPowerSource() && world.isBlockIndirectlyPowered(i, j, k)) {
       this.postBreak(world, i, j, k, 1);
@@ -139,32 +142,32 @@ public class BlockDynamite extends BlockTex {
         if (!world.e(i - 1, j, k) && i1 == 1) {
           flag = true;
         }
-
+  
         if (!world.e(i + 1, j, k) && i1 == 2) {
           flag = true;
         }
-
+  
         if (!world.e(i, j, k - 1) && i1 == 3) {
           flag = true;
         }
-
+  
         if (!world.e(i, j, k + 1) && i1 == 4) {
           flag = true;
         }
-
+  
         if (!world.e(i, j - 1, k) && i1 == 5) {
           flag = true;
         }
-
+  
         if (flag) {
           this.b(world, i, j, k, world.getData(i, j, k), 0);
           world.setTypeId(i, j, k, 0);
         }
       }
-
+  
     }
   }
-
+  
   public boolean dropBlockIfCantStay(World world, int i, int j, int k) {
     if (!this.canPlace(world, i, j, k)) {
       this.wasExploded(world, i, j, k);
@@ -175,7 +178,7 @@ public class BlockDynamite extends BlockTex {
       return true;
     }
   }
-
+  
   public MovingObjectPosition a(World world, int i, int j, int k, Vec3D vec3d, Vec3D vec3d1) {
     int l = world.getData(i, j, k) & 7;
     float f = 0.15F;
@@ -195,7 +198,7 @@ public class BlockDynamite extends BlockTex {
       float f1 = 0.1F;
       this.a(0.5F - f1, 0.0F, 0.5F - f1, 0.5F + f1, 0.6F, 0.5F + f1);
     }
-
+    
     return super.a(world, i, j, k, vec3d, vec3d1);
   }
 }

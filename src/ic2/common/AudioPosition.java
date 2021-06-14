@@ -9,14 +9,14 @@ public class AudioPosition {
   public float x;
   public float y;
   public float z;
-
+  
   public AudioPosition(World world1, float f, float f1, float f2) {
     this.world = world1;
     this.x = f;
     this.y = f1;
     this.z = f2;
   }
-
+  
   public static AudioPosition getFrom(Object obj, PositionSpec positionspec) {
     if (obj instanceof AudioPosition) {
       return (AudioPosition) obj;
@@ -27,7 +27,8 @@ public class AudioPosition {
     }
     else if (obj instanceof TileEntity) {
       TileEntity tileentity = (TileEntity) obj;
-      return new AudioPosition(tileentity.world, (float) tileentity.x + 0.5F, (float) tileentity.y + 0.5F, (float) tileentity.z + 0.5F);
+      return new AudioPosition(tileentity.world, (float) tileentity.x + 0.5F, (float) tileentity.y + 0.5F,
+          (float) tileentity.z + 0.5F);
     }
     else {
       return null;

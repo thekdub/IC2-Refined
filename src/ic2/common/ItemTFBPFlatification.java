@@ -9,11 +9,11 @@ import java.util.ArrayList;
 
 public class ItemTFBPFlatification extends ItemTFBP {
   public static ArrayList removeIDs = new ArrayList();
-
+  
   public ItemTFBPFlatification(int i, int j) {
     super(i, j);
   }
-
+  
   public static void init() {
     removeIDs.add(Block.SNOW.id);
     removeIDs.add(Block.ICE.id);
@@ -35,25 +35,25 @@ public class ItemTFBPFlatification extends ItemTFBP {
     if (Ic2Items.rubberLeaves != null) {
       removeIDs.add(Ic2Items.rubberLeaves.id);
     }
-
+    
     if (Ic2Items.rubberSapling != null) {
       removeIDs.add(Ic2Items.rubberSapling.id);
     }
-
+    
     if (Ic2Items.rubberWood != null) {
       removeIDs.add(Ic2Items.rubberWood.id);
     }
-
+    
   }
-
+  
   public int getConsume() {
     return 4000;
   }
-
+  
   public int getRange() {
     return 40;
   }
-
+  
   public boolean terraform(World world, int i, int j, int k) {
     int l = TileEntityTerra.getFirstBlockFrom(world, i, j, k + 20);
     if (l == -1) {
@@ -71,7 +71,7 @@ public class ItemTFBPFlatification extends ItemTFBP {
         if (world.getTypeId(i, l, j) == Block.SNOW.id) {
           --l;
         }
-
+  
         if (l == k) {
           return false;
         }
@@ -89,14 +89,14 @@ public class ItemTFBPFlatification extends ItemTFBP {
       }
     }
   }
-
+  
   public boolean canRemove(int i) {
     for (int j = 0; j < removeIDs.size(); ++j) {
       if ((Integer) removeIDs.get(j) == i) {
         return true;
       }
     }
-
+    
     return false;
   }
 }

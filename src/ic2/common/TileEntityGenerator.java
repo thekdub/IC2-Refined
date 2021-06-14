@@ -1,18 +1,15 @@
 package ic2.common;
 
 import forge.ISidedInventory;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.Item;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.mod_IC2;
+import net.minecraft.server.*;
 
 public class TileEntityGenerator extends TileEntityBaseGenerator implements ISidedInventory {
   public int itemFuelTime = 0;
-
+  
   public TileEntityGenerator() {
     super(2, mod_IC2.energyGeneratorBase, 4000);
   }
-
+  
   public int gaugeFuelScaled(int i) {
     if (this.fuel <= 0) {
       return 0;
@@ -21,16 +18,16 @@ public class TileEntityGenerator extends TileEntityBaseGenerator implements ISid
       if (this.itemFuelTime <= 0) {
         this.itemFuelTime = this.fuel;
       }
-
+  
       int j = this.fuel * i / this.itemFuelTime;
       if (j > i) {
         j = i;
       }
-
+  
       return j;
     }
   }
-
+  
   public boolean gainFuel() {
     if (this.inventory[1] == null) {
       return false;
@@ -43,7 +40,7 @@ public class TileEntityGenerator extends TileEntityBaseGenerator implements ISid
       if (this.inventory[1].doMaterialsMatch(Ic2Items.scrap) && !mod_IC2.enableBurningScrap) {
         i = 0;
       }
-
+  
       if (i <= 0) {
         return false;
       }
@@ -56,36 +53,36 @@ public class TileEntityGenerator extends TileEntityBaseGenerator implements ISid
         else {
           --this.inventory[1].count;
         }
-
+    
         if (this.inventory[1].count == 0) {
           this.inventory[1] = null;
         }
-
+    
         return true;
       }
     }
   }
-
+  
   public String getName() {
     return "Generator";
   }
-
+  
   public String getGuiClassName(EntityHuman entityhuman) {
     return "GuiGenerator";
   }
-
+  
   public boolean isConverting() {
     return this.fuel > 0;
   }
-
+  
   public String getOperationSoundFile() {
     return "Generators/GeneratorLoop.ogg";
   }
-
+  
   public ContainerIC2 getGuiContainer(EntityHuman entityhuman) {
     return new ContainerBaseGenerator(entityhuman, this);
   }
-
+  
   public int getStartInventorySide(int i) {
     switch (i) {
       case 0:
@@ -95,7 +92,7 @@ public class TileEntityGenerator extends TileEntityBaseGenerator implements ISid
         return 0;
     }
   }
-
+  
   public int getSizeInventorySide(int i) {
     return 1;
   }

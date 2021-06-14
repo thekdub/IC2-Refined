@@ -7,7 +7,7 @@ public class BaseSeed {
   public int statGain;
   public int statResistance;
   public int stackSize;
-
+  
   public BaseSeed(int i, int j, int k, int l, int i1, int j1) {
     this.id = i;
     this.size = j;

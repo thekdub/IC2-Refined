@@ -11,7 +11,7 @@ public class ItemElectricToolDDrill extends ItemElectricToolDrill {
     this.tier = 1;
     this.a = 16.0F;
   }
-
+  
   public void init() {
     super.init();
     this.mineableBlocks.add(Block.OBSIDIAN);

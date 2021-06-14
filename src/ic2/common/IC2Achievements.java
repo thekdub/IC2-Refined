@@ -10,16 +10,17 @@ import java.util.HashMap;
 
 public class IC2Achievements {
   public static HashMap achievementList;
-  private static int achievementBaseX = -4;
-  private static int achievementBaseY = -5;
-
+  private static final int achievementBaseX = -4;
+  private static final int achievementBaseY = -5;
+  
   public static void init() {
     achievementList = new HashMap();
     registerAchievement(736750, "acquireResin", 2, 0, Ic2Items.resin, AchievementList.g, false);
     if (Ic2Items.copperOre != null || Ic2Items.tinOre != null || Ic2Items.uraniumOre != null) {
-      registerAchievement(736751, "mineOre", 4, 0, Ic2Items.copperOre != null ? Ic2Items.copperOre : (Ic2Items.tinOre != null ? Ic2Items.tinOre : Ic2Items.uraniumOre), AchievementList.o, false);
+      registerAchievement(736751, "mineOre", 4, 0, Ic2Items.copperOre != null ? Ic2Items.copperOre :
+          (Ic2Items.tinOre != null ? Ic2Items.tinOre : Ic2Items.uraniumOre), AchievementList.o, false);
     }
-
+    
     registerAchievement(736752, "acquireRefinedIron", 0, 0, Ic2Items.refinedIronIngot, AchievementList.k, false);
     registerAchievement(736753, "buildCable", 0, 2, Ic2Items.insulatedCopperCableItem, "acquireRefinedIron", false);
     registerAchievement(736754, "buildGenerator", 6, 2, Ic2Items.generator, "buildCable", false);
@@ -47,144 +48,153 @@ public class IC2Achievements {
     registerAchievement(736777, "buildTeleporter", 4, 10, Ic2Items.teleporter, "buildMFS", false);
     registerAchievement(736778, "teleportFarAway", 2, 10, Ic2Items.teleporter, "buildTeleporter", true);
     registerAchievement(736779, "buildTerraformer", 8, 10, Ic2Items.terraformer, "buildMFS", false);
-    registerAchievement(736780, "terraformEndCultivation", 10, 10, Ic2Items.cultivationTerraformerBlueprint, "buildTerraformer", true);
-    MinecraftForge.registerAchievementPage(new AchievementPage("IndustrialCraft 2", (Achievement[]) achievementList.values().toArray(new Achievement[achievementList.size()])));
+    registerAchievement(736780, "terraformEndCultivation", 10, 10, Ic2Items.cultivationTerraformerBlueprint,
+        "buildTerraformer", true);
+    MinecraftForge.registerAchievementPage(new AchievementPage("IndustrialCraft 2",
+        (Achievement[]) achievementList.values().toArray(new Achievement[achievementList.size()])));
   }
-
-  public static Achievement registerAchievement(int i, String s, int j, int k, ItemStack itemstack, Achievement achievement, boolean flag) {
-    Achievement achievement1 = new Achievement(i, s, achievementBaseX + j, achievementBaseY + k, itemstack, achievement);
+  
+  public static Achievement registerAchievement(int i, String s, int j, int k, ItemStack itemstack,
+                                                Achievement achievement, boolean flag) {
+    Achievement achievement1 =
+        new Achievement(i, s, achievementBaseX + j, achievementBaseY + k, itemstack, achievement);
     if (flag) {
       achievement1.b();
     }
-
+    
     achievement1.c();
     achievementList.put(s, achievement1);
     return achievement1;
   }
-
-  public static Achievement registerAchievement(int i, String s, int j, int k, ItemStack itemstack, String s1, boolean flag) {
-    Achievement achievement = new Achievement(i, s, achievementBaseX + j, achievementBaseY + k, itemstack, getAchievement(s1));
+  
+  public static Achievement registerAchievement(int i, String s, int j, int k, ItemStack itemstack, String s1,
+                                                boolean flag) {
+    Achievement achievement =
+        new Achievement(i, s, achievementBaseX + j, achievementBaseY + k, itemstack, getAchievement(s1));
     if (flag) {
       achievement.b();
     }
-
+    
     achievement.c();
     achievementList.put(s, achievement);
     return achievement;
   }
-
+  
   public static void issueAchievement(EntityHuman entityhuman, String s) {
     if (achievementList.containsKey(s)) {
       entityhuman.a((Statistic) achievementList.get(s));
     }
-
+    
   }
-
+  
   public static Achievement getAchievement(String s) {
     return achievementList.containsKey(s) ? (Achievement) achievementList.get(s) : null;
   }
-
+  
   public static void takenFromCrafting(EntityHuman entityhuman, ItemStack itemstack, IInventory iinventory) {
     if (itemstack.doMaterialsMatch(Ic2Items.generator)) {
       issueAchievement(entityhuman, "buildGenerator");
     }
-
+    
     if (itemstack.id == Ic2Items.insulatedCopperCableItem.id) {
       issueAchievement(entityhuman, "buildCable");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.macerator)) {
       issueAchievement(entityhuman, "buildMacerator");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.electroFurnace)) {
       issueAchievement(entityhuman, "buildElecFurnace");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.compressor)) {
       issueAchievement(entityhuman, "buildCompressor");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.batBox)) {
       issueAchievement(entityhuman, "buildBatBox");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.mfeUnit)) {
       issueAchievement(entityhuman, "buildMFE");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.teleporter)) {
       issueAchievement(entityhuman, "buildTeleporter");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.massFabricator)) {
       issueAchievement(entityhuman, "buildMassFab");
     }
-
-    if (itemstack.id == Ic2Items.quantumBodyarmor.id || itemstack.id == Ic2Items.quantumBoots.id || itemstack.id == Ic2Items.quantumHelmet.id || itemstack.id == Ic2Items.quantumLeggings.id) {
+    
+    if (itemstack.id == Ic2Items.quantumBodyarmor.id || itemstack.id == Ic2Items.quantumBoots.id ||
+        itemstack.id == Ic2Items.quantumHelmet.id || itemstack.id == Ic2Items.quantumLeggings.id) {
       issueAchievement(entityhuman, "buildQArmor");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.extractor)) {
       issueAchievement(entityhuman, "buildExtractor");
     }
-
+    
     if (itemstack.id == Ic2Items.miningDrill.id) {
       issueAchievement(entityhuman, "buildDrill");
     }
-
+    
     if (itemstack.id == Ic2Items.diamondDrill.id) {
       issueAchievement(entityhuman, "buildDDrill");
     }
-
+    
     if (itemstack.id == Ic2Items.chainsaw.id) {
       issueAchievement(entityhuman, "buildChainsaw");
     }
-
+    
     if (itemstack.id == Ic2Items.miningLaser.id) {
       issueAchievement(entityhuman, "buildMiningLaser");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.mfsUnit)) {
       issueAchievement(entityhuman, "buildMFS");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.terraformer)) {
       issueAchievement(entityhuman, "buildTerraformer");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.coalChunk)) {
       issueAchievement(entityhuman, "buildCoalDiamond");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.inductionFurnace)) {
       issueAchievement(entityhuman, "buildIndFurnace");
     }
-
+    
   }
-
+  
   public static void takenFromFurnace(EntityHuman entityhuman, ItemStack itemstack) {
     if (itemstack.doMaterialsMatch(Ic2Items.refinedIronIngot)) {
       issueAchievement(entityhuman, "acquireRefinedIron");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.uraniumIngot)) {
       issueAchievement(entityhuman, "compressUranium");
     }
-
+    
     if (itemstack.doMaterialsMatch(Ic2Items.matter)) {
       issueAchievement(entityhuman, "acquireMatter");
     }
-
+    
   }
-
+  
   public static void onItemPickup(EntityHuman entityhuman, ItemStack itemstack) {
-    if (Ic2Items.copperOre != null && itemstack.doMaterialsMatch(Ic2Items.copperOre) || Ic2Items.tinOre != null && itemstack.doMaterialsMatch(Ic2Items.tinOre) || Ic2Items.uraniumDrop != null && itemstack.doMaterialsMatch(Ic2Items.uraniumDrop)) {
+    if (Ic2Items.copperOre != null && itemstack.doMaterialsMatch(Ic2Items.copperOre) ||
+        Ic2Items.tinOre != null && itemstack.doMaterialsMatch(Ic2Items.tinOre) ||
+        Ic2Items.uraniumDrop != null && itemstack.doMaterialsMatch(Ic2Items.uraniumDrop)) {
       issueAchievement(entityhuman, "mineOre");
     }
-
+    
   }
-
+  
   public static void addLocalization(Configuration configuration, Ic2 ic2) {
     ic2.addLocalization(configuration, "achievement.acquireRefinedIron", "Better than Iron");
     ic2.addLocalization(configuration, "achievement.acquireRefinedIron.desc", "Smelt a refined iron ingot");
@@ -199,7 +209,8 @@ public class IC2Achievements {
     ic2.addLocalization(configuration, "achievement.buildMacerator", "Double Trouble");
     ic2.addLocalization(configuration, "achievement.buildMacerator.desc", "Build a macerator");
     ic2.addLocalization(configuration, "achievement.buildCoalDiamond", "Shiny");
-    ic2.addLocalization(configuration, "achievement.buildCoalDiamond.desc", "Make a coal chunk to compress into a diamond");
+    ic2.addLocalization(configuration, "achievement.buildCoalDiamond.desc",
+        "Make a coal chunk to compress into a diamond");
     ic2.addLocalization(configuration, "achievement.buildElecFurnace", "Even Hotter Topic");
     ic2.addLocalization(configuration, "achievement.buildElecFurnace.desc", "Build an electric furnace");
     ic2.addLocalization(configuration, "achievement.buildIndFurnace", "Hyperspeed");
@@ -209,7 +220,8 @@ public class IC2Achievements {
     ic2.addLocalization(configuration, "achievement.buildCompressor", "Epic Squeeze");
     ic2.addLocalization(configuration, "achievement.buildCompressor.desc", "Build a compressor");
     ic2.addLocalization(configuration, "achievement.compressUranium", "Radioactivity");
-    ic2.addLocalization(configuration, "achievement.compressUranium.desc", "Compress uranium into an uranium fuel ingot");
+    ic2.addLocalization(configuration, "achievement.compressUranium.desc",
+        "Compress uranium into an uranium fuel ingot");
     ic2.addLocalization(configuration, "achievement.dieFromOwnNuke", "Crazy Ivan");
     ic2.addLocalization(configuration, "achievement.dieFromOwnNuke.desc", "Die from a nuke you have placed");
     ic2.addLocalization(configuration, "achievement.buildExtractor", "Super Treetap");
@@ -221,13 +233,15 @@ public class IC2Achievements {
     ic2.addLocalization(configuration, "achievement.buildDrill", "Meet the Dentist");
     ic2.addLocalization(configuration, "achievement.buildDrill.desc", "Build a mining drill");
     ic2.addLocalization(configuration, "achievement.buildDDrill", "Valuable Upgrade");
-    ic2.addLocalization(configuration, "achievement.buildDDrill.desc", "Upgrade your mining drill to a diamond-tipped mining drill");
+    ic2.addLocalization(configuration, "achievement.buildDDrill.desc",
+        "Upgrade your mining drill to a diamond-tipped mining drill");
     ic2.addLocalization(configuration, "achievement.buildMFE", "Storage Upgrade");
     ic2.addLocalization(configuration, "achievement.buildMFE.desc", "Build a MFE Unit");
     ic2.addLocalization(configuration, "achievement.buildMiningLaser", "Laser Time");
     ic2.addLocalization(configuration, "achievement.buildMiningLaser.desc", "Build a mining laser");
     ic2.addLocalization(configuration, "achievement.killDragonMiningLaser", "Like A Boss");
-    ic2.addLocalization(configuration, "achievement.killDragonMiningLaser.desc", "Kill the enderdragon with a mining laser");
+    ic2.addLocalization(configuration, "achievement.killDragonMiningLaser.desc",
+        "Kill the enderdragon with a mining laser");
     ic2.addLocalization(configuration, "achievement.buildMassFab", "Energy To Matter");
     ic2.addLocalization(configuration, "achievement.buildMassFab.desc", "Build a Mass Fabricator");
     ic2.addLocalization(configuration, "achievement.acquireMatter", "Pink Blob");
@@ -245,6 +259,7 @@ public class IC2Achievements {
     ic2.addLocalization(configuration, "achievement.buildTerraformer", "Change The World");
     ic2.addLocalization(configuration, "achievement.buildTerraformer.desc", "Build a terraformer");
     ic2.addLocalization(configuration, "achievement.terraformEndCultivation", "Endgame Paradise");
-    ic2.addLocalization(configuration, "achievement.terraformEndCultivation.desc", "Terraform the End to look like the overworld");
+    ic2.addLocalization(configuration, "achievement.terraformEndCultivation.desc",
+        "Terraform the End to look like the overworld");
   }
 }

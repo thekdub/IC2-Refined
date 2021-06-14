@@ -16,23 +16,24 @@ public class BlockRubberSheet extends BlockTex {
     ModLoader.registerBlock(this, ItemBlockCommon.class);
     Ic2Items.rubberTrampoline = new ItemStack(this);
   }
-
+  
   public boolean a() {
     return false;
   }
-
+  
   public boolean b() {
     return false;
   }
-
+  
   public boolean canPlace(World world, int i, int j, int k) {
-    return this.isBlockSupporter(world, i - 1, j, k) || this.isBlockSupporter(world, i + 1, j, k) || this.isBlockSupporter(world, i, j, k - 1) || this.isBlockSupporter(world, i, j, k + 1);
+    return this.isBlockSupporter(world, i - 1, j, k) || this.isBlockSupporter(world, i + 1, j, k) ||
+        this.isBlockSupporter(world, i, j, k - 1) || this.isBlockSupporter(world, i, j, k + 1);
   }
-
+  
   public boolean isBlockSupporter(World world, int i, int j, int k) {
     return world.r(i, j, k) || world.getTypeId(i, j, k) == this.id;
   }
-
+  
   public boolean canSupportWeight(World world, int i, int j, int k) {
     if (world.getData(i, j, k) == 1) {
       return true;
@@ -43,90 +44,90 @@ public class BlockRubberSheet extends BlockTex {
       boolean flag2 = false;
       boolean flag3 = false;
       int l = i;
-
+  
       while (true) {
         if (world.r(l, j, k)) {
           flag1 = true;
           break;
         }
-
+    
         if (world.getTypeId(l, j, k) != this.id) {
           break;
         }
-
+    
         if (world.r(l, j - 1, k)) {
           flag1 = true;
           break;
         }
-
+    
         --l;
       }
-
+  
       l = i;
-
+  
       while (true) {
         if (world.r(l, j, k)) {
           flag = true;
           break;
         }
-
+    
         if (world.getTypeId(l, j, k) != this.id) {
           break;
         }
-
+    
         if (world.r(l, j - 1, k)) {
           flag = true;
           break;
         }
-
+    
         ++l;
       }
-
+  
       if (flag && flag1) {
         world.setRawData(i, j, k, 1);
         return true;
       }
       else {
         l = k;
-
+    
         while (true) {
           if (world.r(i, j, l)) {
             flag3 = true;
             break;
           }
-
+      
           if (world.getTypeId(i, j, l) != this.id) {
             break;
           }
-
+      
           if (world.r(i, j - 1, l)) {
             flag3 = true;
             break;
           }
-
+      
           --l;
         }
-
+    
         l = k;
-
+    
         while (true) {
           if (world.r(i, j, l)) {
             flag2 = true;
             break;
           }
-
+      
           if (world.getTypeId(i, j, l) != this.id) {
             break;
           }
-
+      
           if (world.r(i, j - 1, l)) {
             flag2 = true;
             break;
           }
-
+      
           ++l;
         }
-
+    
         if (flag2 && flag3) {
           world.setRawData(i, j, k, 1);
           return true;
@@ -137,19 +138,19 @@ public class BlockRubberSheet extends BlockTex {
       }
     }
   }
-
+  
   public void doPhysics(World world, int i, int j, int k, int l) {
     if (world.getData(i, j, k) == 1) {
       world.setData(i, j, k, 0);
     }
-
+    
     if (!this.canPlace(world, i, j, k)) {
       this.b(world, i, j, k, world.getData(i, j, k), 0);
       world.setTypeId(i, j, k, 0);
     }
-
+    
   }
-
+  
   public void a(World world, int i, int j, int k, Entity entity) {
     if (!world.e(i, j - 1, k)) {
       if (entity instanceof EntityLiving && !this.canSupportWeight(world, i, j, k)) {
@@ -173,14 +174,14 @@ public class BlockRubberSheet extends BlockTex {
           else {
             entity.motY *= -0.800000011920929D;
           }
-
+  
           entity.motZ *= 1.100000023841858D;
         }
-
+  
       }
     }
   }
-
+  
   public void addCreativeItems(ArrayList arraylist) {
     arraylist.add(new ItemStack(this));
   }

@@ -7,28 +7,28 @@ public class TileEntityCableDetector extends TileEntityCable {
   public static int tickRate = 20;
   public long lastValue = -1L;
   public int ticker = 0;
-
+  
   public TileEntityCableDetector(short word0) {
     super(word0);
   }
-
+  
   public TileEntityCableDetector() {
   }
-
+  
   public void a(NBTTagCompound nbttagcompound) {
     super.a(nbttagcompound);
     this.setActiveWithoutNotify(nbttagcompound.getBoolean("active"));
   }
-
+  
   public void b(NBTTagCompound nbttagcompound) {
     super.b(nbttagcompound);
     nbttagcompound.setBoolean("active", this.getActive());
   }
-
+  
   public boolean canUpdate() {
     return Platform.isSimulating();
   }
-
+  
   public void q_() {
     super.q_();
     if (this.ticker++ % tickRate == 0) {
@@ -45,9 +45,9 @@ public class TileEntityCableDetector extends TileEntityCable {
           this.world.applyPhysics(this.x, this.y, this.z, this.world.getTypeId(this.x, this.y, this.z));
         }
       }
-
+  
       this.lastValue = l;
     }
-
+    
   }
 }
