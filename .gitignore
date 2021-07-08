@@ -1,0 +1,10 @@
+# IDEA
+.idea
+
+# Gradle
+.gradle/
+
+# Build
+build
+server/
+!src/main/java/net/minecraft/server
