@@ -1,5 +1,5 @@
 # IC2 Refined
-Refined version of IndustrialCraft 2 focused on increased performance and fewer bugs. Optimized for Tekkit Classic 3.1.2.
+Refined version of IndustrialCraft 2 focused on increased performance and fewer bugs. Optimized for Tekkit Classic 3.1.2. For server use only.
 
 Changes:
 - Luminator update frequency decreased. Correction of flickering bug.
