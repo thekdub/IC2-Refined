@@ -2,6 +2,7 @@ package ic2.common;
 
 import ic2.api.*;
 import ic2.platform.Platform;
+import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.TileEntity;
 import net.minecraft.server.World;
@@ -122,13 +123,13 @@ public final class EnergyNet {
         energySourceToEnergyPathMap
             .put(ienergysource, discover((TileEntity) ienergysource, false, ienergysource.getMaxEnergyOutput()));
       }
-      if (energySourceToEnergyPathMap.get(ienergysource).size() < 1) { // Remove empty entries
+      if (energySourceToEnergyPathMap.get(ienergysource).isEmpty()) { // Remove empty entries
         energySourceToEnergyPathMap.remove(ienergysource);
         return i;
       }
       else {
         energySourceToEnergyPathMap.get(ienergysource).removeIf(energyPath -> energyPath.conductors == null
-            || energyPath.conductors.size() == 0);
+            || energyPath.conductors.isEmpty());
       }
       int j = 0;
       Vector<EnergyPath> vector = new Vector<>();
@@ -170,45 +171,49 @@ public final class EnergyNet {
           j += k - i1;
           conducted = k - l - i1;
           energypath1.totalEnergyConducted += conducted;
-//          if (conducted > energypath1.minInsulationEnergyAbsorption) {
-//            List<EntityLiving> list = world.a(EntityLiving.class, AxisAlignedBB
-//                .a(energypath1.minX - 1, energypath1.minY - 1, energypath1.minZ - 1,
-//                    energypath1.maxX + 2, energypath1.maxY + 2, energypath1.maxZ + 2));
-//            for (EntityLiving entityLiving : list) {
-//              int k1 = 0;
-//
-//              for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
-//                TileEntity tileentity = (TileEntity) iEnergyConductor;
-//                if (entityLiving.boundingBox.a(AxisAlignedBB
-//                    .a(tileentity.x - 1, tileentity.y - 1, tileentity.z - 1,
-//                        tileentity.x + 2, tileentity.y + 2, tileentity.z + 2))) {
-//                  int l1 = conducted - iEnergyConductor.getInsulationEnergyAbsorption();
-//                  if (l1 > k1) {
-//                    k1 = l1;
-//                  }
-//                  if (iEnergyConductor.getInsulationEnergyAbsorption() == energypath1.minInsulationEnergyAbsorption) {
-//                    break;
-//                  }
-//                }
-//              }
-//              if (entityLivingToShockEnergyMap.containsKey(entityLiving)) {
-//                entityLivingToShockEnergyMap.put(entityLiving, entityLivingToShockEnergyMap.get(entityLiving) + k1);
-//              }
-//              else {
-//                entityLivingToShockEnergyMap.put(entityLiving, k1);
-//              }
-//            }
-//            if (conducted >= energypath1.minInsulationBreakdownEnergy) {
-//              for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
-//                if (conducted >= iEnergyConductor.getInsulationBreakdownEnergy()) {
-//                  iEnergyConductor.removeInsulation();
-//                  if (iEnergyConductor.getInsulationEnergyAbsorption() < energypath1.minInsulationEnergyAbsorption) {
-//                    energypath1.minInsulationEnergyAbsorption = iEnergyConductor.getInsulationEnergyAbsorption();
-//                  }
-//                }
-//              }
-//            }
-//          }
+          // Added for the statistic tracking of energy for EU Reader
+          if (conducted > 0) {
+            energypath1.addPacket(conducted);
+          }
+          if (conducted > energypath1.minInsulationEnergyAbsorption) {
+            List<EntityLiving> list = world.a(EntityLiving.class, AxisAlignedBB
+                .a(energypath1.minX - 1, energypath1.minY - 1, energypath1.minZ - 1,
+                    energypath1.maxX + 2, energypath1.maxY + 2, energypath1.maxZ + 2));
+            for (EntityLiving entityLiving : list) {
+              int k1 = 0;
+
+              for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
+                TileEntity tileentity = (TileEntity) iEnergyConductor;
+                if (entityLiving.boundingBox.a(AxisAlignedBB
+                    .a(tileentity.x - 1, tileentity.y - 1, tileentity.z - 1,
+                        tileentity.x + 2, tileentity.y + 2, tileentity.z + 2))) {
+                  int l1 = conducted - iEnergyConductor.getInsulationEnergyAbsorption();
+                  if (l1 > k1) {
+                    k1 = l1;
+                  }
+                  if (iEnergyConductor.getInsulationEnergyAbsorption() == energypath1.minInsulationEnergyAbsorption) {
+                    break;
+                  }
+                }
+              }
+              if (entityLivingToShockEnergyMap.containsKey(entityLiving)) {
+                entityLivingToShockEnergyMap.put(entityLiving, entityLivingToShockEnergyMap.get(entityLiving) + k1);
+              }
+              else {
+                entityLivingToShockEnergyMap.put(entityLiving, k1);
+              }
+            }
+            if (conducted >= energypath1.minInsulationBreakdownEnergy) {
+              for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
+                if (conducted >= iEnergyConductor.getInsulationBreakdownEnergy()) {
+                  iEnergyConductor.removeInsulation();
+                  if (iEnergyConductor.getInsulationEnergyAbsorption() < energypath1.minInsulationEnergyAbsorption) {
+                    energypath1.minInsulationEnergyAbsorption = iEnergyConductor.getInsulationEnergyAbsorption();
+                  }
+                }
+              }
+            }
+          }
         } while (conducted < energypath1.minConductorBreakdownEnergy);
         for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
           if (conducted >= iEnergyConductor.getConductorBreakdownEnergy()) {
@@ -475,6 +480,22 @@ public final class EnergyNet {
           ep.minY == minY
           && ep.minZ == minZ && ep.maxX == maxX && ep.maxY == maxY && ep.maxZ == maxZ;
     }
+
+    // src/main/java/ic2/common/EnergyNet.java  (inside the EnergyPath class)
+
+    int packetCount = 0;           // number of packets that successfully reached a sink
+    long totalPacketSize = 0L;     // cumulative energy of those packets
+    int minPacketSize = Integer.MAX_VALUE; // smallest packet size seen
+    int maxPacketSize = Integer.MIN_VALUE; // largest packet size seen
+
+    // Called from `emitEnergyFrom` after a successful transmission
+    void addPacket(int delivered) {
+      if (delivered <= 0) return;
+      packetCount++;
+      totalPacketSize += delivered;
+      minPacketSize = Math.min(minPacketSize, delivered);
+      maxPacketSize = Math.max(maxPacketSize, delivered);
+    }
   }
   
   static class EnergyTarget {
@@ -486,4 +507,95 @@ public final class EnergyNet {
       direction = direction1;
     }
   }
+
+
+
+  // -----------------------------------------------------------------------------
+  //  NEW: packet‑statistics DTO
+  // -----------------------------------------------------------------------------
+  public static final class EnergyPacketStats {
+    /** Total EU that has ever reached the target tile entity. */
+    public final long totalEnergy;
+
+    /** Total number of delivered packets. */
+    public final long totalPackets;
+
+    /** Sum of the sizes of all delivered packets (EU). */
+    public final long totalPacketSize;
+
+    /** Minimum delivered packet size seen (EU). */
+    public final int minPacketSize;
+
+    /** Maximum delivered packet size seen (EU). */
+    public final int maxPacketSize;
+
+    private EnergyPacketStats(long energy, long packets, long sum,
+                              int min, int max) {
+      this.totalEnergy = energy;
+      this.totalPackets = packets;
+      this.totalPacketSize = sum;
+      this.minPacketSize = min;
+      this.maxPacketSize = max;
+    }
+
+    /* NEW: Helper to tell whether the measured power is zero. */
+    public boolean hasZeroPower() {
+      return this.totalPackets > 0 && this.totalEnergy == 0L;
+    }
+  }
+
+// -----------------------------------------------------------------------------
+//  NEW: helper that aggregates packet statistics for a given tile entity
+// -----------------------------------------------------------------------------
+  /**
+   * Walks the entire energy‑network and extracts the packet‑level statistics
+   * that belong to {@code te}.  The method performs **no state changes**;
+   * it only reads the cumulative packet data stored in each {@link EnergyPath}.
+   *
+   * @param te the tile entity to query
+   * @return a populated {@link EnergyPacketStats} instance
+   */
+  public EnergyPacketStats getEnergyPacketStats(TileEntity te) {
+    long energy      = 0L;
+    long packets     = 0L;
+    long sumSize     = 0L;
+    int  minSize     = Integer.MAX_VALUE;
+    int  maxSize     = Integer.MIN_VALUE;
+
+    // Walk every source‑to‑paths list in the network
+    for (List<EnergyPath> paths : energySourceToEnergyPathMap.values()) {
+      for (EnergyPath p : paths) {
+        // Does this path touch the queried tile entity?
+        boolean hits = false;
+        if (p.target == te) {
+          hits = true;
+        } else if (te instanceof IEnergyConductor && p.conductors.contains(te)) {
+          hits = true;
+        }
+        if (!hits) continue;
+
+        // Accumulate packet statistics from this path
+        energy   += p.totalEnergyConducted;   // legacy value kept for compatibility
+        packets  += p.packetCount;
+        sumSize   += p.totalPacketSize;
+        minSize   = Math.min(minSize, p.minPacketSize);
+        maxSize   = Math.max(maxSize, p.maxPacketSize);
+      }
+    }
+
+    // If no path touched the entity, reset min/max to zero
+    if (packets == 0L) {
+      minSize = 0;
+      maxSize = 0;
+    }
+
+    // NEW: Reset min/max when *no* power is being delivered
+    EnergyPacketStats result = new EnergyPacketStats(energy, packets, sumSize, minSize, maxSize);
+    if (result.hasZeroPower()) {
+      result = new EnergyPacketStats(energy, packets, sumSize, 0, 0);
+    }
+
+    return result;
+  }
+
 }
