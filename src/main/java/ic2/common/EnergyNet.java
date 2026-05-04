@@ -273,7 +273,159 @@ public final class EnergyNet {
   
     return l;
   }
-  
+
+  /**
+   * Sends up to {@code totalEnergy} EU from {@code source} to the reachable
+   * sinks, with the following constraints:
+   *
+   * 1. At most {@code 512} sinks are considered (or fewer if the source
+   *    has < 512EU).  This keeps path‑finding efficient.
+   * 2. Every packet sent to a sink is capped at {@code maxPacketSize}
+   *    (the transformer’s packet size).
+   * 3. Shock logic, insulation breakdown and conductor breakdown are
+   *    preserved exactly as in the original implementation.
+   * 4. The method returns the amount of energy that actually reached
+   *    the sinks (post‑loss).
+   *
+   * @param source          the energy source (e.g. a tile entity)
+   * @param maxPacketSize   the maximum EU that can be sent to a single
+   *                        sink in one packet
+   * @param totalEnergy     the amount of energy the source is ready to
+   *                        distribute this tick
+   * @return the total EU that was delivered to sinks this tick
+   */
+  public int emitEnergyFrom(IEnergySource source, int maxPacketSize, int totalEnergy) {
+
+    if (source == null || !source.isAddedToEnergyNet()) {
+      return 0;
+    }
+
+    /* ---- 1.  Make sure we have a path list ---- */
+    if (!energySourceToEnergyPathMap.containsKey(source)) {
+      energySourceToEnergyPathMap.put(source,
+          discover((TileEntity) source, false, source.getMaxEnergyOutput()));
+    }
+    List<EnergyPath> allPaths = energySourceToEnergyPathMap.get(source);
+    if (allPaths.isEmpty()) {
+      energySourceToEnergyPathMap.remove(source);
+      return 0;
+    }
+    // remove paths with no conductors (they are dead)
+    allPaths.removeIf(p -> p.conductors == null || p.conductors.isEmpty());
+
+    /* ---- 2.  Build a sink vector (max 512 or fewer) ---- */
+    int sinkLimit = Math.min(512, totalEnergy);   // 512‑sink cap
+    Vector<EnergyPath> sinks = new Vector<>();
+    double d = 0.0D;                               // 1/loss weighting
+    for (EnergyPath p : allPaths) {
+      if (!(p.target instanceof IEnergySink)) continue;
+      IEnergySink sink = (IEnergySink) p.target;
+      if (!sink.demandsEnergy()) continue;
+
+      d += 1.0D / p.loss;
+      if (!sinks.contains(p)) sinks.add(p);
+      if (sinks.size() >= sinkLimit) break;     // reached the limit
+    }
+    if (sinks.isEmpty()) return 0;
+
+    /* ---- 3.  Main loop – one wave per tick ---- */
+    int remaining   = totalEnergy;          // energy still to send
+    int deliveredSum = 0;                   // energy actually delivered
+
+    while (!sinks.isEmpty() && remaining / sinks.size() >= 1) {
+
+      int energyPortion = Math.min(remaining / sinks.size(), maxPacketSize);
+      if (energyPortion < 1) {
+        break;
+      }
+
+      boolean anyDeliveredThisWave = false;
+      Iterator<EnergyPath> it = sinks.iterator();
+
+      while (it.hasNext() && remaining >= energyPortion) {
+        EnergyPath path = it.next();
+        IEnergySink sink = (IEnergySink) path.target;
+
+        int received = energyPortion - ((int) path.loss);
+
+        if (received <= 0) {
+          continue;
+        }
+
+        /* ---- 3d.  Reject energy that the sink cannot accept ---- */
+        int rejected = sink.injectEnergy(path.targetDirection, received);
+        int conducted = energyPortion - rejected;
+        int delivered = received - rejected;   // EU actually accepted
+
+        /* ---- 3e.  If the sink is now full, drop it from future waves ---- */
+        if (!sink.demandsEnergy()) it.remove();
+
+        /* ---- 3f.  Update counters only if something was accepted ---- */
+        if (delivered > 0) {
+          anyDeliveredThisWave = true;
+          deliveredSum += delivered;
+          remaining   -= conducted;
+
+          path.totalEnergyConducted += delivered;
+          path.addPacket(delivered);
+        }
+
+        /* ---- 3g.  Shock logic – exactly as original ---- */
+				// energy that actually travelled
+				if (conducted > path.minInsulationEnergyAbsorption) {
+          List<EntityLiving> list = world.a(EntityLiving.class,
+              AxisAlignedBB.a(path.minX - 1, path.minY - 1, path.minZ - 1,
+                  path.maxX + 2, path.maxY + 2, path.maxZ + 2));
+          for (EntityLiving entityLiving : list) {
+            int maxDamage = 0;
+            for (IEnergyConductor con : path.conductors) {
+              TileEntity t = (TileEntity) con;
+              if (entityLiving.boundingBox.a(
+                  AxisAlignedBB.a(t.x - 1, t.y - 1, t.z - 1,
+                      t.x + 2, t.y + 2, t.z + 2))) {
+                int damage = conducted - con.getInsulationEnergyAbsorption();
+                if (damage > maxDamage) maxDamage = damage;
+                if (con.getInsulationEnergyAbsorption()
+                    == path.minInsulationEnergyAbsorption) break;
+              }
+            }
+            entityLivingToShockEnergyMap.merge(entityLiving, maxDamage, Integer::sum);
+          }
+
+          /* ---- 3h.  Insulation breakdown if enough energy was conducted ---- */
+          if (conducted >= path.minInsulationBreakdownEnergy) {
+            for (IEnergyConductor con : path.conductors) {
+              if (conducted >= con.getInsulationBreakdownEnergy()) {
+                con.removeInsulation();
+                if (con.getInsulationEnergyAbsorption()
+                    < path.minInsulationEnergyAbsorption) {
+                  path.minInsulationEnergyAbsorption =
+                      con.getInsulationEnergyAbsorption();
+                }
+              }
+            }
+          }
+        }
+
+        /* ---- 3i.  Conductors that break because of over‑current ---- */
+        if (conducted >= path.minConductorBreakdownEnergy) {
+          for (IEnergyConductor con : path.conductors) {
+            if (conducted >= con.getConductorBreakdownEnergy()) {
+              con.removeConductor();
+            }
+          }
+        }
+      }
+
+      /* ---- 4.  Prevent infinite loop – no sink can accept ≥ 1 EU this wave ---- */
+      if (!anyDeliveredThisWave) break;
+    }
+
+    /* ---- 5.  Return the energy that reached the sinks ---- */
+    return deliveredSum;
+  }
+
+
   private List<EnergyPath> discover(TileEntity tileEntity, boolean flag, int i) {
     //newDiscover(tileEntity, flag, i); // Todo: Remove this
     HashMap<TileEntity, EnergyBlockLink> tileEntityEnergyBlockLinkHashMap = new HashMap<>();
