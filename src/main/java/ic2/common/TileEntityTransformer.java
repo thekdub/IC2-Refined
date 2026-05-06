@@ -50,11 +50,8 @@ public abstract class TileEntityTransformer extends TileEntityBlock implements I
     int packetSize = this.redstone ? this.highOutput : this.lowOutput;
 
     // Send *all* stored EU, respecting the packetSize limit
-    int sent = Objects.requireNonNull(EnergyNet.getForWorld(this.world))
-        .emitEnergyFrom(this, packetSize, this.energy);
-
-    // Subtract the actually delivered amount from the transformer’s storage
-    this.energy -= sent;
+    this.energy = Objects.requireNonNull(EnergyNet.getForWorld(this.world))
+        .emitAllEnergyFrom(this, packetSize, this.energy);
   }
 
   

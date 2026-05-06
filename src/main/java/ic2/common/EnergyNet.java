@@ -113,165 +113,80 @@ public final class EnergyNet {
       energySourceToEnergyPathMap.remove(tileEntity);
     }
   }
-  
-  public int emitEnergyFrom(IEnergySource ienergysource, int i) {
-    if (ienergysource == null || !ienergysource.isAddedToEnergyNet()) {
-      return i;
-    }
-    else {
-      if (!energySourceToEnergyPathMap.containsKey(ienergysource)) {
-        energySourceToEnergyPathMap
-            .put(ienergysource, discover((TileEntity) ienergysource, false, ienergysource.getMaxEnergyOutput()));
-      }
-      if (energySourceToEnergyPathMap.get(ienergysource).isEmpty()) { // Remove empty entries
-        energySourceToEnergyPathMap.remove(ienergysource);
-        return i;
-      }
-      else {
-        energySourceToEnergyPathMap.get(ienergysource).removeIf(energyPath -> energyPath.conductors == null
-            || energyPath.conductors.isEmpty());
-      }
-      int j = 0;
-      Vector<EnergyPath> vector = new Vector<>();
-      double d = 0.0D;
-      for (EnergyPath energypath : energySourceToEnergyPathMap.get(ienergysource)) {
-        if (!EnergyNet.class.desiredAssertionStatus() && !(energypath.target instanceof IEnergySink)) {
-          throw new AssertionError();
-        }
-        IEnergySink ienergysink = (IEnergySink) energypath.target;
-        if (ienergysink.demandsEnergy()) {
-          d += 1.0D / energypath.loss;
-          if (!vector.contains(energypath)) //Added to prevent duplicates.
-          {
-            vector.add(energypath);
-          }
-          if (vector.size() >= i) {
-            break;
-          }
-        }
-      }
-      Iterator<EnergyPath> iterator1 = vector.iterator();
-      while (true) {
-        int conducted;
-        EnergyPath energypath1;
-        do {
-          IEnergySink ienergysink1;
-          int k;
-          int l;
-          do {
-            if (!iterator1.hasNext()) {
-              return i - j;
-            }
-            energypath1 = iterator1.next();
-            ienergysink1 = (IEnergySink) energypath1.target;
-            k = (int) Math.floor((double) Math.round((double) i / d / energypath1.loss * 100000.0D) / 100000.0D);
-            l = (int) Math.floor(energypath1.loss);
-          } while (k <= l);
-          int i1 = ienergysink1.injectEnergy(energypath1.targetDirection, k - l);
-          j += k - i1;
-          conducted = k - l - i1;
-          energypath1.totalEnergyConducted += conducted;
-          // Added for the statistic tracking of energy for EU Reader
-          if (conducted > 0) {
-            energypath1.addPacket(conducted);
-          }
-          if (conducted > energypath1.minInsulationEnergyAbsorption) {
-            List<EntityLiving> list = world.a(EntityLiving.class, AxisAlignedBB
-                .a(energypath1.minX - 1, energypath1.minY - 1, energypath1.minZ - 1,
-                    energypath1.maxX + 2, energypath1.maxY + 2, energypath1.maxZ + 2));
-            for (EntityLiving entityLiving : list) {
-              int k1 = 0;
 
-              for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
-                TileEntity tileentity = (TileEntity) iEnergyConductor;
-                if (entityLiving.boundingBox.a(AxisAlignedBB
-                    .a(tileentity.x - 1, tileentity.y - 1, tileentity.z - 1,
-                        tileentity.x + 2, tileentity.y + 2, tileentity.z + 2))) {
-                  int l1 = conducted - iEnergyConductor.getInsulationEnergyAbsorption();
-                  if (l1 > k1) {
-                    k1 = l1;
-                  }
-                  if (iEnergyConductor.getInsulationEnergyAbsorption() == energypath1.minInsulationEnergyAbsorption) {
-                    break;
-                  }
-                }
-              }
-              if (entityLivingToShockEnergyMap.containsKey(entityLiving)) {
-                entityLivingToShockEnergyMap.put(entityLiving, entityLivingToShockEnergyMap.get(entityLiving) + k1);
-              }
-              else {
-                entityLivingToShockEnergyMap.put(entityLiving, k1);
-              }
-            }
-            if (conducted >= energypath1.minInsulationBreakdownEnergy) {
-              for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
-                if (conducted >= iEnergyConductor.getInsulationBreakdownEnergy()) {
-                  iEnergyConductor.removeInsulation();
-                  if (iEnergyConductor.getInsulationEnergyAbsorption() < energypath1.minInsulationEnergyAbsorption) {
-                    energypath1.minInsulationEnergyAbsorption = iEnergyConductor.getInsulationEnergyAbsorption();
-                  }
-                }
-              }
-            }
-          }
-        } while (conducted < energypath1.minConductorBreakdownEnergy);
-        for (IEnergyConductor iEnergyConductor : energypath1.conductors) {
-          if (conducted >= iEnergyConductor.getConductorBreakdownEnergy()) {
-            iEnergyConductor.removeConductor();
-          }
+  public int emitEnergyFrom(IEnergySource energySource, int energyAvailable) {
+    if (Runtime.getRuntime().freeMemory() < 1073741824L)
+      return energyAvailable;
+    if (!energySource.isAddedToEnergyNet())
+      return energyAvailable;
+    if (!this.energySourceToEnergyPathMap.containsKey(energySource))
+      this.energySourceToEnergyPathMap.put(energySource, discover((TileEntity)energySource, false, energySource.getMaxEnergyOutput()));
+    int energySpent = 0;
+    Vector<EnergyPath> energyPaths = new Vector<>();
+    double energyLossRatio = 0.0D;
+    for (EnergyPath energypath : this.energySourceToEnergyPathMap.get(energySource)) {
+      assert energypath.target instanceof IEnergySink;
+      IEnergySink ienergysink = (IEnergySink)energypath.target;
+      if (ienergysink.demandsEnergy()) {
+        energyLossRatio += 1.0D / energypath.loss;
+        if (!energyPaths.contains(energypath))
+          energyPaths.add(energypath);
+        if (energyPaths.size() >= energyAvailable)
+          break;
+      }
+    }
+    Iterator<EnergyPath> energyPathIterator = energyPaths.iterator();
+    while (true) {
+      if (!energyPathIterator.hasNext())
+        return energyAvailable - energySpent;
+      EnergyPath energyPath = energyPathIterator.next();
+      IEnergySink energySink = (IEnergySink)energyPath.target;
+      int energyRemaining = (int)Math.floor(Math.round(energyAvailable / energyLossRatio / energyPath.loss * 100000.0D) / 100000.0D);
+      int energyLoss = (int)Math.floor(energyPath.loss);
+      if (energyRemaining > energyLoss) {
+        int energyInjected = energySink.injectEnergy(energyPath.targetDirection, energyRemaining - energyLoss);
+        energySpent += energyRemaining - energyInjected;
+        int conducted = energyRemaining - energyLoss - energyInjected;
+        energyPath.totalEnergyConducted += conducted;
+        if (conducted > 0) {
+          energyPath.addPacket(conducted);
         }
-      }
-    }
-  }
-  
-  public long getTotalEnergyConducted(TileEntity tileentity) {
-    long l = 0L;
-    if (tileentity instanceof IEnergyConductor || tileentity instanceof IEnergySink) {
-      List list = discover(tileentity, true, Integer.MAX_VALUE);
-      Iterator iterator1 = list.iterator();
-  
-      label56:
-      while (true) {
-        EnergyPath energypath1;
-        IEnergySource ienergysource;
-        do {
-          do {
-            if (!iterator1.hasNext()) {
-              break label56;
+        if (conducted > energyPath.minInsulationEnergyAbsorption) {
+          List<EntityLiving> list = this.world.a(EntityLiving.class, AxisAlignedBB.a((energyPath.minX - 1), (energyPath.minY - 1), (energyPath.minZ - 1), (energyPath.maxX + 2), (energyPath.maxY + 2), (energyPath.maxZ + 2)));
+          for (EntityLiving entityLiving : list) {
+            int k1 = 0;
+            for (IEnergyConductor iEnergyConductor : energyPath.conductors) {
+              TileEntity tileentity = (TileEntity)iEnergyConductor;
+              if (entityLiving.boundingBox.a(AxisAlignedBB.a((tileentity.x - 1), (tileentity.y - 1), (tileentity.z - 1), (tileentity.x + 2), (tileentity.y + 2), (tileentity.z + 2)))) {
+                int l1 = conducted - iEnergyConductor.getInsulationEnergyAbsorption();
+                if (l1 > k1)
+                  k1 = l1;
+                if (iEnergyConductor.getInsulationEnergyAbsorption() == energyPath.minInsulationEnergyAbsorption)
+                  break;
+              }
             }
-  
-            energypath1 = (EnergyPath) iterator1.next();
-            ienergysource = (IEnergySource) energypath1.target;
-          } while (!energySourceToEnergyPathMap.containsKey(ienergysource));
-        } while ((double) ienergysource.getMaxEnergyOutput() <= energypath1.loss);
-  
-        Iterator iterator2 = ((List) energySourceToEnergyPathMap.get(ienergysource)).iterator();
-  
-        while (true) {
-          EnergyPath energypath2;
-          do {
-            if (!iterator2.hasNext()) {
-              continue label56;
+            if (this.entityLivingToShockEnergyMap.containsKey(entityLiving)) {
+              this.entityLivingToShockEnergyMap.put(entityLiving, Integer.valueOf(this.entityLivingToShockEnergyMap.get(entityLiving).intValue() + k1));
+              continue;
             }
-      
-            energypath2 = (EnergyPath) iterator2.next();
-          } while ((!(tileentity instanceof IEnergySink) || energypath2.target != tileentity) &&
-              (!(tileentity instanceof IEnergyConductor) || !energypath2.conductors.contains(tileentity)));
-    
-          l += energypath2.totalEnergyConducted;
+            this.entityLivingToShockEnergyMap.put(entityLiving, Integer.valueOf(k1));
+          }
+          if (conducted >= energyPath.minInsulationBreakdownEnergy)
+            for (IEnergyConductor iEnergyConductor : energyPath.conductors) {
+              if (conducted >= iEnergyConductor.getInsulationBreakdownEnergy()) {
+                iEnergyConductor.removeInsulation();
+                if (iEnergyConductor.getInsulationEnergyAbsorption() < energyPath.minInsulationEnergyAbsorption)
+                  energyPath.minInsulationEnergyAbsorption = iEnergyConductor.getInsulationEnergyAbsorption();
+              }
+            }
         }
+        if (conducted >= energyPath.minConductorBreakdownEnergy)
+          for (IEnergyConductor iEnergyConductor : energyPath.conductors) {
+            if (conducted >= iEnergyConductor.getConductorBreakdownEnergy())
+              iEnergyConductor.removeConductor();
+          }
       }
     }
-    
-    EnergyPath energypath;
-    if (tileentity instanceof IEnergySource && energySourceToEnergyPathMap.containsKey(tileentity)) {
-      for (Iterator iterator = ((List) energySourceToEnergyPathMap.get(tileentity)).iterator(); iterator.hasNext();
-            l += energypath.totalEnergyConducted) {
-        energypath = (EnergyPath) iterator.next();
-      }
-    }
-  
-    return l;
   }
 
   /**
@@ -297,110 +212,115 @@ public final class EnergyNet {
   public int emitEnergyFrom(IEnergySource source, int maxPacketSize, int totalEnergy) {
 
     if (source == null || !source.isAddedToEnergyNet()) {
-      return 0;
+      return totalEnergy;
     }
 
     /* ---- 1.  Make sure we have a path list ---- */
     if (!energySourceToEnergyPathMap.containsKey(source)) {
-      energySourceToEnergyPathMap.put(source,
-          discover((TileEntity) source, false, source.getMaxEnergyOutput()));
+      energySourceToEnergyPathMap.put(source, discover((TileEntity) source, false, source.getMaxEnergyOutput()));
     }
     List<EnergyPath> allPaths = energySourceToEnergyPathMap.get(source);
     if (allPaths.isEmpty()) {
       energySourceToEnergyPathMap.remove(source);
-      return 0;
+      return totalEnergy;
     }
     // remove paths with no conductors (they are dead)
     allPaths.removeIf(p -> p.conductors == null || p.conductors.isEmpty());
 
     /* ---- 2.  Build a sink vector (max 512 or fewer) ---- */
     int sinkLimit = Math.min(512, totalEnergy);   // 512‑sink cap
-    Vector<EnergyPath> sinks = new Vector<>();
-    double d = 0.0D;                               // 1/loss weighting
-    for (EnergyPath p : allPaths) {
-      if (!(p.target instanceof IEnergySink)) continue;
-      IEnergySink sink = (IEnergySink) p.target;
-      if (!sink.demandsEnergy()) continue;
 
-      d += 1.0D / p.loss;
-      if (!sinks.contains(p)) sinks.add(p);
-      if (sinks.size() >= sinkLimit) break;     // reached the limit
+    Vector<EnergyPath> sinks = new Vector<>();
+    double energyCost = 0.0D;                               // 1/loss weighting
+    for (EnergyPath energyPath : allPaths) {
+      if (!EnergyNet.class.desiredAssertionStatus() && !(energyPath.target instanceof IEnergySink)) {
+        throw new AssertionError();
+      }
+      IEnergySink sink = (IEnergySink) energyPath.target;
+      if (!sink.demandsEnergy()) {
+        continue;
+      }
+      energyCost += 1.0D / energyPath.loss;
+      if (!sinks.contains(energyPath)) {
+        sinks.add(energyPath);
+      }
+      if (sinks.size() >= sinkLimit) {
+        break;     // reached the limit
+      }
     }
     if (sinks.isEmpty()) return 0;
 
     /* ---- 3.  Main loop – one wave per tick ---- */
-    int remaining   = totalEnergy;          // energy still to send
-    int deliveredSum = 0;                   // energy actually delivered
+    double remaining   = totalEnergy;          // energy still to send
+    double deliveredSum = 0;                   // energy actually delivered
 
     while (!sinks.isEmpty() && remaining / sinks.size() >= 1) {
 
-      int energyPortion = Math.min(remaining / sinks.size(), maxPacketSize);
+      double energyPortion = Math.min(remaining / sinks.size(), maxPacketSize);
       if (energyPortion < 1) {
         break;
       }
 
       boolean anyDeliveredThisWave = false;
-      Iterator<EnergyPath> it = sinks.iterator();
+      Iterator<EnergyPath> energyPaths = sinks.iterator();
 
-      while (it.hasNext() && remaining >= energyPortion) {
-        EnergyPath path = it.next();
-        IEnergySink sink = (IEnergySink) path.target;
-
-        int received = energyPortion - ((int) path.loss);
+      while (energyPaths.hasNext() && remaining >= energyPortion) {
+        EnergyPath energyPath = energyPaths.next();
+        IEnergySink energyTarget = (IEnergySink) energyPath.target;
+        double received = energyPortion - ((int) energyPath.loss);
 
         if (received <= 0) {
           continue;
         }
 
         /* ---- 3d.  Reject energy that the sink cannot accept ---- */
-        int rejected = sink.injectEnergy(path.targetDirection, received);
-        int conducted = energyPortion - rejected;
-        int delivered = received - rejected;   // EU actually accepted
+        double rejected = energyTarget.injectEnergy(energyPath.targetDirection, (int) received);
+        double conducted = energyPortion - rejected;
+        double delivered = received - rejected;   // EU actually accepted
 
         /* ---- 3e.  If the sink is now full, drop it from future waves ---- */
-        if (!sink.demandsEnergy()) it.remove();
+        if (!energyTarget.demandsEnergy()) {
+          energyPaths.remove();
+        }
 
         /* ---- 3f.  Update counters only if something was accepted ---- */
         if (delivered > 0) {
           anyDeliveredThisWave = true;
           deliveredSum += delivered;
-          remaining   -= conducted;
+          remaining -= conducted;
 
-          path.totalEnergyConducted += delivered;
-          path.addPacket(delivered);
+          energyPath.totalEnergyConducted += (long) delivered;
+          energyPath.addPacket((int) delivered);
         }
 
         /* ---- 3g.  Shock logic – exactly as original ---- */
-				// energy that actually travelled
-				if (conducted > path.minInsulationEnergyAbsorption) {
-          List<EntityLiving> list = world.a(EntityLiving.class,
-              AxisAlignedBB.a(path.minX - 1, path.minY - 1, path.minZ - 1,
-                  path.maxX + 2, path.maxY + 2, path.maxZ + 2));
+				// energy that actually traveled
+				if (conducted > energyPath.minInsulationEnergyAbsorption) {
+          List<EntityLiving> list = world.a(EntityLiving.class, AxisAlignedBB.a(energyPath.minX - 1, energyPath.minY - 1, energyPath.minZ - 1, energyPath.maxX + 2, energyPath.maxY + 2, energyPath.maxZ + 2));
           for (EntityLiving entityLiving : list) {
-            int maxDamage = 0;
-            for (IEnergyConductor con : path.conductors) {
-              TileEntity t = (TileEntity) con;
-              if (entityLiving.boundingBox.a(
-                  AxisAlignedBB.a(t.x - 1, t.y - 1, t.z - 1,
-                      t.x + 2, t.y + 2, t.z + 2))) {
-                int damage = conducted - con.getInsulationEnergyAbsorption();
-                if (damage > maxDamage) maxDamage = damage;
-                if (con.getInsulationEnergyAbsorption()
-                    == path.minInsulationEnergyAbsorption) break;
+            double maxDamage = 0;
+            for (IEnergyConductor conductor : energyPath.conductors) {
+              TileEntity t = (TileEntity) conductor;
+              if (entityLiving.boundingBox.a(AxisAlignedBB.a(t.x - 1, t.y - 1, t.z - 1, t.x + 2, t.y + 2, t.z + 2))) {
+                double damage = conducted - conductor.getInsulationEnergyAbsorption();
+                if (damage > maxDamage) {
+                  maxDamage = damage;
+                }
+                if (conductor.getInsulationEnergyAbsorption() == energyPath.minInsulationEnergyAbsorption) {
+                  break;
+                }
               }
             }
-            entityLivingToShockEnergyMap.merge(entityLiving, maxDamage, Integer::sum);
+            entityLivingToShockEnergyMap.merge(entityLiving, (int) maxDamage, Integer::sum);
           }
 
           /* ---- 3h.  Insulation breakdown if enough energy was conducted ---- */
-          if (conducted >= path.minInsulationBreakdownEnergy) {
-            for (IEnergyConductor con : path.conductors) {
+          if (conducted >= energyPath.minInsulationBreakdownEnergy) {
+            for (IEnergyConductor con : energyPath.conductors) {
               if (conducted >= con.getInsulationBreakdownEnergy()) {
                 con.removeInsulation();
-                if (con.getInsulationEnergyAbsorption()
-                    < path.minInsulationEnergyAbsorption) {
-                  path.minInsulationEnergyAbsorption =
-                      con.getInsulationEnergyAbsorption();
+                if (con.getInsulationEnergyAbsorption() < energyPath.minInsulationEnergyAbsorption) {
+                  energyPath.minInsulationEnergyAbsorption = con.getInsulationEnergyAbsorption();
                 }
               }
             }
@@ -408,8 +328,8 @@ public final class EnergyNet {
         }
 
         /* ---- 3i.  Conductors that break because of over‑current ---- */
-        if (conducted >= path.minConductorBreakdownEnergy) {
-          for (IEnergyConductor con : path.conductors) {
+        if (conducted >= energyPath.minConductorBreakdownEnergy) {
+          for (IEnergyConductor con : energyPath.conductors) {
             if (conducted >= con.getConductorBreakdownEnergy()) {
               con.removeConductor();
             }
@@ -417,12 +337,254 @@ public final class EnergyNet {
         }
       }
 
-      /* ---- 4.  Prevent infinite loop – no sink can accept ≥ 1 EU this wave ---- */
-      if (!anyDeliveredThisWave) break;
+      /* ---- 4.  Prevent infinite loop – no sink can accept ≥1 EU this wave ---- */
+      if (!anyDeliveredThisWave) {
+        break;
+      }
     }
 
     /* ---- 5.  Return the energy that reached the sinks ---- */
-    return deliveredSum;
+    return (int) deliveredSum;
+  }
+
+  /**
+   * Deliver energy from {@code energySource} to the sinks it is connected to.
+   * <p>
+   * The routine repeatedly re‑computes the source amount that each active
+   * sink should receive and then sends a packet to every sink that
+   * respects the {@code packetSize} limit.  The loop terminates when
+   * no more energy can be sent (either because all sinks are satisfied
+   * or because the remaining amount is too small to give each sink at
+   * least one EU).
+   * </p>
+   *
+   * @param energySource     the source of the energy
+   * @param packetSize       maximum EU that may be injected into a sink
+   *                         in a single round (must be > 0)
+   * @param energyAvailable amount of EU that can be spent
+   * @return the amount of EU that could not be spent
+   */
+  public int emitAllEnergyFrom(IEnergySource energySource,
+                               int packetSize,
+                               int energyAvailable) {
+
+    /* ---------- sanity checks ---------- */
+    if (Runtime.getRuntime().freeMemory() < 1_073_741_824L) { // 1GB
+      return energyAvailable;
+    }
+    if (!energySource.isAddedToEnergyNet()) {
+      return energyAvailable;
+    }
+    if (packetSize <= 0) {
+      throw new IllegalArgumentException("packetSize must be > 0");
+    }
+    if (energyAvailable < packetSize) {
+      return energyAvailable;
+    }
+
+    /* ---------- cache / discover energy paths ---------- */
+    @SuppressWarnings("unchecked")
+    List<EnergyPath> allPaths =
+				this.energySourceToEnergyPathMap
+						.computeIfAbsent(energySource,
+								src -> discover((TileEntity) src, false,
+										src.getMaxEnergyOutput()));
+
+    /* ---------- main distribution loop ---------- */
+    int remainingEnergy = energyAvailable;
+    int energySpent = 0; // total energy consumed by this call
+
+    while (true) {
+      /* active paths that actually demand energy */
+      List<EnergyPath> activePaths = new ArrayList<>();
+      for (EnergyPath ep : allPaths) {
+        if (((IEnergySink) ep.target).demandsEnergy()) {
+          activePaths.add(ep);
+        }
+      }
+      if (activePaths.isEmpty()) {
+        break; // nothing left to deliver
+      }
+
+      /* if we cannot give at least 1 EU to each sink, stop */
+      if ((double) remainingEnergy / activePaths.size() < 1.0) {
+        break;
+      }
+
+      /* loss‑sum used to compute the proportional source amount */
+      double lossSum = 0.0D;
+      for (EnergyPath ep : activePaths) {
+        lossSum += 1.0D / ep.loss;
+      }
+
+      /* ------- pre‑compute how much source energy to send to each path -------
+       * The original code calculates the source amount for a path as
+       *   sourceToSend = floor(round(remainingEnergy / lossSum / ep.loss * 100000) / 100000)
+       * We compute that for every active path *before* we start sending.
+       * The packet is capped to {@code packetSize} at this point.
+       */
+      List<Integer> sourceToSendList = new ArrayList<>(activePaths.size());
+      for (EnergyPath ep : activePaths) {
+        int rawSource = (int) Math.floor(
+            Math.round(remainingEnergy / lossSum / ep.loss * 100_000.0D) / 100_000.0D);
+        int sourceToSend = Math.min(rawSource, packetSize);
+        sourceToSendList.add(sourceToSend);
+      }
+
+      /* ------- send a packet to each active sink ------- */
+      boolean anyInjectedThisRound = false;
+
+      for (int i = 0; i < activePaths.size(); i++) {
+        EnergyPath ep = activePaths.get(i);
+        IEnergySink sink = (IEnergySink) ep.target;
+        int sourceToSend = sourceToSendList.get(i);
+
+        /* nothing to send on this path (e.g. all loss) */
+        if (sourceToSend <= ep.loss) {
+          continue;
+        }
+
+        anyInjectedThisRound = true;
+
+        /* perform the actual injection */
+        int injected = sink.injectEnergy(ep.targetDirection,
+						(int) (sourceToSend - ep.loss));
+
+        /* bookkeeping – energy spent includes loss + conducted energy */
+        energySpent += sourceToSend - injected;
+
+        /* update path statistics */
+        int conducted = (int) (sourceToSend - ep.loss - injected);
+        ep.totalEnergyConducted += conducted;
+        if (conducted > 0) {
+          ep.addPacket(conducted);
+        }
+
+        /* ----- insulation absorption & shocking ----- */
+        if (conducted > ep.minInsulationEnergyAbsorption) {
+          AxisAlignedBB pathBB = AxisAlignedBB.a(
+              ep.minX - 1, ep.minY - 1, ep.minZ - 1,
+              ep.maxX + 2, ep.maxY + 2, ep.maxZ + 2);
+
+          List<EntityLiving> entities =
+              this.world.a(EntityLiving.class, pathBB);
+
+          for (EntityLiving entity : entities) {
+            int maxShock = 0;
+            for (IEnergyConductor ec : ep.conductors) {
+              TileEntity te = (TileEntity) ec;
+              AxisAlignedBB conBB = AxisAlignedBB.a(
+                  te.x - 1, te.y - 1, te.z - 1,
+                  te.x + 2, te.y + 2, te.z + 2);
+
+              if (entity.boundingBox.a(conBB)) {
+                int shock = conducted - ec.getInsulationEnergyAbsorption();
+                if (shock > maxShock) {
+                  maxShock = shock;
+                }
+                if (ec.getInsulationEnergyAbsorption()
+                    == ep.minInsulationEnergyAbsorption) {
+                  break; // first conductor that limits the shock
+                }
+              }
+            }
+
+            /* accumulate shock values for this entity */
+            this.entityLivingToShockEnergyMap.merge(entity,
+                maxShock, Integer::sum);
+          }
+
+          /* insulation breakdown */
+          if (conducted >= ep.minInsulationBreakdownEnergy) {
+            for (IEnergyConductor ec : ep.conductors) {
+              if (conducted >= ec.getInsulationBreakdownEnergy()) {
+                ec.removeInsulation();
+                if (ec.getInsulationEnergyAbsorption()
+                    < ep.minInsulationEnergyAbsorption) {
+                  ep.minInsulationEnergyAbsorption =
+                      ec.getInsulationEnergyAbsorption();
+                }
+              }
+            }
+          }
+        }
+
+        /* ----- conductor breakdown ----- */
+        if (conducted >= ep.minConductorBreakdownEnergy) {
+          for (IEnergyConductor ec : ep.conductors) {
+            if (conducted >= ec.getConductorBreakdownEnergy()) {
+              ec.removeConductor();
+            }
+          }
+        }
+
+        /* deduct the source energy that was actually sent this round */
+        remainingEnergy -= sourceToSend;
+      }
+
+      /* if nothing was injected this round we are stuck – exit */
+      if (!anyInjectedThisRound) {
+        break;
+      }
+
+      /* stop if we have less than packetSize left – the next round will exit */
+      if (remainingEnergy < packetSize) {
+        break;
+      }
+    }
+
+    /* return whatever energy could not be spent */
+    return remainingEnergy;
+  }
+
+  public long getTotalEnergyConducted(TileEntity tileentity) {
+    long l = 0L;
+    if (tileentity instanceof IEnergyConductor || tileentity instanceof IEnergySink) {
+      List list = discover(tileentity, true, Integer.MAX_VALUE);
+      Iterator iterator1 = list.iterator();
+
+  label56:
+      while (true) {
+        EnergyPath energypath1;
+        IEnergySource ienergysource;
+        do {
+          do {
+            if (!iterator1.hasNext()) {
+              break label56;
+            }
+
+            energypath1 = (EnergyPath) iterator1.next();
+            ienergysource = (IEnergySource) energypath1.target;
+          } while (!energySourceToEnergyPathMap.containsKey(ienergysource));
+        } while ((double) ienergysource.getMaxEnergyOutput() <= energypath1.loss);
+
+        Iterator iterator2 = ((List) energySourceToEnergyPathMap.get(ienergysource)).iterator();
+
+        while (true) {
+          EnergyPath energypath2;
+          do {
+            if (!iterator2.hasNext()) {
+              continue label56;
+            }
+
+            energypath2 = (EnergyPath) iterator2.next();
+          } while ((!(tileentity instanceof IEnergySink) || energypath2.target != tileentity) &&
+              (!(tileentity instanceof IEnergyConductor) || !energypath2.conductors.contains(tileentity)));
+
+          l += energypath2.totalEnergyConducted;
+        }
+      }
+    }
+
+    EnergyPath energypath;
+    if (tileentity instanceof IEnergySource && energySourceToEnergyPathMap.containsKey(tileentity)) {
+      for (Iterator iterator = ((List) energySourceToEnergyPathMap.get(tileentity)).iterator(); iterator.hasNext();
+           l += energypath.totalEnergyConducted) {
+        energypath = (EnergyPath) iterator.next();
+      }
+    }
+
+    return l;
   }
 
 
