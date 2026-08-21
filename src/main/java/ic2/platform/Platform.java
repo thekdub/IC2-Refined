@@ -123,7 +123,10 @@ public class Platform {
   
   public static void messagePlayer(EntityHuman entityhuman, String s) {
     if (entityhuman instanceof EntityPlayer) {
-      ((EntityPlayer) entityhuman).netServerHandler.sendPacket(new Packet3Chat(s));
+      EntityPlayer player = (EntityPlayer)entityhuman;
+      if (player.netServerHandler != null) {
+        player.netServerHandler.sendPacket(new Packet3Chat(s));
+      }
     }
   }
   
